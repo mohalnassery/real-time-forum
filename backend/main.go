@@ -1,0 +1,115 @@
+package main
+
+import (
+	"flag"
+	"log"
+	"net/http"
+	"time"
+
+	"real-time-forum/database"
+	"real-time-forum/handlers"
+	"real-time-forum/helper"
+)
+
+func main() {
+	// Initialize database tables and defer closing the database connection
+	database.InitConnection()
+	defer database.DB.Close()
+
+	// Create a new HTTP serve mux
+	r := http.NewServeMux()
+
+	// Create rate limiters for different handlers
+	generalLimiter := helper.NewRateLimiter(50, 50) // 50 requests per minute
+	authLimiter := helper.NewRateLimiter(10, 10)    // 10 requests per second
+	postLimiter := helper.NewRateLimiter(40, 40)    // 40 requests per minute
+	commentLimiter := helper.NewRateLimiter(30, 30) // 30 requests per minute
+
+	// Serve the single HTML file
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "../client/index.html")
+	})
+
+	// Functionality endpoints
+	r.Handle("/categories", helper.LimitMiddleware(generalLimiter, http.HandlerFunc(handlers.GetCategories)))
+	r.Handle("/auth/register", helper.LimitMiddleware(authLimiter, http.HandlerFunc(handlers.RegisterHandler)))
+	r.Handle("/auth/login", helper.LimitMiddleware(authLimiter, http.HandlerFunc(handlers.LoginHandler)))
+	r.Handle("/posts", helper.LimitMiddleware(postLimiter, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodPost:
+			handlers.CreatePost(w, r)
+		case http.MethodGet:
+			handlers.GetPosts(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})))
+
+	r.Handle("/posts/{postId}", helper.LimitMiddleware(generalLimiter, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			handlers.GetPost(w, r)
+		case http.MethodPut:
+			handlers.UpdatePost(w, r)
+		case http.MethodDelete:
+			handlers.DeletePost(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})))
+
+	// Post-related endpoints
+	r.Handle("/posts/{postId}/like", helper.LimitMiddleware(postLimiter, http.HandlerFunc(handlers.LikePost)))
+	r.Handle("/posts/{postId}/dislike", helper.LimitMiddleware(postLimiter, http.HandlerFunc(handlers.DislikePost)))
+	r.Handle("/posts/{postId}/comments", helper.LimitMiddleware(commentLimiter, http.HandlerFunc(handlers.CreateComment)))
+
+	// Comment-related endpoints
+	r.Handle("/comments/{commentId}/like", helper.LimitMiddleware(commentLimiter, http.HandlerFunc(handlers.LikeComment)))
+	r.Handle("/comments/{commentId}/dislike", helper.LimitMiddleware(commentLimiter, http.HandlerFunc(handlers.DislikeComment)))
+	r.Handle("/comments/{commentId}", helper.LimitMiddleware(commentLimiter, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodPut:
+			handlers.UpdateComment(w, r)
+		case http.MethodDelete:
+			handlers.DeleteComment(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})))
+
+	// Authentication and user-related endpoints
+	r.Handle("/auth/is-logged-in", helper.LimitMiddleware(authLimiter, http.HandlerFunc(handlers.IsLoggedIn)))
+	r.Handle("/auth/logout", helper.LimitMiddleware(authLimiter, http.HandlerFunc(handlers.Logout)))
+	r.Handle("/user-stats", helper.LimitMiddleware(generalLimiter, http.HandlerFunc(handlers.GetUserStats)))
+	r.Handle("/user-activity", helper.LimitMiddleware(generalLimiter, http.HandlerFunc(handlers.GetUserActivity)))
+
+	// General statistics and leaderboard
+	r.Handle("/all-stats", helper.LimitMiddleware(generalLimiter, http.HandlerFunc(handlers.GetAllStats)))
+	r.Handle("/leaderboard", helper.LimitMiddleware(generalLimiter, http.HandlerFunc(handlers.GetLeaderboard)))
+
+	// Notification management
+	r.Handle("/notifications", helper.LimitMiddleware(generalLimiter, http.HandlerFunc(handlers.GetNotifications)))
+	r.Handle("/notifications/clear/{notificationId}", helper.LimitMiddleware(generalLimiter, http.HandlerFunc(handlers.ClearNotification)))
+	r.Handle("/notifications/mark-all-read", helper.LimitMiddleware(generalLimiter, http.HandlerFunc(handlers.MarkAllNotificationsAsRead)))
+
+	// Serving static files
+	r.Handle("/js/", http.FileServer(http.Dir("../client")))
+	r.Handle("/css/", http.FileServer(http.Dir("../client")))
+	r.Handle("/assets/", http.FileServer(http.Dir("../client")))
+	r.Handle("/uploads/", http.FileServer(http.Dir("../client")))
+
+	// Parse command-line flags
+	flag.Parse()
+
+	// Start the server on port 8080
+	server := &http.Server{
+		Addr:         ":8080",
+		Handler:      r,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  120 * time.Second,
+	}
+
+	log.Println("Starting server on http://localhost:8080/")
+	log.Fatal(server.ListenAndServe())
+}

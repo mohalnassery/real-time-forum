@@ -1,0 +1,74 @@
+.
+├── backend
+│   ├── database
+│   │   ├── db_comment.go
+│   │   ├── db_like.go
+│   │   ├── db_notification.go
+│   │   ├── db_post.go
+│   │   └── db_user.go
+│   ├── go.mod
+│   ├── go.sum
+│   ├── handlers
+│   │   ├── auth.go
+│   │   ├── comments.go
+│   │   ├── likes.go
+│   │   ├── messages.go
+│   │   └── posts.go
+│   ├── main.go
+│   ├── main_test.go
+│   ├── models
+│   │   ├── comment.go
+│   │   ├── like.go
+│   │   ├── message.go
+│   │   ├── post.go
+│   │   └── user.go
+│   ├── utils
+│   │   ├── auth.go
+│   │   ├── config.go
+│   │   └── db.go
+│   └── websockets
+│       ├── client.go
+│       ├── hub.go
+│       └── message.go
+├── delete.sh
+├── directory_structure1.txt
+├── directory_structure.txt
+├── folders-files-restructure.sh
+├── frontend
+│   ├── css
+│   │   ├── auth.css
+│   │   ├── comments.css
+│   │   ├── create-post.css
+│   │   ├── home.css
+│   │   ├── layout.css
+│   │   ├── login.css
+│   │   ├── messages.css
+│   │   ├── nav.css
+│   │   ├── post-details.css
+│   │   ├── posts.css
+│   │   ├── register.css
+│   │   └── styles.css
+│   ├── index.html
+│   └── js
+│       ├── Activity.js
+│       ├── app.js
+│       ├── auth.js
+│       ├── comments.js
+│       ├── CreatePost.js
+│       ├── Index.js
+│       ├── Login.js
+│       ├── messages.js
+│       ├── nav.js
+│       ├── notifications.js
+│       ├── postDetails.js
+│       ├── posts.js
+│       ├── Register.js
+│       ├── stats.js
+│       └── websocket.js
+├── new-tree-structure.txt
+├── objective.md
+├── README.md
+├── todo.md
+└── update_structure.sh
+
+24 directories, 92 files

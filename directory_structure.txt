@@ -1,0 +1,84 @@
+.
+├── client
+│   ├── activity.html
+│   ├── assets
+│   │   ├── favicon.ico
+│   │   ├── logo.png
+│   │   ├── undraw_Access_account_re_8spm.png
+│   │   └── Wavy_Tech-28_Single-10-min.jpg
+│   ├── create-post.html
+│   ├── css
+│   │   ├── create-post.css
+│   │   ├── home.css
+│   │   ├── login.css
+│   │   ├── nav.css
+│   │   ├── post-details.css
+│   │   └── register.css
+│   ├── errors
+│   │   ├── 400.html
+│   │   ├── 404.html
+│   │   ├── 405.html
+│   │   └── 500.html
+│   ├── index.html
+│   ├── js
+│   │   ├── Activity.js
+│   │   ├── CreatePost.js
+│   │   ├── Index.js
+│   │   ├── Login.js
+│   │   ├── nav.js
+│   │   ├── notifications.js
+│   │   ├── postDetails.js
+│   │   ├── Register.js
+│   │   └── stats.js
+│   ├── loginPage.html
+│   ├── postDetails.html
+│   ├── registerPage.html
+│   └── uploads
+├── compose.yaml
+├── directory_structure.txt
+├── Dockerfile
+├── objective.md
+├── README.md
+└── server
+    ├── cert
+    │   ├── cert.pem
+    │   ├── key.pem
+    │   ├── server.crt
+    │   └── server.key
+    ├── cert.pem
+    ├── database
+    │   ├── Delete.go
+    │   ├── Get.go
+    │   ├── Init.go
+    │   ├── Insert.go
+    │   ├── Update.go
+    │   └── Verify.go
+    ├── form.db
+    ├── go.mod
+    ├── go.sum
+    ├── helper
+    │   └── ratelimit.go
+    ├── key.pem
+    ├── main.go
+    ├── models
+    │   ├── comments.go
+    │   ├── notification.go
+    │   ├── oauth.go
+    │   ├── post.go
+    │   ├── stats.go
+    │   └── User.go
+    └── routes
+        ├── Activity.go
+        ├── Auth.go
+        ├── Categories.go
+        ├── Comments.go
+        ├── HandleGet.go
+        ├── Likes.go
+        ├── notifications.go
+        ├── oauth_callbacks.go
+        ├── oauth_utils.go
+        ├── Posts.go
+        ├── session.go
+        └── Stats.go
+
+14 directories, 67 files
