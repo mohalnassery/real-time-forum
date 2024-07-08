@@ -94,7 +94,7 @@ func GetAllStats(w http.ResponseWriter, r *http.Request) {
 func GetLeaderboard(w http.ResponseWriter, r *http.Request) {
 	var leaderboard []models.LeaderboardEntry
 
-	rows, err := database.DB.Query("SELECT u.username, COUNT(p.post_id) AS post_count FROM users u LEFT JOIN posts p ON u.id = p.author GROUP BY u.id HAVING COUNT(p.post_id) > 0 ORDER BY post_count DESC LIMIT 10")
+	rows, err := database.DB.Query("SELECT u.nickname, COUNT(p.post_id) AS post_count FROM users u LEFT JOIN posts p ON u.id = p.author GROUP BY u.id HAVING COUNT(p.post_id) > 0 ORDER BY post_count DESC LIMIT 10")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -103,7 +103,7 @@ func GetLeaderboard(w http.ResponseWriter, r *http.Request) {
 
 	for rows.Next() {
 		var entry models.LeaderboardEntry
-		err := rows.Scan(&entry.Username, &entry.PostCount)
+		err := rows.Scan(&entry.Nickname, &entry.PostCount)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

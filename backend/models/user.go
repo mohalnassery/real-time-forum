@@ -1,10 +1,14 @@
 package models
 
 type UserRegisteration struct {
-	Nickname string `json:"nickname"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	AuthType string `json:"auth_type"`
+	Nickname  string `json:"nickname"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	AuthType  string `json:"auth_type"`
+	Age       int    `json:"age"`
+	Gender    string `json:"gender"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
 }
 
 type UserLogin struct {
@@ -27,8 +31,8 @@ type User struct {
 	Nickname  string `json:"nickname"`
 	Age       int    `json:"age"`
 	Gender    string `json:"gender"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
 	Email     string `json:"email"`
 	Password  string `json:"password"`
 	AuthType  string `json:"auth_type"`

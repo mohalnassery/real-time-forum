@@ -28,7 +28,7 @@ type SessionData struct {
 
 func CreateSession(w http.ResponseWriter, r *http.Request, user models.UserRegisteration) error {
 	// Invalidate any existing session for the user
-	_, err := database.DB.Exec("DELETE FROM sessions WHERE username = ?", user.Nickname)
+	_, err := database.DB.Exec("DELETE FROM sessions WHERE nickname = ?", user.Nickname)
 	if err != nil {
 		return err
 	}
@@ -50,7 +50,7 @@ func CreateSession(w http.ResponseWriter, r *http.Request, user models.UserRegis
 	encodedSession := encodeSession(sessionJSON)
 
 	// Store session in the database
-	_, err = database.DB.Exec("INSERT INTO sessions (session_id, username, expires_at) VALUES (?, ?, ?)", sessionID, user.Nickname, expirationTime)
+	_, err = database.DB.Exec("INSERT INTO sessions (session_id, nickname, expires_at) VALUES (?, ?, ?)", sessionID, user.Nickname, expirationTime)
 	if err != nil {
 		return err
 	}
@@ -94,7 +94,7 @@ func GetSessionUser(r *http.Request) (*models.UserRegisteration, error) {
 
 	// Check if the session is still valid in the database
 	var dbSessionID string
-	err = database.DB.QueryRow("SELECT session_id FROM sessions WHERE session_id = ? AND username = ?", sessionData.SessionID, sessionData.User.Nickname).Scan(&dbSessionID)
+	err = database.DB.QueryRow("SELECT session_id FROM sessions WHERE session_id = ? AND nickname = ?", sessionData.SessionID, sessionData.User.Nickname).Scan(&dbSessionID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			DestroySession(nil, r) // Destroy the session if it is no longer valid

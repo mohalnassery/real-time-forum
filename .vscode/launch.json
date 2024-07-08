@@ -6,11 +6,8 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "env": {
-                "TLS_CERT_FILE": "${workspaceFolder}/server/cert/server.crt",
-                "TLS_KEY_FILE": "${workspaceFolder}/server/cert/server.key"
-            },
-            "program": "${workspaceFolder}/server/main.go"
+
+            "program": "${workspaceFolder}/backend/main.go"
         }
     ]
 }

@@ -72,19 +72,25 @@ func GetUsernameByID(userID int) (string, error) {
 	return nickname, err
 }
 
-func CreateUser(db *sql.DB, user models.User) error {
-	_, err := db.Exec("INSERT INTO users (nickname, email, password, auth_type) VALUES (?, ?, ?, ?)", user.Nickname, user.Email, user.Password, user.AuthType)
+func CreateUser(db *sql.DB, user models.UserRegisteration) error {
+	_, err := db.Exec("INSERT INTO users (nickname, email, password, auth_type, age, gender, first_name, last_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", user.Nickname, user.Email, user.Password, user.AuthType, user.Age, user.Gender, user.FirstName, user.LastName)
 	return err
 }
 
-func GetUserByEmail(db *sql.DB, email string) (models.User, error) {
+func GetUserByEmail(db *sql.DB, email string) (interface{}, error) {
 	var user models.User
 	err := db.QueryRow("SELECT id, nickname, email, password, auth_type FROM users WHERE email = ?", email).Scan(&user.ID, &user.Nickname, &user.Email, &user.Password, &user.AuthType)
-	return user, err
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
-func GetUserByNickname(db *sql.DB, nickname string) (models.User, error) {
+func GetUserByNickname(db *sql.DB, nickname string) (interface{}, error) {
 	var user models.User
 	err := db.QueryRow("SELECT id, nickname, email, password, auth_type FROM users WHERE nickname = ?", nickname).Scan(&user.ID, &user.Nickname, &user.Email, &user.Password, &user.AuthType)
-	return user, err
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }

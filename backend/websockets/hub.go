@@ -1,63 +1,64 @@
-package routes
+package websockets
 
 import (
+	"log"
 	"net/http"
-	"real-time-forum/models"
-	"strings"
-	"text/template"
+
+	"github.com/gorilla/websocket"
 )
 
-func HandleGet(w http.ResponseWriter, r *http.Request) {
-	var err error
-	var tmpl *template.Template
-	path, _, _ := strings.Cut(r.URL.Path[1:], "/")
-	switch path {
-	case "register":
-		tmpl, err = template.ParseFiles("../client/registerPage.html")
-	case "login":
-		tmpl, err = template.ParseFiles("../client/loginPage.html")
-	case "":
-		tmpl, err = template.ParseFiles("../client/index.html")
-	case "create":
-		tmpl, err = template.ParseFiles("../client/create-post.html")
-	case "post-details":
-		tmpl, err = template.ParseFiles("../client/postDetails.html")
-	case "404":
-		tmpl, err = template.ParseFiles("../client/errors/404.html")
-		w.WriteHeader(http.StatusNotFound)
-	case "400":
-		tmpl, err = template.ParseFiles("../client/errors/400.html")
-		w.WriteHeader(http.StatusBadRequest)
-	case "500":
-		tmpl, err = template.ParseFiles("../client/errors/500.html")
-		w.WriteHeader(http.StatusInternalServerError)
-	case "405":
-		tmpl, err = template.ParseFiles("../client/errors/405.html")
-		w.WriteHeader(http.StatusMethodNotAllowed)
-	default:
-		tmpl, err = template.ParseFiles("../client/errors/404.html")
-		w.WriteHeader(http.StatusNotFound)
-	}
-	if err != nil {
-		http.Error(w, "Error parsing template", http.StatusInternalServerError)
-		return
-	}
+type Hub struct {
+	clients    map[*Client]bool
+	broadcast  chan []byte
+	register   chan *Client
+	unregister chan *Client
+}
 
-	if err = tmpl.Execute(w, nil); err != nil {
-		http.Error(w, "Error executing template", http.StatusInternalServerError)
-		return
+var hub = Hub{
+	broadcast:  make(chan []byte),
+	register:   make(chan *Client),
+	unregister: make(chan *Client),
+	clients:    make(map[*Client]bool),
+}
+
+func (h *Hub) Run() {
+	for {
+		select {
+		case client := <-h.register:
+			h.clients[client] = true
+		case client := <-h.unregister:
+			if _, ok := h.clients[client]; ok {
+				delete(h.clients, client)
+				close(client.send)
+			}
+		case message := <-h.broadcast:
+			for client := range h.clients {
+				select {
+				case client.send <- message:
+				default:
+					close(client.send)
+					delete(h.clients, client)
+				}
+			}
+		}
 	}
 }
 
-func CreatePostTemplate(w http.ResponseWriter, formdata models.PostCreate) {
-	tmpl, err := template.ParseFiles("../client/create-post.html")
-	if err != nil {
-		http.Error(w, "Error parsing template", http.StatusInternalServerError)
-		return
-	}
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
 
-	if err = tmpl.Execute(w, formdata); err != nil {
-		http.Error(w, "Error executing template", http.StatusInternalServerError)
+func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(err)
 		return
 	}
+	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256)}
+	client.hub.register <- client
+
+	go client.writePump()
+	go client.readPump()
 }

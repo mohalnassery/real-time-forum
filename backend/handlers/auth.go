@@ -6,12 +6,13 @@ import (
 	"real-time-forum/database"
 	"real-time-forum/models"
 	"regexp"
+	"strings"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	var user models.User
+	var user models.UserRegisteration
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -30,6 +31,12 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Validate age
+	if user.Age <= 0 {
+		http.Error(w, "Invalid age", http.StatusBadRequest)
+		return
+	}
+
 	// Hash the user's password using bcrypt
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -45,40 +52,59 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Create a session for the user
+	err = CreateSession(w, r, user)
+	if err != nil {
+		http.Error(w, "Failed to create session", http.StatusInternalServerError)
+		return
+	}
+
 	// Return a success response
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("User registered successfully"))
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	var user models.User
-	err := json.NewDecoder(r.Body).Decode(&user)
+	// Define a custom struct for the login request
+	type LoginRequest struct {
+		NicknameOrEmail string `json:"nicknameOrEmail"`
+		Password        string `json:"password"`
+	}
+
+	var loginReq LoginRequest
+	err := json.NewDecoder(r.Body).Decode(&loginReq)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	// Retrieve the user by email or nickname
-	var dbUser models.User
-	if user.Email != "" {
-		dbUser, err = database.GetUserByEmail(database.DB, user.Email)
+	var dbUser models.UserRegisteration
+	if strings.Contains(loginReq.NicknameOrEmail, "@") {
+		user, _ := database.GetUserByEmail(database.DB, loginReq.NicknameOrEmail)
+		dbUser = user.(models.UserRegisteration)
 	} else {
-		dbUser, err = database.GetUserByNickname(database.DB, user.Nickname)
+		user, _ := database.GetUserByNickname(database.DB, loginReq.NicknameOrEmail)
+		dbUser = user.(models.UserRegisteration)
 	}
-	if err != nil {
+	if dbUser.Nickname == "" {
 		http.Error(w, "User not found", http.StatusBadRequest)
 		return
 	}
 
 	// Compare the hashed password with the provided password
-	err = bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(user.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(loginReq.Password))
 	if err != nil {
 		http.Error(w, "Invalid password", http.StatusUnauthorized)
 		return
 	}
 
-	// Generate a session token or JWT (implementation not shown)
-	// ...
+	// Create a session for the user
+	err = CreateSession(w, r, dbUser)
+	if err != nil {
+		http.Error(w, "Failed to create session", http.StatusInternalServerError)
+		return
+	}
 
 	// Return the token in the response
 	w.WriteHeader(http.StatusOK)
@@ -98,7 +124,7 @@ func IsLoggedIn(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{
 		"status":    "logged_in",
-		"username":  user.Nickname,
+		"nickname":  user.Nickname,
 		"sessionID": UserSessions[user.Nickname],
 	})
 }
@@ -111,5 +137,3 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	DestroySession(w, r)
 	json.NewEncoder(w).Encode(map[string]string{"status": "logged_out"})
 }
-
-

@@ -9,11 +9,12 @@ import (
 	"real-time-forum/database"
 	"real-time-forum/handlers"
 	"real-time-forum/helper"
+	"real-time-forum/websockets"
 )
 
 func main() {
 	// Initialize database tables and defer closing the database connection
-	database.InitConnection()
+	database.InitDatabaseTables()
 	defer database.DB.Close()
 
 	// Create a new HTTP serve mux
@@ -27,7 +28,14 @@ func main() {
 
 	// Serve the single HTML file
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "../client/index.html")
+		http.ServeFile(w, r, "../frontend/index.html")
+	})
+
+	// WebSocket endpoint
+	hub := &websockets.Hub{}
+	go hub.Run()
+	r.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		websockets.ServeWs(hub, w, r)
 	})
 
 	// Functionality endpoints
@@ -93,10 +101,10 @@ func main() {
 	r.Handle("/notifications/mark-all-read", helper.LimitMiddleware(generalLimiter, http.HandlerFunc(handlers.MarkAllNotificationsAsRead)))
 
 	// Serving static files
-	r.Handle("/js/", http.FileServer(http.Dir("../client")))
-	r.Handle("/css/", http.FileServer(http.Dir("../client")))
-	r.Handle("/assets/", http.FileServer(http.Dir("../client")))
-	r.Handle("/uploads/", http.FileServer(http.Dir("../client")))
+	r.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("../frontend/js"))))
+	r.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("../frontend/css"))))
+	r.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("../frontend/assets"))))
+	r.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir("../frontend/uploads"))))
 
 	// Parse command-line flags
 	flag.Parse()

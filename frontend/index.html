@@ -1,92 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Forum Application</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-    integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link rel="stylesheet" href="./css/home.css">
-  <link rel="stylesheet" href="./css/nav.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Forum</title>
+    <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body>
-  <div class="main-container">
-    <div class="left-section">
-      <div class="stats" id="user-stats">
-        <h1>My Stats</h1>
-        <div class="stat-item">
-          <p>Number of posts created:</p>
-          <span id="user-posts"></span>
+    <div id="app">
+        <!-- Registration and Login Forms -->
+        <div id="auth">
+            <div id="register">
+                <h2>Register</h2>
+                <form id="registerForm">
+                    <input type="text" id="nickname" placeholder="Nickname" required>
+                    <input type="number" id="age" placeholder="Age" required>
+                    <input type="text" id="gender" placeholder="Gender" required>
+                    <input type="text" id="firstName" placeholder="First Name" required>
+                    <input type="text" id="lastName" placeholder="Last Name" required>
+                    <input type="email" id="email" placeholder="Email" required>
+                    <input type="password" id="password" placeholder="Password" required>
+                    <button type="submit">Register</button>
+                </form>
+            </div>
+            <div id="login">
+                <h2>Login</h2>
+                <form id="loginForm">
+                    <input type="text" id="loginNicknameOrEmail" placeholder="Nickname or Email" required>
+                    <input type="password" id="loginPassword" placeholder="Password" required>
+                    <button type="submit">Login</button>
+                </form>
+            </div>
         </div>
-        <div class="stat-item">
-          <p>Number of comments:</p>
-          <span id="user-comments"></span>
-        </div>
-        <div class="stat-item">
-          <p>Number of Likes:</p>
-          <span id="user-likes"></span>
-        </div>
-        <div class="stat-item">
-          <p>Number of Dislikes:</p>
-          <span id="user-dislikes"></span>
-        </div>
-      </div>
 
-      <div class="stats" id="alluser-stats">
-        <h1>Forum Statistics</h1>
-        <div class="stat-item">
-          <p>Total number of posts:</p>
-          <span id="total-posts"></span>
+        <!-- Main Content -->
+        <div id="mainContent" style="display: none;">
+            <div id="posts">
+                <h2>Posts</h2>
+                <div id="postList"></div>
+                <form id="createPostForm">
+                    <input type="text" id="postTitle" placeholder="Title" required>
+                    <textarea id="postContent" placeholder="Content" required></textarea>
+                    <button type="submit">Create Post</button>
+                </form>
+            </div>
+            <div id="privateMessages">
+                <h2>Private Messages</h2>
+                <div id="messageList"></div>
+                <form id="sendMessageForm">
+                    <input type="text" id="messageRecipient" placeholder="Recipient" required>
+                    <textarea id="messageContent" placeholder="Message" required></textarea>
+                    <button type="submit">Send Message</button>
+                </form>
+            </div>
         </div>
-        <div class="stat-item">
-          <p>Total number of comments:</p>
-          <span id="total-comments"></span>
-        </div>
-        <div class="stat-item">
-          <p>Total number of likes:</p>
-          <span id="total-likes"></span>
-        </div>
-        <div class="stat-item">
-          <p>Total number of dislikes:</p>
-          <span id="total-dislikes"></span>
-        </div>
-      </div>
-
-      <div class="stats" id="categories">
-        <h1>Filter By Category</h1>
-        <div class="category-container"></div>
-      </div>
     </div>
-
-    <div class="middle-section">
-      <div class="create-section">
-        <h1>All Posts</h1>
-        <a href="/create">
-          <button id="create-btn">Create Post</button>
-        </a>
-      </div>
-
-      <div class="posts-section"></div>
-    </div>
-
-    <div class="right-section">
-      <div class="leaderboard">
-        <h1>LeaderBoard</h1>
-        <div id="user-leaderboard"></div>
-      </div>
-
-      <div class="filter-options" id="user-filters">
-        <h1>Filter By</h1>
-        <div class="options">
-          <div>Created Posts</div>
-          <div>Liked Posts</div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <script type="module" src="./js/nav.js"></script>
-  <script type="module" src="./js/stats.js"></script>
-  <script type="module" src="./js/Index.js"></script>
+    <script src="./js/websocket.js"></script>
+    <script src="./js/app.js"></script>
 </body>
 </html>

@@ -15,6 +15,6 @@ type AllStats struct {
 }
 
 type LeaderboardEntry struct {
-	Username  string `json:"username"`
+	Nickname  string `json:"nickname"`
 	PostCount int    `json:"postCount"`
 }

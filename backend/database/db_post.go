@@ -52,7 +52,7 @@ func GetPostDetails(postID, userID int) (models.PostHome, error) {
             posts.body, 
             posts.creation_date,
             posts.image,
-            users.username,
+            users.nickname,
             GROUP_CONCAT(DISTINCT categories.name) AS categories,
             (SELECT COUNT(*) FROM "like-posts" WHERE "like-posts".postID = posts.post_id) AS likes,
             (SELECT COUNT(*) FROM "dislike-posts" WHERE "dislike-posts".postID = posts.post_id) AS dislikes,
@@ -148,7 +148,7 @@ func DeletePost(postID, userID int) error {
 	return nil
 }
 
-func UpdatePost(postID int, username string, title string, body string) error {
-	_, err := DB.Exec("UPDATE posts SET title = ?, body = ? WHERE post_id = ? AND author = (SELECT id FROM users WHERE username = ?)", title, body, postID, username)
+func UpdatePost(postID int, nickname string, title string, body string) error {
+	_, err := DB.Exec("UPDATE posts SET title = ?, body = ? WHERE post_id = ? AND author = (SELECT id FROM users WHERE nickname = ?)", title, body, postID, nickname)
 	return err
 }

@@ -1,15 +1,16 @@
-package routes
+package websockets
 
 import (
 	"encoding/json"
 	"net/http"
 	"real-time-forum/database"
+	"real-time-forum/handlers"
 	"strconv"
 	"strings"
 )
 
 func GetNotifications(w http.ResponseWriter, r *http.Request) {
-	user, err := GetSessionUser(r)
+	user, err := handlers.GetSessionUser(r)
 	if err != nil {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
@@ -56,7 +57,7 @@ func ClearNotification(w http.ResponseWriter, r *http.Request) {
 }
 
 func MarkAllNotificationsAsRead(w http.ResponseWriter, r *http.Request) {
-	user, err := GetSessionUser(r)
+	user, err := handlers.GetSessionUser(r)
 	if err != nil {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return

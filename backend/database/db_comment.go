@@ -65,7 +65,7 @@ func GetPostComments(postID, userID int) ([]models.CommentHome, error) {
             comments.id,
             comments.body,
             comments.creation_date,
-            users.username,
+            users.nickname,
             (SELECT COUNT(*) FROM "like-comments" WHERE "like-comments".comment_id = comments.id) AS likes,
             (SELECT COUNT(*) FROM "dislike-comments" WHERE "dislike-comments".comment_id = comments.id) AS dislikes,
             COALESCE((SELECT 1 FROM "like-comments" WHERE "like-comments".comment_id = comments.id AND user_id = ?), 0) AS user_liked,
