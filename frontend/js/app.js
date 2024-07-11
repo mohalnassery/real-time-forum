@@ -1,77 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const registerForm = document.getElementById("registerForm");
-    const loginForm = document.getElementById("loginForm");
-    const createPostForm = document.getElementById("createPostForm");
+     const createPostForm = document.getElementById("createPostForm");
     const sendMessageForm = document.getElementById("sendMessageForm");
 
-    registerForm.addEventListener("submit", function(event) {
-        event.preventDefault();
-        const nickname = document.getElementById("nickname").value;
-        const age = parseInt(document.getElementById("age").value, 10); // Convert age to integer
-        const gender = document.getElementById("gender").value;
-        const firstName = document.getElementById("firstName").value;
-        const lastName = document.getElementById("lastName").value;
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
-
-        fetch("/auth/register", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ nickname, age, gender, firstName, lastName, email, password })
-        })
-        .then(response => {
-            if (response.headers.get("Content-Type").includes("application/json")) {
-                return response.json();
-            } else {
-                return response.text().then(text => { throw new Error(text); });
-            }
-        })
-        .then(data => {
-            if (data.success) {
-                alert("Registration successful!");
-            } else {
-                alert("Registration failed: " + data.message);
-            }
-        })
-        .catch(error => {
-            alert("Registration failed: " + error.message);
-        });
-    });
-
-    loginForm.addEventListener("submit", function(event) {
-        event.preventDefault();
-        const nicknameOrEmail = document.getElementById("loginNicknameOrEmail").value;
-        const password = document.getElementById("loginPassword").value;
-
-        fetch("/auth/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ nicknameOrEmail, password })
-        })
-        .then(response => {
-            if (response.headers.get("Content-Type").includes("application/json")) {
-                return response.json();
-            } else {
-                return response.text().then(text => { throw new Error(text); });
-            }
-        })
-        .then(data => {
-            if (data.success) {
-                alert("Login successful!");
-                document.getElementById("auth").style.display = "none";
-                document.getElementById("mainContent").style.display = "block";
-            } else {
-                alert("Login failed: " + data.message);
-            }
-        })
-        .catch(error => {
-            alert("Login failed: " + error.message);
-        });
-    });
 
     createPostForm.addEventListener("submit", function(event) {
         event.preventDefault();

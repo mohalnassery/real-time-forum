@@ -1,9 +1,10 @@
 // Function to fetch and display user stats
 export async function fetchUserStats() {
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-    if (isLoggedIn) {
+    const loggedInNickname = localStorage.getItem("nickname");
+    if (isLoggedIn && loggedInNickname) {
       try {
-        const response = await fetch("/user-stats");
+        const response = await fetch(`/user-stats?nickname=${loggedInNickname}`);
         if (response.ok) {
           const stats = await response.json();
           document.querySelectorAll("#user-posts").forEach((element) => {
@@ -113,4 +114,3 @@ export async function fetchUserStats() {
       console.log(error.message);
     }
   }
-  

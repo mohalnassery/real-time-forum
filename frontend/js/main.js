@@ -1,14 +1,13 @@
-import { createNavBar } from './nav.js';
-import { showSection } from './utils.js';
-import { initAuth } from './auth.js';
-import { initContent } from './content.js';
+import { createNavBar } from './nav/nav.js';
+import { showSection } from './auth/utils.js';
+import { initAuth } from './auth/auth.js';
+import { initContent } from './content/content.js';
 
 document.addEventListener("DOMContentLoaded", () => {
     const app = document.getElementById("app");
 
     // Create and append the navigation bar
-    const navBar = createNavBar();
-    app.appendChild(navBar);
+    createNavBar();
 
     // Initialize authentication (login/register)
     initAuth(app);

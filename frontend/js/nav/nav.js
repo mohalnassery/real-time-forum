@@ -1,4 +1,4 @@
-import { fetchNotifications, clearNotification, markAllNotificationsAsRead } from './notifications.js';
+import { fetchNotifications, clearNotification, markAllNotificationsAsRead } from './notifications.mjs';
 
 export function createNavBar() {
     const style = document.createElement("style");
@@ -126,7 +126,7 @@ export function createNavBar() {
     logoutButton.className = "link-buttons";
     logoutButton.style.display = "none";
     logoutButton.textContent = "Logout";
-    logoutButton.addEventListener("click", logout);
+    //logoutButton.addEventListener("click", logout); -- Add logout function
     userAuth.appendChild(logoutButton);
     const userInfo = document.createElement("div");
     userInfo.className = "user-info";

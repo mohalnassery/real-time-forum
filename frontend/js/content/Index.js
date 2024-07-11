@@ -22,14 +22,14 @@ document.addEventListener("click", handleOutsideClick);
 let selectedCategories = [];
 let filterLikes = false;
 let filterCreated = false;
-let nickname = "";
+let loggedInNickname = "";
 
 // Function to check the login status of the user
 // Event listener for login status update
 window.addEventListener("loginStatusUpdate", (event) => {
   const { isLoggedIn } = event.detail;
   if (isLoggedIn) {
-    nickname = localStorage.getItem("nickname");
+    loggedInNickname = localStorage.getItem("nickname");
     const createBtn = document.getElementById("create-btn");
     if (createBtn) createBtn.style.display = "block";
     document.querySelectorAll("#user-filters").forEach((element) => {
@@ -67,10 +67,10 @@ async function fetchCategories() {
 async function fetchPosts() {
   try {
     let url = "/posts?";
-    nickname = localStorage.getItem("nickname");
+    loggedInNickname = localStorage.getItem("nickname");
     selectedCategories.length > 0 && (url += `&category=${selectedCategories}`);
-    filterLikes && (url += `&liked=${nickname}`);
-    filterCreated && (url += `&created=${nickname}`);
+    filterLikes && (url += `&liked=${loggedInNickname}`);
+    filterCreated && (url += `&created=${loggedInNickname}`);
     const res = await fetch(url, {
       method: "GET",
     });

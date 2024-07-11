@@ -1,6 +1,4 @@
-document.addEventListener("DOMContentLoaded", function() {
-    const app = document.getElementById("app");
-
+export function initAuth(app) {
     const authContainer = document.createElement("div");
     authContainer.id = "auth";
     authContainer.style.display = "flex";
@@ -33,31 +31,31 @@ document.addEventListener("DOMContentLoaded", function() {
                 <form class="register-form">
                     <div class="input-container">
                         <i class="fas fa-user"></i>
-                        <input type="text" class="form-input" id="nickname" placeholder="Nickname" required>
+                        <input type="text" class="form-input" id="register_nickname" placeholder="Nickname" required>
                     </div>
                     <div class="input-container">
                         <i class="fas fa-envelope"></i>
-                        <input type="email" class="form-input" id="email" placeholder="Email" required>
+                        <input type="email" class="form-input" id="register_email" placeholder="Email" required>
                     </div>
                     <div class="input-container">
                         <i class="fas fa-lock"></i>
-                        <input type="password" class="form-input" id="password" placeholder="Password" required>
+                        <input type="password" class="form-input" id="register_password" placeholder="Password" required>
                     </div>
                     <div class="input-container">
                         <i class="fas fa-calendar"></i>
-                        <input type="number" class="form-input" id="age" placeholder="Age" required>
+                        <input type="number" class="form-input" id="register_age" placeholder="Age" required>
                     </div>
                     <div class="input-container">
                         <i class="fas fa-venus-mars"></i>
-                        <input type="text" class="form-input" id="gender" placeholder="Gender" required>
+                        <input type="text" class="form-input" id="register_gender" placeholder="Gender" required>
                     </div>
                     <div class="input-container">
                         <i class="fas fa-user"></i>
-                        <input type="text" class="form-input" id="firstName" placeholder="First Name" required>
+                        <input type="text" class="form-input" id="register_firstName" placeholder="First Name" required>
                     </div>
                     <div class="input-container">
                         <i class="fas fa-user"></i>
-                        <input type="text" class="form-input" id="lastName" placeholder="Last Name" required>
+                        <input type="text" class="form-input" id="register_lastName" placeholder="Last Name" required>
                     </div>
                     <div class="error-container" id="register-error"></div>
                     <button type="submit">Register</button>
@@ -124,17 +122,26 @@ document.addEventListener("DOMContentLoaded", function() {
     // Add event listeners for form submissions
     document.querySelector('.register-form').addEventListener('submit', handleRegister);
     document.querySelector('.login-form').addEventListener('submit', handleLogin);
-});
+}
 
 async function handleRegister(event) {
     event.preventDefault();
-    const nickname = document.getElementById("nickname").value;
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const age = parseInt(document.getElementById("age").value, 10);
-    const gender = document.getElementById("gender").value;
-    const firstName = document.getElementById("firstName").value;
-    const lastName = document.getElementById("lastName").value;
+    const nickname = document.getElementById("register_nickname").value;
+    const email = document.getElementById("register_email").value;
+    const password = document.getElementById("register_password").value;
+    const age = parseInt(document.getElementById("register_age").value, 10);
+    const gender = document.getElementById("register_gender").value;
+    const firstName = document.getElementById("register_firstName").value;
+    const lastName = document.getElementById("register_lastName").value;
+
+    // Debugging: Check if elements are correctly selected
+    console.log("Nickname:", nickname);
+    console.log("Email:", email);
+    console.log("Password:", password);
+    console.log("Age:", age);
+    console.log("Gender:", gender);
+    console.log("First Name:", firstName);
+    console.log("Last Name:", lastName);
 
     try {
         const res = await fetch("/auth/register", {
