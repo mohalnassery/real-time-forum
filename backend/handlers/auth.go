@@ -79,17 +79,21 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Retrieve the user by email or nickname
-	var dbUser models.UserRegisteration
+	var dbUser models.User
 	if strings.Contains(loginReq.NicknameOrEmail, "@") {
-		user, _ := database.GetUserByEmail(database.DB, loginReq.NicknameOrEmail)
-		dbUser = user.(models.UserRegisteration)
+		user, err := database.GetUserByEmail(database.DB, loginReq.NicknameOrEmail)
+		if err != nil {
+			http.Error(w, "User not found", http.StatusBadRequest)
+			return
+		}
+		dbUser = user.(models.User)
 	} else {
-		user, _ := database.GetUserByNickname(database.DB, loginReq.NicknameOrEmail)
-		dbUser = user.(models.UserRegisteration)
-	}
-	if dbUser.Nickname == "" {
-		http.Error(w, "User not found", http.StatusBadRequest)
-		return
+		user, err := database.GetUserByNickname(database.DB, loginReq.NicknameOrEmail)
+		if err != nil {
+			http.Error(w, "User not found", http.StatusBadRequest)
+			return
+		}
+		dbUser = user.(models.User)
 	}
 
 	// Compare the hashed password with the provided password
@@ -99,8 +103,17 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// turn dbUser to UserRegisteration
+	user := models.UserRegisteration{
+		Nickname: dbUser.Nickname,
+		Email:    dbUser.Email,
+		Password: dbUser.Password,
+		Age:      dbUser.Age,
+		Gender:   dbUser.Gender,
+	}
+
 	// Create a session for the user
-	err = CreateSession(w, r, dbUser)
+	err = CreateSession(w, r, user)
 	if err != nil {
 		http.Error(w, "Failed to create session", http.StatusInternalServerError)
 		return
@@ -110,7 +123,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Login successful"))
 }
-
 func IsLoggedIn(w http.ResponseWriter, r *http.Request) {
 	user, err := GetSessionUser(r)
 	if err != nil {

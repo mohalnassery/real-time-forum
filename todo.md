@@ -49,74 +49,74 @@
 # Task 1.5: Create the Database
 - Files: `backend/utils/db.go`
 
-- [ ] Subtask 1: Define the database connection
-    - [ ] Open `backend/utils/db.go`.
-    - [ ] Define a function `ConnectDB` to establish a connection to the database.
-    - [ ] Use a suitable Go package (e.g., `gorm` or `database/sql`) for database operations.
-    - [ ] Configure the database connection parameters (e.g., host, port, user, password, dbname).
+- [X] Subtask 1: Define the database connection
+    - [X] Open `backend/utils/db.go`.
+    - [X] Define a function `ConnectDB` to establish a connection to the database.
+    - [X] Use a suitable Go package (e.g., `gorm` or `database/sql`) for database operations.
+    - [X] Configure the database connection parameters (e.g., host, port, user, password, dbname).
 
-- [ ] Subtask 2: Create database tables
-    - [ ] Define functions to create tables for `User`, `Post`, `Comment`, `Like`, and `Message` models.
-    - [ ] Ensure that the tables are created if they do not already exist.
+- [X] Subtask 2: Create database tables
+    - [X] Define functions to create tables for `User`, `Post`, `Comment`, `Like`, and `Message` models.
+    - [X] Ensure that the tables are created if they do not already exist.
 
-- [ ] Subtask 3: Initialize the database
-    - [ ] Call the `ConnectDB` function in the main application entry point (`backend/main.go`).
-    - [ ] Ensure that the database connection is established when the application starts.
-    - [ ] Log any errors that occur during the database connection process.
+- [X] Subtask 3: Initialize the database
+    - [X] Call the `ConnectDB` function in the main application entry point (`backend/main.go`).
+    - [X] Ensure that the database connection is established when the application starts.
+    - [X] Log any errors that occur during the database connection process.
 
 # Task 2: Implement Registration and Login
 - Files: `backend/handlers/auth.go`, `backend/models/user.go`, `frontend/js/auth.js`, `frontend/index.html`
 
-- [ ] Subtask 1: Backend - User Model
-    - [ ] Define the User model with fields: Nickname, Age, Gender, First Name, Last Name, Email, Password.
-        - [ ] Open `backend/models/user.go`.
-        - [ ] Define a struct `User` with the mentioned fields.
-        - [ ] Add JSON tags to each field for proper JSON serialization.
-    - [ ] Implement methods for creating and retrieving users.
-        - [ ] Create a method `CreateUser` to insert a new user into the database.
-        - [ ] Create a method `GetUserByEmail` to retrieve a user by email.
-        - [ ] Create a method `GetUserByNickname` to retrieve a user by nickname.
+- [X] Subtask 1: Backend - User Model
+    - [X] Define the User model with fields: Nickname, Age, Gender, First Name, Last Name, Email, Password.
+        - [X] Open `backend/models/user.go`.
+        - [X] Define a struct `User` with the mentioned fields.
+        - [X] Add JSON tags to each field for proper JSON serialization.
+    - [X] Implement methods for creating and retrieving users.
+        - [X] Create a method `CreateUser` to insert a new user into the database.
+        - [X] Create a method `GetUserByEmail` to retrieve a user by email.
+        - [X] Create a method `GetUserByNickname` to retrieve a user by nickname.
 
-- [ ] Subtask 2: Backend - Authentication Handlers
-    - [ ] Implement registration handler to create a new user.
-        - [ ] Open `backend/handlers/auth.go`.
-        - [ ] Create a function `RegisterHandler` to handle user registration.
-        - [ ] Validate the input data.
-        - [ ] Hash the user's password using bcrypt.
-        - [ ] Call `CreateUser` method to save the user in the database.
-        - [ ] Return a success response.
-    - [ ] Implement login handler to authenticate a user.
-        - [ ] Create a function `LoginHandler` to handle user login.
-        - [ ] Validate the input data.
-        - [ ] Retrieve the user by email or nickname.
-        - [ ] Compare the hashed password with the provided password.
-        - [ ] Generate a session token or JWT.
-        - [ ] Return the token in the response.
-    - [ ] Implement logout handler to end the user session.
-        - [ ] Create a function `LogoutHandler` to handle user logout.
-        - [ ] Invalidate the user's session token.
-        - [ ] Return a success response.
+- [X] Subtask 2: Backend - Authentication Handlers
+    - [X] Implement registration handler to create a new user.
+        - [X] Open `backend/handlers/auth.go`.
+        - [X] Create a function `RegisterHandler` to handle user registration.
+        - [X] Validate the input data.
+        - [X] Hash the user's password using bcrypt.
+        - [X] Call `CreateUser` method to save the user in the database.
+        - [X] Return a success response.
+    - [X] Implement login handler to authenticate a user.
+        - [X] Create a function `LoginHandler` to handle user login.
+        - [X] Validate the input data.
+        - [X] Retrieve the user by email or nickname.
+        - [X] Compare the hashed password with the provided password.
+        - [X] Generate a session token or JWT.
+        - [X] Return the token in the response.
+    - [X] Implement logout handler to end the user session.
+        - [X] Create a function `LogoutHandler` to handle user logout.
+        - [X] Invalidate the user's session token.
+        - [X] Return a success response.
 
-- [ ] Subtask 3: Frontend - Registration and Login Forms
-    - [ ] Create registration form in `index.html`.
-        - [ ] Open `frontend/index.html`.
-        - [ ] Add a form with fields: Nickname, Age, Gender, First Name, Last Name, Email, Password.
-        - [ ] Add a submit button to the form.
-    - [ ] Create login form in `index.html`.
-        - [ ] Add a form with fields: Email/Nickname, Password.
-        - [ ] Add a submit button to the form.
-    - [ ] Implement JavaScript functions to handle form submissions and communicate with the backend.
-        - [ ] Open `frontend/js/auth.js`.
-        - [ ] Create a function `registerUser` to handle registration form submission.
-            - [ ] Prevent the default form submission.
-            - [ ] Collect form data.
-            - [ ] Send a POST request to the backend registration endpoint.
-            - [ ] Handle the response and show appropriate messages.
-        - [ ] Create a function `loginUser` to handle login form submission.
-            - [ ] Prevent the default form submission.
-            - [ ] Collect form data.
-            - [ ] Send a POST request to the backend login endpoint.
-            - [ ] Handle the response and store the session token.
+- [X] Subtask 3: Frontend - Registration and Login Forms
+    - [X] Create registration form in `index.html`.
+        - [X] Open `frontend/index.html`.
+        - [X] Add a form with fields: Nickname, Age, Gender, First Name, Last Name, Email, Password.
+        - [X] Add a submit button to the form.
+    - [X] Create login form in `index.html`.
+        - [X] Add a form with fields: Email/Nickname, Password.
+        - [X] Add a submit button to the form.
+    - [X] Implement JavaScript functions to handle form submissions and communicate with the backend.
+        - [X] Open `frontend/js/auth.js`.
+        - [X] Create a function `registerUser` to handle registration form submission.
+            - [X] Prevent the default form submission.
+            - [X] Collect form data.
+            - [X] Send a POST request to the backend registration endpoint.
+            - [X] Handle the response and show appropriate messages.
+        - [X] Create a function `loginUser` to handle login form submission.
+            - [X] Prevent the default form submission.
+            - [X] Collect form data.
+            - [X] Send a POST request to the backend login endpoint.
+            - [X] Handle the response and store the session token.
 
 # Task 3: Implement Post Creation and Commenting
 - Files: `backend/handlers/posts.go`, `backend/handlers/comments.go`, `backend/models/post.go`, `backend/models/comment.go`, `frontend/js/posts.js`, `frontend/js/comments.js`, `frontend/index.html`
