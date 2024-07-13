@@ -1,10 +1,9 @@
 import { fetchUserStats, fetchAllUserStats, fetchLeaderboard } from './stats.js';
+import { fetchPosts, createCategoryElements } from './posts.js';
 
 export function initContent(app) {
-    const mainContent = document.createElement("div");
-    mainContent.id = "mainContent";
-    mainContent.style.display = "none";
-    mainContent.innerHTML = `
+    console.log("initContent");
+    app.innerHTML = `
         <div class="main-container">
             <div class="left-section">
                 <div class="stats" id="user-stats">
@@ -53,7 +52,7 @@ export function initContent(app) {
             <div class="middle-section">
                 <div class="create-section">
                     <h1>All Posts</h1>
-                    <button id="create-btn">Create Post</button>
+                    <button id="create-btn" onclick="window.location.hash='#create-post'">Create Post</button>
                 </div>
                 <div class="posts-section"></div>
             </div>
@@ -72,7 +71,6 @@ export function initContent(app) {
             </div>
         </div>
     `;
-    app.appendChild(mainContent);
 
     // Fetch initial data
     fetchPosts();
@@ -80,36 +78,4 @@ export function initContent(app) {
     fetchAllUserStats();
     fetchLeaderboard();
     createCategoryElements();
-}
-
-async function fetchPosts() {
-    // Implement fetchPosts logic
-}
-
-async function createCategoryElements() {
-    const categories = await fetchCategories();
-    const containers = document.querySelectorAll(".category-container");
-
-    containers.forEach((container) => {
-        container.innerHTML = "";
-
-        categories.forEach((category) => {
-            const categoryElement = document.createElement("div");
-            categoryElement.className = "individual-category";
-            categoryElement.textContent = category;
-            categoryElement.addEventListener("click", () => {
-                if (selectedCategories.includes(category)) {
-                    selectedCategories = selectedCategories.filter(
-                        (cat) => cat !== category
-                    );
-                    categoryElement.classList.remove("selected");
-                } else {
-                    selectedCategories.push(category);
-                    categoryElement.classList.add("selected");
-                }
-                fetchPosts();
-            });
-            container.appendChild(categoryElement);
-        });
-    });
 }

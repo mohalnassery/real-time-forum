@@ -226,11 +226,6 @@ function displayPosts(posts) {
       });
       postInfo.appendChild(title);
 
-      // NOTE: NO NEED FOR A SNIPPET DECIDED TO REMOVE
-      // const body = document.createElement("p");
-      // body.textContent = post.body;
-      // postInfo.appendChild(body);
-
       const tags = document.createElement("div");
       tags.className = "tags";
       if (post.categories && post.categories.length > 0) {

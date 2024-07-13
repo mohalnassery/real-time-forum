@@ -1,4 +1,5 @@
-export function initAuth(app) {
+export function initAuth(parentElement) {
+    console.log("initAuth");
     const authContainer = document.createElement("div");
     authContainer.id = "auth";
     authContainer.style.display = "flex";
@@ -117,7 +118,7 @@ export function initAuth(app) {
     `;
 
     authContainer.innerHTML = header + registerForm + loginForm;
-    app.appendChild(authContainer);
+    parentElement.appendChild(authContainer);
 
     // Add event listeners for form submissions
     document.querySelector('.register-form').addEventListener('submit', handleRegister);
@@ -133,15 +134,6 @@ async function handleRegister(event) {
     const gender = document.getElementById("register_gender").value;
     const firstName = document.getElementById("register_firstName").value;
     const lastName = document.getElementById("register_lastName").value;
-
-    // Debugging: Check if elements are correctly selected
-    console.log("Nickname:", nickname);
-    console.log("Email:", email);
-    console.log("Password:", password);
-    console.log("Age:", age);
-    console.log("Gender:", gender);
-    console.log("First Name:", firstName);
-    console.log("Last Name:", lastName);
 
     try {
         const res = await fetch("/auth/register", {
@@ -163,6 +155,8 @@ async function handleRegister(event) {
     }
 }
 
+import { updateNavMenu } from '../nav/nav.js';
+
 async function handleLogin(event) {
     event.preventDefault();
     const nicknameOrEmail = document.getElementById("loginNicknameOrEmail").value;
@@ -182,6 +176,10 @@ async function handleLogin(event) {
             throw new Error(errorMessage);
         }
 
+        // Update the navigation menu to reflect the logged-in status
+        await updateNavMenu();
+
+        // Redirect to the main page
         window.location.href = '/';
     } catch (error) {
         document.getElementById("login-error").innerText = error.message;

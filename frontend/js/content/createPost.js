@@ -22,7 +22,7 @@ function validateImageUpload() {
     }
   });
 }
-// fetchCategories.js
+
 async function fetchCategories() {
   try {
     const response = await fetch("/categories");
@@ -42,7 +42,7 @@ async function createCategoryCheckboxes() {
   const container = document.querySelector(".tag-input-container");
   container.innerHTML = "";
 
-  categories.forEach((category, idx) => {
+  categories.forEach((category) => {
     const label = document.createElement("label");
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
@@ -54,35 +54,12 @@ async function createCategoryCheckboxes() {
   });
 }
 
-// function showPopupMessage(message) {
-//   const popup = document.createElement("div");
-//   popup.classList.add("popup-message");
-//   popup.textContent = message;
-//   document.body.appendChild(popup);
-
-//   setTimeout(() => {
-//     popup.remove();
-//   }, 3000);
-// }
-
-async function checkLoginStatus() {
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-  if (!isLoggedIn) {
-    window.location.href = "/login";
-  }
-}
-
-
 async function createPost(event) {
   event.preventDefault();
-
   const form = event.target;
   const formData = new FormData(form);
-
-  // Perform client-side validation
-  const imageInput = document.getElementById("image");
-  const file = imageInput.files[0];
-  const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+  const file = formData.get("image");
+  const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/bmp", "image/webp", "image/tiff", "image/svg+xml"];
   const maxSize = 20 * 1024 * 1024; // 20 MB
 
   if (file) {
@@ -111,4 +88,22 @@ async function createPost(event) {
   } catch (error) {
     console.error("Error creating post:", error);
   }
+}
+
+export function initCreatePost(mainContent) {
+  mainContent.innerHTML = `
+    <form id="create-post-form">
+      <!-- form fields here -->
+      <input type="file" id="image" name="image" />
+      <div class="tag-input-container"></div>
+      <button type="submit">Create Post</button>
+    </form>
+  `;
+
+  checkLoginStatus();
+  createCategoryCheckboxes();
+  validateImageUpload();
+
+  const form = document.getElementById("create-post-form");
+  form.addEventListener("submit", createPost);
 }

@@ -87,12 +87,33 @@ export function createNavBar() {
     notificationDropdown.className = "notification-dropdown";
     notificationIcon.appendChild(notificationDropdown);
 
+    // Add "Mark all as read" button
+    const markAllRead = document.createElement("div");
+    markAllRead.className = "mark-all-read";
+    markAllRead.textContent = "Mark all as read";
+    markAllRead.addEventListener("click", async () => {
+        await markAllNotificationsAsRead();
+        notificationDropdown.innerHTML = "";
+    });
+    notificationDropdown.appendChild(markAllRead);
+
     // Add event listener to toggle dropdown visibility and fetch notifications
     notificationIcon.addEventListener("click", async (event) => {
         event.stopPropagation();
         notificationDropdown.classList.toggle("show");
         if (notificationDropdown.classList.contains("show")) {
-            await fetchNotifications();
+            const notifications = await fetchNotifications();
+            notificationDropdown.innerHTML = "";
+            notifications.forEach((notification) => {
+                const item = document.createElement("div");
+                item.className = "notification-item";
+                item.textContent = notification.message;
+                item.addEventListener("click", async () => {
+                    await clearNotification(notification.id);
+                    item.remove();
+                });
+                notificationDropdown.appendChild(item);
+            });
         }
     });
 
@@ -126,7 +147,9 @@ export function createNavBar() {
     logoutButton.className = "link-buttons";
     logoutButton.style.display = "none";
     logoutButton.textContent = "Logout";
-    //logoutButton.addEventListener("click", logout); -- Add logout function
+    logoutButton.addEventListener("click", async () => {
+        await logout();
+    });
     userAuth.appendChild(logoutButton);
     const userInfo = document.createElement("div");
     userInfo.className = "user-info";
@@ -160,11 +183,73 @@ async function updateNavMenu() {
                 localStorage.setItem("isLoggedIn", "true");
                 localStorage.setItem("nickname", data.nickname);
                 localStorage.setItem("sessionID", data.sessionID);
+            } else {
+                document.getElementById("login-btn").style.display = "inline-block";
+                document.getElementById("signup-btn").style.display = "inline-block";
+                document.getElementById("logout-btn").style.display = "none";
+                document.querySelector(".notification-icon").style.display = "none"; // Hide bell icon
+                document.getElementById("nickname").textContent = "";
+                localStorage.removeItem("isLoggedIn");
+                localStorage.removeItem("nickname");
+                localStorage.removeItem("sessionID");
             }
+            // Dispatch a custom event to notify the index page
+            const event = new CustomEvent("loginStatusUpdate", {
+                detail: { isLoggedIn },
+            });
+            window.dispatchEvent(event);
+        } else if (response.status === 401) {
+            document.getElementById("login-btn").style.display = "inline-block";
+            document.getElementById("signup-btn").style.display = "inline-block";
+            document.getElementById("logout-btn").style.display = "none";
+            document.querySelector(".notification-icon").style.display = "none"; // Hide bell icon
+            document.getElementById("nickname").textContent = "";
+            localStorage.removeItem("isLoggedIn");
+            localStorage.removeItem("nickname");
+            localStorage.removeItem("sessionID");
+            // Dispatch a custom event to notify the index page
+            const event = new CustomEvent("loginStatusUpdate", {
+                detail: { isLoggedIn: false },
+            });
+            window.dispatchEvent(event);
+        } else {
+            console.error("Error updating nav menu:", response.status);
         }
     } catch (error) {
         console.error("Failed to update navigation menu:", error);
     }
 }
+
+async function logout() {
+    try {
+        const response = await fetch("/auth/logout", { method: "POST" });
+        if (response.ok) {
+            window.location.href = "/";
+        } else {
+            console.error("Logout failed");
+        }
+    } catch (error) {
+        console.error("Error during logout:", error);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    updateNavMenu();
+});
+
+window.addEventListener("storage", (event) => {
+    if (event.key === "logout") {
+        // Perform logout actions
+        isLoggedIn = false;
+        document.getElementById("login-btn").style.display = "inline-block";
+        document.getElementById("signup-btn").style.display = "inline-block";
+        document.getElementById("logout-btn").style.display = "none";
+        document.querySelector(".notification-icon").style.display = "none"; // Hide bell icon
+        document.getElementById("nickname").textContent = "";
+
+        // Remove the stored session ID
+        localStorage.removeItem("sessionID");
+    }
+});
 
 export { updateNavMenu };
