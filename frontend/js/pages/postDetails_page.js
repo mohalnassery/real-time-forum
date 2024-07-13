@@ -1,4 +1,4 @@
-import { fetchPostsAndStatus, enableInteractions, disableInteractions } from '../components/postdetails/interactions.js';
+import { fetchPosts } from '../components/postdetails/interactions.js';
 import { getPostIdFromURL } from '../components/postdetails/PostDetails.js';
 
 export async function initPostDetails(app, postId) {
@@ -43,19 +43,3 @@ export async function initPostDetails(app, postId) {
 
   await fetchPostsAndStatus();
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-  console.log("DOMContentLoaded");
-  fetchPostsAndStatus();
-});
-
-// Event listener for login status update
-window.addEventListener("loginStatusUpdate", (event) => {
-  console.log("loginStatusUpdate");
-  const { isLoggedIn } = event.detail;
-  if (isLoggedIn) {
-    enableInteractions();
-  } else {
-    disableInteractions();
-  }
-});
