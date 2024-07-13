@@ -1,72 +1,47 @@
 #!/bin/bash
 
+# Backup and archive the current frontend directory
+tar -czvf frontend_backup_$(date +%Y%m%d_%H%M%S).tar.gz frontend
+
 # Create necessary directories
-mkdir -p backend/handlers
-mkdir -p backend/models
-mkdir -p backend/database
-mkdir -p backend/websockets
-mkdir -p backend/utils
-mkdir -p frontend/css
-mkdir -p frontend/js
+mkdir -p frontend/assets
+mkdir -p frontend/css/components
+mkdir -p frontend/css/pages
+mkdir -p frontend/js/components
+mkdir -p frontend/js/pages
 
-# Move existing files to their new locations
-mv backend/main.go backend/
-mv backend/go.mod backend/
-mv backend/go.sum backend/
-mv backend/handlers/auth.go backend/handlers/auth.go
-mv backend/handlers/posts.go backend/handlers/posts.go
-mv backend/handlers/comments.go backend/handlers/comments.go
-mv backend/handlers/messages.go backend/handlers/messages.go
-mv backend/models/user.go backend/models/user.go
-mv backend/models/post.go backend/models/post.go
-mv backend/models/comment.go backend/models/comment.go
-mv backend/models/message.go backend/models/message.go
-mv frontend/index.html frontend/index.html
+# Move files to their new locations
+mv frontend/assets/favicon.ico frontend/assets/favicon.ico
+mv frontend/assets/logo.png frontend/assets/logo.png
 
-# Move files from oldStructure if they exist
-mv oldStructure/server/routes/Likes.go backend/handlers/likes.go
-mv oldStructure/server/models/Like.go backend/models/like.go
-mv oldStructure/server/database/Insert.go backend/database/db_user.go
-mv oldStructure/server/database/Insert.go backend/database/db_post.go
-mv oldStructure/server/database/Insert.go backend/database/db_comment.go
-mv oldStructure/server/database/Insert.go backend/database/db_notification.go
-mv oldStructure/server/database/Insert.go backend/database/db_like.go
-mv oldStructure/server/websockets/hub.go backend/websockets/hub.go
-mv oldStructure/server/websockets/client.go backend/websockets/client.go
-mv oldStructure/server/websockets/message.go backend/websockets/message.go
-mv oldStructure/server/utils/auth.go backend/utils/auth.go
-mv oldStructure/server/utils/db.go backend/utils/db.go
-mv oldStructure/server/utils/config.go backend/utils/config.go
+mv frontend/css/auth.css frontend/css/components/auth.css
+mv frontend/css/comments.css frontend/css/components/comments.css
+mv frontend/css/create-post.css frontend/css/components/create-post.css
+mv frontend/css/home.css frontend/css/components/home.css
+mv frontend/css/layout.css frontend/css/components/layout.css
+mv frontend/css/login.css frontend/css/components/login.css
+mv frontend/css/messages.css frontend/css/components/messages.css
+mv frontend/css/nav.css frontend/css/components/nav.css
+mv frontend/css/post-details.css frontend/css/components/post-details.css
+mv frontend/css/posts.css frontend/css/components/posts.css
+mv frontend/css/register.css frontend/css/components/register.css
+mv frontend/css/styles.css frontend/css/components/styles.css
 
-# Create new files if they don't exist
-touch backend/handlers/likes.go
-touch backend/models/like.go
-touch backend/database/db_user.go
-touch backend/database/db_post.go
-touch backend/database/db_comment.go
-touch backend/database/db_notification.go
-touch backend/database/db_like.go
-touch backend/websockets/hub.go
-touch backend/websockets/client.go
-touch backend/websockets/message.go
-touch backend/utils/auth.go
-touch backend/utils/db.go
-touch backend/utils/config.go
-touch backend/main_test.go
-touch frontend/index.html
-touch frontend/css/styles.css
-touch frontend/css/layout.css
-touch frontend/css/auth.css
-touch frontend/css/posts.css
-touch frontend/css/comments.css
-touch frontend/css/messages.css
-touch frontend/js/app.js
-touch frontend/js/auth.js
-touch frontend/js/posts.js
-touch frontend/js/comments.js
-touch frontend/js/messages.js
-touch frontend/js/websocket.js
-touch README.md
-touch .gitignore
+mv frontend/js/auth/auth.js frontend/js/components/auth.js
+mv frontend/js/auth/utils.js frontend/js/components/utils.js
+mv frontend/js/comments.js frontend/js/components/comments.js
+mv frontend/js/content/Activity.js frontend/js/pages/activity.js
+mv frontend/js/content/content.js frontend/js/pages/home.js
+mv frontend/js/content/createPost.js frontend/js/pages/createPost.js
+mv frontend/js/content/Index.js frontend/js/pages/home.js
+mv frontend/js/content/postDetails.js frontend/js/pages/postDetails.js
+mv frontend/js/content/posts.js frontend/js/components/posts.js
+mv frontend/js/content/stats.js frontend/js/pages/activity.js
+mv frontend/js/main.js frontend/js/main.js
+mv frontend/js/messages.js frontend/js/components/messages.js
+mv frontend/js/nav/nav.js frontend/js/components/nav.js
+mv frontend/js/nav/notifications.mjs frontend/js/components/notifications.mjs
+mv frontend/js/posts.js frontend/js/components/posts.js
+mv frontend/js/websocket.js frontend/js/components/websocket.js
 
-echo "Project structure has been set up successfully."
+echo "Files have been moved successfully."

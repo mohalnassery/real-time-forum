@@ -1,4 +1,5 @@
 import { fetchNotifications, clearNotification, markAllNotificationsAsRead } from './notifications.mjs';
+import { logout } from './auth/auth_handling.js';
 
 export function createNavBar() {
     const style = document.createElement("style");
@@ -18,18 +19,18 @@ export function createNavBar() {
         }
         .notification-icon {
             position: relative;
-            cursor: pointer;
         }
         .notification-dropdown {
             display: none;
             position: absolute;
-            right: 0;
             top: 100%;
-            background-color: white;
+            right: 0;
+            background-color: #ffffff;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             width: 300px;
             max-height: 400px;
             overflow-y: auto;
+            border-radius: 4px;
             z-index: 1000;
         }
         .notification-dropdown.show {
@@ -37,11 +38,7 @@ export function createNavBar() {
         }
         .notification-item {
             padding: 10px;
-            border-bottom: 1px solid #ddd;
-            cursor: pointer;
-        }
-        .notification-item:last-child {
-            border-bottom: none;
+            border-bottom: 1px solid #f0f0f0;
         }
         .notification-item:hover {
             background-color: #f5f5f5;
@@ -168,7 +165,7 @@ export function createNavBar() {
 
 let isLoggedIn = false; // Variable to track login status
 
-async function updateNavMenu() {
+export async function updateNavMenu() {
     try {
         const response = await fetch("/auth/is-logged-in");
         if (response.ok) {
@@ -220,36 +217,8 @@ async function updateNavMenu() {
     }
 }
 
-async function logout() {
-    try {
-        const response = await fetch("/auth/logout", { method: "POST" });
-        if (response.ok) {
-            window.location.href = "/";
-        } else {
-            console.error("Logout failed");
-        }
-    } catch (error) {
-        console.error("Error during logout:", error);
-    }
-}
-
 document.addEventListener("DOMContentLoaded", () => {
     updateNavMenu();
 });
 
-window.addEventListener("storage", (event) => {
-    if (event.key === "logout") {
-        // Perform logout actions
-        isLoggedIn = false;
-        document.getElementById("login-btn").style.display = "inline-block";
-        document.getElementById("signup-btn").style.display = "inline-block";
-        document.getElementById("logout-btn").style.display = "none";
-        document.querySelector(".notification-icon").style.display = "none"; // Hide bell icon
-        document.getElementById("nickname").textContent = "";
 
-        // Remove the stored session ID
-        localStorage.removeItem("sessionID");
-    }
-});
-
-export { updateNavMenu };

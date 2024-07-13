@@ -1,5 +1,5 @@
-import { fetchUserStats, fetchAllUserStats, fetchLeaderboard } from './stats.js';
-import { fetchPosts, createCategoryElements } from './posts.js';
+import { fetchPosts, createCategoryElements } from '../components/home/posts.js';
+import { fetchUserStats, fetchAllUserStats, fetchLeaderboard } from '../components/home/stats.js';
 
 export function initContent(app) {
     console.log("initContent");

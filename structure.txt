@@ -1,0 +1,44 @@
+.
+├── frontend
+│   ├── assets
+│   │   ├── favicon.ico
+│   │   └── logo.png
+│   ├── css
+│   │   ├── components
+│   │   │   ├── messages.css
+│   │   │   └── nav.css
+│   │   ├── pages
+│   │   │   ├── create-post.css
+│   │   │   ├── home.css
+│   │   │   ├── login-register.css
+│   │   │   └── post-details.css
+│   │   └── styles.css
+│   ├── index.html
+│   └── js
+│       ├── components
+│       │   ├── auth
+│       │   │   ├── auth_handling.js
+│       │   │   └── loginRegister.js
+│       │   ├── home
+│       │   │   ├── posts.js
+│       │   │   └── stats.js
+│       │   ├── nav.js
+│       │   ├── notifications.mjs
+│       │   ├── postdetails
+│       │   ├── utils.js
+│       │   └── websocket
+│       │       ├── messages.js
+│       │       └── websocket.js
+│       ├── content
+│       ├── main.js
+│       └── pages
+│           ├── activity_page.js
+│           ├── createPost_page.js
+│           ├── home_page.js
+│           ├── loginRegister_page.js
+│           └── postDetails_page.js
+├── structure.txt
+├── todo.md
+└── update_structure.sh
+
+25 directories, 95 files

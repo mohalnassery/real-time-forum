@@ -89,21 +89,3 @@ async function createPost(event) {
     console.error("Error creating post:", error);
   }
 }
-
-export function initCreatePost(mainContent) {
-  mainContent.innerHTML = `
-    <form id="create-post-form">
-      <!-- form fields here -->
-      <input type="file" id="image" name="image" />
-      <div class="tag-input-container"></div>
-      <button type="submit">Create Post</button>
-    </form>
-  `;
-
-  checkLoginStatus();
-  createCategoryCheckboxes();
-  validateImageUpload();
-
-  const form = document.getElementById("create-post-form");
-  form.addEventListener("submit", createPost);
-}
