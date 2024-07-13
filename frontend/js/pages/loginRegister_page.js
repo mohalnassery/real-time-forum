@@ -6,18 +6,6 @@ export function initAuth(parentElement, showLogin = true) {
     authContainer.id = "auth";
     authContainer.className = "auth-container";
 
-    const header = `
-        <div class="header">
-            <a href="/">
-                <img src="/assets/logo.png" alt="Logo" class="logo" style="height: 50px; width: auto;">
-            </a>
-            <div class="user-auth">
-                <button class="link-buttons" id="toggle-login" ${showLogin ? 'disabled' : ''}>Login</button>
-                <button class="link-buttons" id="toggle-signup" ${showLogin ? '' : 'disabled'}>SignUp</button>
-            </div>
-        </div>
-    `;
-
     const registerForm = `
         <div class="form-container" id="register-form" style="display: ${showLogin ? 'none' : 'flex'};">
             <h1>Register</h1>
@@ -104,7 +92,7 @@ export function initAuth(parentElement, showLogin = true) {
         </div>
     `;
 
-    authContainer.innerHTML = header + registerForm + loginForm;
+    authContainer.innerHTML = registerForm + loginForm;
     parentElement.innerHTML = ''; // Clear any existing content
     parentElement.appendChild(authContainer);
 
@@ -128,19 +116,25 @@ export function initAuth(parentElement, showLogin = true) {
     });
 
     // Add event listeners for switching forms
-    document.getElementById('switch-to-login').addEventListener('click', (e) => {
-        e.preventDefault();
-        document.getElementById('login-form').style.display = 'flex';
-        document.getElementById('register-form').style.display = 'none';
-        document.getElementById('toggle-login').disabled = true;
-        document.getElementById('toggle-signup').disabled = false;
-    });
+    const switchToLoginElement = document.getElementById('switch-to-login');
+    if (switchToLoginElement) {
+        switchToLoginElement.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('login-form').style.display = 'flex';
+            document.getElementById('register-form').style.display = 'none';
+            document.getElementById('toggle-login').disabled = true;
+            document.getElementById('toggle-signup').disabled = false;
+        });
+    }
 
-    document.getElementById('switch-to-signup').addEventListener('click', (e) => {
-        e.preventDefault();
-        document.getElementById('login-form').style.display = 'none';
-        document.getElementById('register-form').style.display = 'flex';
-        document.getElementById('toggle-login').disabled = false;
-        document.getElementById('toggle-signup').disabled = true;
-    });
+    const switchToSignupElement = document.getElementById('switch-to-signup');
+    if (switchToSignupElement) {
+        switchToSignupElement.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('register-form').style.display = 'flex';
+            document.getElementById('toggle-login').disabled = false;
+            document.getElementById('toggle-signup').disabled = true;
+        });
+    }
 }

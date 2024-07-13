@@ -1,11 +1,10 @@
-import { fetchPostDetails } from './fetchPostDetails.js';
-import { getPostIdFromURL, submitComment } from './PostDetails.js';
+import { getPostIdFromURL, submitComment, fetchPostDetailsFromServer } from './PostDetails.js';
 
 export async function fetchPostsAndStatus() {
   try {
     console.log("fetchPostsAndStatus");
     const postId = getPostIdFromURL(); // Ensure this function correctly extracts the postId from the URL
-    const postDetails = await fetchPostDetails(postId);
+    const postDetails = await fetchPostDetailsFromServer(postId);
     // Process postDetails
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
     if (isLoggedIn) {
@@ -14,7 +13,10 @@ export async function fetchPostsAndStatus() {
       disableInteractions();
     }
   } catch (error) {
-    document.getElementById('error').textContent = 'Failed to load post details.';
+    const errorElement = document.getElementById('error');
+    if (errorElement) {
+      errorElement.textContent = 'Failed to load post details.';
+    }
     disableInteractions();
   }
 }
@@ -84,7 +86,7 @@ export async function likePost() {
     });
 
     if (response.ok) {
-      fetchPostDetails(postId); // Refresh the post details
+      fetchPostDetailsFromServer(postId); // Refresh the post details
     } else {
       const errorMessage = await response.text();
       console.error("Error liking post:", errorMessage);
@@ -103,7 +105,7 @@ export async function dislikePost() {
     });
 
     if (response.ok) {
-      fetchPostDetails(postId); // Refresh the post details
+      fetchPostDetailsFromServer(postId); // Refresh the post details
     } else {
       const errorMessage = await response.text();
       console.error("Error disliking post:", errorMessage);

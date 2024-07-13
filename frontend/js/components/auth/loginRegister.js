@@ -64,8 +64,3 @@ export async function handleRegister(event) {
         document.getElementById("register-error").innerText = error.message;
     }
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-    document.querySelector(".register-form").addEventListener("submit", handleRegister);
-    document.querySelector(".login-form").addEventListener("submit", handleLogin);
-});

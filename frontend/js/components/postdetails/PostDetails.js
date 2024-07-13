@@ -1,10 +1,7 @@
-import { displayPostDetails, displayComments, getPostIdFromURL } from './PostDetails.js';
-import { fetchPostDetails } from './fetchPostDetails.js';
-import { submitComment } from './interactions.js';
 
-export async function fetchPostDetails(postId) {
+export async function fetchPostDetailsFromServer(postId) {
   try {
-    console.log("fetchPostDetails");
+    console.log("fetchPostDetailsFromServer");
     const response = await fetch(`/posts/${postId}`, {
       method: 'GET',
       headers: {
@@ -18,8 +15,6 @@ export async function fetchPostDetails(postId) {
     }
 
     const postDetails = await response.json();
-    displayPostDetails(postDetails.post);
-    displayComments(postDetails.comments);
     return postDetails;
   } catch (error) {
     console.error('Error fetching post details:', error);
@@ -158,7 +153,7 @@ export async function submitComment() {
 
     if (response.ok) {
       commentInput.textContent = "";
-      fetchPostDetails(postId); // Refresh the post details
+      fetchPostDetailsFromServer(postId); // Refresh the post details
     } else {
       const errorMessage = await response.text();
       document.getElementById("error").textContent = `Error submitting comment: ${errorMessage}`;

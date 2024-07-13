@@ -3,56 +3,7 @@ import { logout } from './auth/auth_handling.js';
 
 export function createNavBar() {
     const style = document.createElement("style");
-    style.innerHTML = `
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 30px;
-            background-color: #ffffff;
-            box-shadow: 4px 0 5px 0 rgb(0, 0, 0, 0.3);
-            z-index: 999;
-        }
-        .notification-icon {
-            position: relative;
-        }
-        .notification-dropdown {
-            display: none;
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background-color: #ffffff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 300px;
-            max-height: 400px;
-            overflow-y: auto;
-            border-radius: 4px;
-            z-index: 1000;
-        }
-        .notification-dropdown.show {
-            display: block;
-        }
-        .notification-item {
-            padding: 10px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        .notification-item:hover {
-            background-color: #f5f5f5;
-        }
-        .mark-all-read {
-            padding: 10px;
-            text-align: center;
-            cursor: pointer;
-            background-color: #f5f5f5;
-        }
-        .mark-all-read:hover {
-            background-color: #e0e0e0;
-        }
-    `;
+
     document.head.appendChild(style);
 
     const header = document.createElement("div");
