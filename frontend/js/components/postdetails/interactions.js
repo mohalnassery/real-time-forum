@@ -1,17 +1,11 @@
 import { getPostIdFromURL, submitComment, fetchPostDetailsFromServer } from './PostDetails.js';
 
-export async function fetchPostsAndStatus() {
+export async function fetchPosts() {
   try {
     console.log("fetchPostsAndStatus");
     const postId = getPostIdFromURL(); // Ensure this function correctly extracts the postId from the URL
     const postDetails = await fetchPostDetailsFromServer(postId);
     // Process postDetails
-    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-    if (isLoggedIn) {
-      enableInteractions();
-    } else {
-      disableInteractions();
-    }
   } catch (error) {
     const errorElement = document.getElementById('error');
     if (errorElement) {
@@ -56,25 +50,6 @@ export function enableInteractions() {
 
   enablePostEdit();
   enableCommentEdit();
-}
-
-export function disableInteractions() {
-  console.log("disableInteractions");
-  const commentInput = document.getElementById("comment-input");
-  commentInput.setAttribute("contenteditable", "false");
-  commentInput.setAttribute(
-    "placeholder",
-    "Please login to be able to comment..."
-  );
-  document.getElementById("submit-comment").setAttribute("disabled", "");
-  const likeButton = document.getElementById("like-btn");
-  const dislikeButton = document.getElementById("dislike-btn");
-  likeButton.disabled = true;
-  dislikeButton.disabled = true;
-  likeButton.classList.add("disabled-button");
-  dislikeButton.classList.add("disabled-button");
-  likeButton.classList.remove("liked");
-  dislikeButton.classList.remove("disliked");
 }
 
 export async function likePost() {

@@ -1,4 +1,4 @@
-import { fetchNotifications, clearNotification, markAllNotificationsAsRead } from './notifications.mjs';
+import { fetchNotifications, clearNotification, markAllNotificationsAsRead } from './notifications.js';
 import { logout } from './auth/auth_handling.js';
 
 export function createNavBar(navbar) {
