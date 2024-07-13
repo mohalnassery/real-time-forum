@@ -84,6 +84,7 @@ export async function updateNavMenu() {
                 document.getElementById("toggle-login").hidden = true;
                 document.getElementById("toggle-signup").hidden = true;
                 document.getElementById("logout-btn").hidden = false;
+                document.getElementById("logout-btn").disabled = false; // Enable logout button
                 document.querySelector(".notification-icon").hidden = false; // Show bell icon
                 document.getElementById("nickname").textContent = data.nickname;
                 localStorage.setItem("isLoggedIn", "true");
@@ -93,6 +94,7 @@ export async function updateNavMenu() {
                 document.getElementById("toggle-login").hidden = false;
                 document.getElementById("toggle-signup").hidden = false;
                 document.getElementById("logout-btn").hidden = true;
+                document.getElementById("logout-btn").disabled = true; // Disable logout button
                 document.querySelector(".notification-icon").hidden = true; // Hide bell icon
                 document.getElementById("nickname").textContent = "";
                 localStorage.removeItem("isLoggedIn");
@@ -108,6 +110,7 @@ export async function updateNavMenu() {
             document.getElementById("toggle-login").hidden = false;
             document.getElementById("toggle-signup").hidden = false;
             document.getElementById("logout-btn").hidden = true;
+            document.getElementById("logout-btn").disabled = true; // Disable logout button
             document.querySelector(".notification-icon").hidden = true; // Hide bell icon
             document.getElementById("nickname").textContent = "";
             localStorage.removeItem("isLoggedIn");
@@ -129,5 +132,3 @@ export async function updateNavMenu() {
 document.addEventListener("DOMContentLoaded", () => {
     updateNavMenu();
 });
-
-
