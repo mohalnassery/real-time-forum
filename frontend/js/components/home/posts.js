@@ -1,3 +1,11 @@
+import {
+  getSelectedCategories,
+  getFilterLikes,
+  getFilterCreated,
+  getNickname,
+  updateSelectedCategories,
+} from './filtering.js';
+
 export async function fetchCategories() {
     try {
         const response = await fetch("/categories");
@@ -15,10 +23,10 @@ export async function fetchCategories() {
 export async function fetchPosts() {
     try {
         let url = "/posts?";
-        const username = localStorage.getItem("nickname"); // Ensure consistency with localStorage key
-        const selectedCategories = []; // Add logic to get selected categories
-        const filterLikes = false; // Add logic to get filterLikes
-        const filterCreated = false; // Add logic to get filterCreated
+        const nickname = getNickname();
+        const selectedCategories = getSelectedCategories();
+        const filterLikes = getFilterLikes();
+        const filterCreated = getFilterCreated();
 
         selectedCategories.length > 0 && (url += `&category=${selectedCategories}`);
         filterLikes && (url += `&liked=${nickname}`);
@@ -40,47 +48,124 @@ export async function fetchPosts() {
 
 export async function createCategoryElements() {
     const categories = await fetchCategories();
-    const categoryContainer = document.querySelector(".category-container");
-    if (categoryContainer) {
-        categories.forEach((category) => {
-            const categoryElement = document.createElement("div");
-            categoryElement.className = "category-item";
-            categoryElement.textContent = category.name;
-            categoryContainer.appendChild(categoryElement);
+    const containers = document.querySelectorAll(".category-container");
+  
+    containers.forEach((container) => {
+      container.innerHTML = "";
+  
+      categories.forEach((category) => {
+        const categoryElement = document.createElement("div");
+        categoryElement.className = "individual-category";
+        categoryElement.textContent = category;
+        categoryElement.addEventListener("click", () => {
+          updateSelectedCategories(category);
+          categoryElement.classList.toggle("selected");
         });
-    }
-}
+        container.appendChild(categoryElement);
+      });
+    });
+  }
 
 function displayPosts(posts) {
-    const postsSection = document.querySelector(".posts-section");
-    postsSection.innerHTML = ""; // Clear existing posts
+  const postsSection = document.querySelector(".posts-section");
 
-    if (posts.length > 0) {
-        posts.forEach((post) => {
-            const postInfo = document.createElement("div");
-            postInfo.className = "post-info";
+  // Clear the existing posts
+  postsSection.innerHTML = "";
 
-            const title = document.createElement("h2");
-            title.textContent = post.title;
-            postInfo.appendChild(title);
+  if (posts && posts.length > 0) {
+    // For loop to create and append post elements
+    posts.forEach((post) => {
+      const postInfo = document.createElement("div");
+      postInfo.className = "post-info";
 
-            const tags = document.createElement("div");
-            tags.className = "tags";
-            if (post.categories && post.categories.length > 0) {
-                post.categories.forEach((category) => {
-                    const tag = document.createElement("div");
-                    tag.textContent = category;
-                    tags.appendChild(tag);
-                });
-            }
-            postInfo.appendChild(tags);
+      const top = document.createElement("div");
+      top.className = "top";
 
-            postsSection.appendChild(postInfo);
+      const right = document.createElement("div");
+      right.className = "right";
+
+      const avatar = document.createElement("div");
+      avatar.className = "avatar";
+      avatar.textContent = post.author.charAt(0).toUpperCase();
+      right.appendChild(avatar);
+
+      const authorInfo = document.createElement("p");
+      authorInfo.innerHTML = `${post.author} <span>• ${new Date(
+        post.creationdate
+      ).toLocaleDateString()}</span>`;
+      right.appendChild(authorInfo);
+
+      top.appendChild(right);
+
+      const left = document.createElement("div");
+      left.className = "left";
+
+      const likeStats = document.createElement("div");
+      likeStats.className = "post-stats";
+      likeStats.id = "like";
+      const likeIcon = document.createElement("i");
+      likeIcon.className = "fa-solid fa-thumbs-up";
+      likeStats.appendChild(likeIcon);
+      const likeNumber = document.createElement("p");
+      likeNumber.className = "number";
+      likeNumber.textContent = post.likes;
+      likeStats.appendChild(likeNumber);
+      left.appendChild(likeStats);
+
+      const dislikeStats = document.createElement("div");
+      dislikeStats.className = "post-stats";
+      dislikeStats.id = "dislike";
+      const dislikeIcon = document.createElement("i");
+      dislikeIcon.className = "fa-solid fa-thumbs-down";
+      dislikeStats.appendChild(dislikeIcon);
+      const dislikeNumber = document.createElement("p");
+      dislikeNumber.className = "number";
+      dislikeNumber.textContent = post.dislikes;
+      dislikeStats.appendChild(dislikeNumber);
+      left.appendChild(dislikeStats);
+
+      const commentStats = document.createElement("div");
+      commentStats.className = "post-stats";
+      commentStats.id = "comment";
+      const commentIcon = document.createElement("i");
+      commentIcon.className = "fa-solid fa-comment";
+      commentStats.appendChild(commentIcon);
+      const commentNumber = document.createElement("p");
+      commentNumber.className = "number";
+      commentNumber.textContent = post.commentCount;
+      commentStats.appendChild(commentNumber);
+      left.appendChild(commentStats);
+
+      top.appendChild(left);
+
+      postInfo.appendChild(top);
+
+      const title = document.createElement("h1");
+      title.textContent = post.title;
+
+      // Include the postId in the URL when navigating to the post details page
+      postInfo.addEventListener("click", () => {
+        window.location.href = `/post-details/${post.post_id}`;
+      });
+      postInfo.appendChild(title);
+
+      const tags = document.createElement("div");
+      tags.className = "tags";
+      if (post.categories && post.categories.length > 0) {
+        post.categories.forEach((category) => {
+          const tag = document.createElement("div");
+          tag.textContent = category;
+          tags.appendChild(tag);
         });
-    } else {
-        // Display a message when there are no posts
-        const noPostsMessage = document.createElement("p");
-        noPostsMessage.textContent = "No posts available.";
-        postsSection.appendChild(noPostsMessage);
-    }
+      }
+      postInfo.appendChild(tags);
+
+      postsSection.appendChild(postInfo);
+    });
+  } else {
+    // Display a message when there are no posts
+    const noPostsMessage = document.createElement("p");
+    noPostsMessage.textContent = "No posts available.";
+    postsSection.appendChild(noPostsMessage);
+  }
 }

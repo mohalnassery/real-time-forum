@@ -1,5 +1,6 @@
 import { fetchPosts, createCategoryElements } from '../components/home/posts.js';
 import { fetchUserStats, fetchAllUserStats, fetchLeaderboard } from '../components/home/stats.js';
+import { createFilterListeners } from '../components/home/filtering.js';
 
 export function initContent(app) {
     console.log("initContent");
@@ -78,4 +79,5 @@ export function initContent(app) {
     fetchAllUserStats();
     fetchLeaderboard();
     createCategoryElements();
+    createFilterListeners(); // Add this line to initialize filter listeners
 }

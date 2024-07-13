@@ -27,7 +27,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!isLoggedIn) {
         // Initialize authentication (login/register)
         initAuth(mainContent);
+        loadCSS('./css/components/nav.css');
         loadCSS('./css/pages/login-register.css');
+    } else {
+        // Initialize content for logged-in users
+        initContent(mainContent);
+        loadCSS('./css/pages/home.css');
     }
 
     // Handle navigation
