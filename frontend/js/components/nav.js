@@ -1,49 +1,48 @@
 import { fetchNotifications, clearNotification, markAllNotificationsAsRead } from './notifications.mjs';
 import { logout } from './auth/auth_handling.js';
 
-export function createNavBar() {
-    const style = document.createElement("style");
+export function createNavBar(navbar) {
+    navbar.innerHTML = `
+        <div class="header">
+            <a href="/">
+                <img src="/assets/logo.png" alt="Logo" class="logo" style="height: 50px; width: auto;">
+            </a>
+            <div class="user-auth">
+                <div class="notification-icon" hidden>
+                    <i class="fa-solid fa-bell"></i>
+                    <div class="notification-dropdown">
+                        <div class="mark-all-read">
+                        </div>
+                    </div>
+                </div>
+                <button class="link-buttons" id="toggle-login" hidden disabled >Login</button>
+                <button class="link-buttons" id="toggle-signup" hidden disabled >SignUp</button>
+                <button class="link-buttons" id="logout-btn" hidden disabled >LogOut</button>
+                <div class="user-info" display="none">
+                    <p id="nickname">
+                    </p>
+                </div>
+            </div>
+        </div>
+    `;
 
-    document.head.appendChild(style);
+    document.getElementById("logout-btn").addEventListener("click", async () => {
+        await logout();
+    });
 
-    const header = document.createElement("div");
-    header.className = "header";
-    const headerLink = document.createElement("a");
-    headerLink.href = "/";
-    header.appendChild(headerLink);
-    const logo = document.createElement("img");
-    logo.src = "/assets/logo.png";
-    logo.alt = "Logo";
-    logo.className = "logo";
-    logo.style.height = "50px";
-    logo.style.width = "auto";
-    headerLink.appendChild(logo);
-    const userAuth = document.createElement("div");
-    userAuth.className = "user-auth";
+    // Add event listener to nickname element to redirect to activity page
+    document.getElementById("nickname").addEventListener("click", () => {
+        window.location.href = "/activity.html";
+    });
 
-    // Add bell icon for notifications (initially hidden)
-    const notificationIcon = document.createElement("div");
-    notificationIcon.className = "notification-icon";
-    notificationIcon.style.display = "none"; // Hide by default
-    const bellIcon = document.createElement("i");
-    bellIcon.className = "fa-solid fa-bell";
-    notificationIcon.appendChild(bellIcon);
-    userAuth.appendChild(notificationIcon);
-
-    // Create dropdown menu for notifications
-    const notificationDropdown = document.createElement("div");
-    notificationDropdown.className = "notification-dropdown";
-    notificationIcon.appendChild(notificationDropdown);
 
     // Add "Mark all as read" button
-    const markAllRead = document.createElement("div");
-    markAllRead.className = "mark-all-read";
-    markAllRead.textContent = "Mark all as read";
-    markAllRead.addEventListener("click", async () => {
+    const notificationIcon = document.getElementsByClassName("notification-icon")[0]
+    const notificationDropdown = document.getElementsByClassName("notification-dropdown")[0]
+    document.getElementsByClassName("mark-all-read")[0].addEventListener("click", async () => {
         await markAllNotificationsAsRead();
         notificationDropdown.innerHTML = "";
     });
-    notificationDropdown.appendChild(markAllRead);
 
     // Add event listener to toggle dropdown visibility and fetch notifications
     notificationIcon.addEventListener("click", async (event) => {
@@ -71,47 +70,6 @@ export function createNavBar() {
             notificationDropdown.classList.remove("show");
         }
     });
-
-    const loginLink = document.createElement("a");
-    loginLink.href = "/login";
-    loginLink.className = "auth-links";
-    const loginButton = document.createElement("button");
-    loginButton.className = "link-buttons";
-    loginButton.id = "login-btn";
-    loginButton.textContent = "Login";
-    loginLink.appendChild(loginButton);
-    userAuth.appendChild(loginLink);
-    const signupLink = document.createElement("a");
-    signupLink.href = "/register";
-    signupLink.className = "auth-links";
-    const signupButton = document.createElement("button");
-    signupButton.className = "link-buttons";
-    signupButton.id = "signup-btn";
-    signupButton.textContent = "SignUp";
-    signupLink.appendChild(signupButton);
-    userAuth.appendChild(signupLink);
-    const logoutButton = document.createElement("button");
-    logoutButton.id = "logout-btn";
-    logoutButton.className = "link-buttons";
-    logoutButton.style.display = "none";
-    logoutButton.textContent = "Logout";
-    logoutButton.addEventListener("click", async () => {
-        await logout();
-    });
-    userAuth.appendChild(logoutButton);
-    const userInfo = document.createElement("div");
-    userInfo.className = "user-info";
-    const usernameElement = document.createElement("p");
-    usernameElement.id = "nickname";
-    userInfo.appendChild(usernameElement);
-    userAuth.appendChild(userInfo);
-    header.appendChild(userAuth);
-    document.body.insertBefore(header, document.body.firstChild);
-
-    // Add event listener to nickname element to redirect to activity page
-    usernameElement.addEventListener("click", () => {
-        window.location.href = "/activity.html";
-    });
 }
 
 let isLoggedIn = false; // Variable to track login status
@@ -123,19 +81,19 @@ export async function updateNavMenu() {
             const data = await response.json();
             if (data.status === "logged_in") {
                 isLoggedIn = true;
-                document.getElementById("login-btn").style.display = "none";
-                document.getElementById("signup-btn").style.display = "none";
-                document.getElementById("logout-btn").style.display = "inline-block";
-                document.querySelector(".notification-icon").style.display = "inline-block"; // Show bell icon
+                document.getElementById("toggle-login").hidden = true;
+                document.getElementById("toggle-signup").hidden = true;
+                document.getElementById("logout-btn").hidden = false;
+                document.querySelector(".notification-icon").hidden = false; // Show bell icon
                 document.getElementById("nickname").textContent = data.nickname;
                 localStorage.setItem("isLoggedIn", "true");
                 localStorage.setItem("nickname", data.nickname);
                 localStorage.setItem("sessionID", data.sessionID);
             } else {
-                document.getElementById("login-btn").style.display = "inline-block";
-                document.getElementById("signup-btn").style.display = "inline-block";
-                document.getElementById("logout-btn").style.display = "none";
-                document.querySelector(".notification-icon").style.display = "none"; // Hide bell icon
+                document.getElementById("toggle-login").hidden = false;
+                document.getElementById("toggle-signup").hidden = false;
+                document.getElementById("logout-btn").hidden = true;
+                document.querySelector(".notification-icon").hidden = true; // Hide bell icon
                 document.getElementById("nickname").textContent = "";
                 localStorage.removeItem("isLoggedIn");
                 localStorage.removeItem("nickname");
@@ -147,10 +105,10 @@ export async function updateNavMenu() {
             });
             window.dispatchEvent(event);
         } else if (response.status === 401) {
-            document.getElementById("login-btn").style.display = "inline-block";
-            document.getElementById("signup-btn").style.display = "inline-block";
-            document.getElementById("logout-btn").style.display = "none";
-            document.querySelector(".notification-icon").style.display = "none"; // Hide bell icon
+            document.getElementById("toggle-login").hidden = false;
+            document.getElementById("toggle-signup").hidden = false;
+            document.getElementById("logout-btn").hidden = true;
+            document.querySelector(".notification-icon").hidden = true; // Hide bell icon
             document.getElementById("nickname").textContent = "";
             localStorage.removeItem("isLoggedIn");
             localStorage.removeItem("nickname");

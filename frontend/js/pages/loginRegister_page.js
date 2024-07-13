@@ -6,6 +6,14 @@ export function initAuth(parentElement, showLogin = true) {
     authContainer.id = "auth";
     authContainer.className = "auth-container";
 
+    if (showLogin) {
+        document.getElementById('toggle-login').disabled = true;
+        document.getElementById('toggle-signup').disabled = false;
+    } else {
+        document.getElementById('toggle-login').disabled = false;
+        document.getElementById('toggle-signup').disabled = true;
+    }
+
     const registerForm = `
         <div class="form-container" id="register-form" style="display: ${showLogin ? 'none' : 'flex'};">
             <h1>Register</h1>
