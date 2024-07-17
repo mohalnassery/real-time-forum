@@ -8,6 +8,10 @@ export function createNavBar(navbar) {
                 <img src="/assets/logo.png" alt="Logo" class="logo" style="height: 50px; width: auto;">
             </a>
             <div class="user-auth">
+                <label class="theme-switch">
+                    <input type="checkbox" id="theme-toggle">
+                    <span class="slider"></span>
+                </label>
                 <div class="notification-icon" hidden>
                     <i class="fa-solid fa-bell"></i>
                     <div class="notification-dropdown">
@@ -22,7 +26,6 @@ export function createNavBar(navbar) {
                     <p id="nickname">
                     </p>
                 </div>
-                <button class="link-buttons" id="theme-toggle">Toggle Dark Mode</button>
             </div>
         </div>
     `;
@@ -72,7 +75,7 @@ export function createNavBar(navbar) {
     });
 
     // Add event listener for theme toggle
-    document.getElementById("theme-toggle").addEventListener("click", () => {
+    document.getElementById("theme-toggle").addEventListener("change", () => {
         const currentTheme = document.body.getAttribute("data-theme");
         const newTheme = currentTheme === "dark" ? "light" : "dark";
         document.body.setAttribute("data-theme", newTheme);
@@ -82,6 +85,7 @@ export function createNavBar(navbar) {
     // Set the initial theme based on localStorage
     const savedTheme = localStorage.getItem("theme") || "light";
     document.body.setAttribute("data-theme", savedTheme);
+    document.getElementById("theme-toggle").checked = savedTheme === "dark";
 }
 
 let isLoggedIn = false; // Variable to track login status

@@ -217,7 +217,7 @@ function displayPosts(posts) {
 
       postInfo.appendChild(top);
 
-      const title = document.createElement("h1");
+      const title = document.createElement("h2");
       title.textContent = post.title;
 
       // Include the postId in the URL when navigating to the post details page
