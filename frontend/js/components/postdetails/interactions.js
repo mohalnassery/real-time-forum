@@ -308,6 +308,8 @@ export async function submitComment() {
 }
 
 export function getPostIdFromURL() {
-  const urlParts = window.location.pathname.split("/");
-  return urlParts[urlParts.length - 1];
+  const hash = window.location.hash;
+  const postId = hash.split("/")[1];
+  console.log("Extracted postId from URL:", postId);
+  return postId;
 }

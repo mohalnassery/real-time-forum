@@ -9,6 +9,9 @@
     --border-radius: 10px;
     --tag-color: #cccccc;
     --button-color: #6200ea;
+    --input-background: #f0f0f0;
+    --input-border: #cccccc;
+    --input-placeholder: #888888;
 }
 
 [data-theme="dark"] {
@@ -19,8 +22,11 @@
     --card-background-color: #1e1e1e;
     --text-color: #ffffff;
     --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
-    --tag-color: #333333; /* Changed to a darker color */
+    --tag-color: #333333;
     --button-color: #00346e;
+    --input-background: #2e2e2e;
+    --input-border: #555555;
+    --input-placeholder: #aaaaaa;
 }
 
 body {

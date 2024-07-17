@@ -246,7 +246,17 @@ a {
   color: blue;
 }
 
+.fa-solid.fa-thumbs-up.liked {
+  color: blue;
+}
+
+
+
 .fa-thumbs-down.disliked {
+  color: red;
+}
+
+.fa-solid.fa-thumbs-down.disliked {
   color: red;
 }
 

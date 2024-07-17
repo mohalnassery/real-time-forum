@@ -96,7 +96,6 @@ export function displayPostDetails(post) {
 }
 
 export function displayComments(comments) {
-  console.log("displayComments");
   const commentList = document.getElementById("comment-section");
   commentList.innerHTML = "";
 
@@ -105,24 +104,108 @@ export function displayComments(comments) {
       const commentCard = document.createElement("div");
       commentCard.classList.add("comment");
 
-      // Add comment details to the card
-      commentCard.innerHTML = `
-        <div class="comment-author-avatar">${comment.author.charAt(0).toUpperCase()}</div>
-        <div class="comment-content">
-          <p class="comment-author">${comment.author} <span>• ${new Date(comment.creationDate).toLocaleDateString()}</span></p>
-          <p class="comment-body">${comment.body}</p>
-          <div class="comment-actions">
-            <i class="fa-solid fa-thumbs-up" onclick="likeComment(${comment.id})"></i>
-            <i class="fa-solid fa-thumbs-down" onclick="dislikeComment(${comment.id})"></i>
-            ${comment.isAuthor ? `<i class="fa-solid fa-trash" onclick="deleteComment(${comment.id})"></i>` : ""}
-          </div>
-        </div>
-      `;
+      const commentHeader = document.createElement("div");
+      commentHeader.classList.add("info");
+
+      const avatar = document.createElement("div");
+      avatar.classList.add("avatar");
+      avatar.textContent = comment.author.charAt(0).toUpperCase();
+      commentHeader.appendChild(avatar);
+
+      const author = document.createElement("p");
+      author.innerHTML =
+        comment.author +
+        ` <span>• ${new Date(
+          comment.creationDate
+        ).toLocaleDateString()}</span>`;
+      commentHeader.appendChild(author);
+
+      commentCard.appendChild(commentHeader);
+      const commentText = document.createElement("p");
+      commentText.classList.add("comment-data");
+      commentText.innerHTML = comment.body;
+      commentCard.appendChild(commentText);
+      const commentActions = document.createElement("div");
+      commentActions.classList.add("like-dislike");
+
+      const likes = document.createElement("div");
+      const likeCount = document.createElement("p");
+      likeCount.classList.add("comment-likes");
+      likeCount.innerText = comment.likes;
+      likes.appendChild(likeCount);
+
+      const likeButton = document.createElement("i");
+      likeButton.id = `like-comment-${comment.id}`;
+      likeButton.className = "fa-solid fa-thumbs-up";
+      likeButton.addEventListener("click", () => likeComment(comment.id));
+      const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+      if (isLoggedIn) {
+        likeButton.disabled = false;
+        likeButton.classList.remove("disabled-button");
+      } else {
+        likeButton.disabled = true;
+        likeButton.classList.add("disabled-button");
+      }
+      likeButton.classList.toggle("liked", comment.userLiked);
+      likes.appendChild(likeButton);
+
+      commentActions.appendChild(likes);
+
+      const dislikes = document.createElement("div");
+      const dislikeCount = document.createElement("p");
+      dislikeCount.classList.add("comment-dislikes");
+      dislikeCount.innerText = comment.dislikes;
+      dislikes.appendChild(dislikeCount);
+
+      const dislikeButton = document.createElement("i");
+      dislikeButton.id = `dislike-comment-${comment.id}`;
+      dislikeButton.className = "fa-solid fa-thumbs-down";
+      dislikeButton.addEventListener("click", () => dislikeComment(comment.id));
+      if (isLoggedIn) {
+        dislikeButton.disabled = false;
+        dislikeButton.classList.remove("disabled-button");
+      } else {
+        dislikeButton.disabled = true;
+        dislikeButton.classList.add("disabled-button");
+      }
+      dislikeButton.classList.toggle("disliked", comment.userDisliked);
+      dislikes.appendChild(dislikeButton);
+
+      commentActions.appendChild(dislikes);
+
+      commentCard.appendChild(commentActions);
+
+      if (comment.isAuthor) {
+        const commentActions = document.createElement("div");
+        commentActions.classList.add("comment-actions");
+
+        const deleteCommentButton = document.createElement("i");
+        deleteCommentButton.className = "fa-solid fa-trash";
+        deleteCommentButton.addEventListener("click", () =>
+          deleteComment(comment.id)
+        );
+        commentActions.appendChild(deleteCommentButton);
+
+        const editCommentButton = document.createElement("i");
+        editCommentButton.className = "fa-solid fa-edit";
+        editCommentButton.addEventListener("click", () =>
+          editComment(comment.id, commentText)
+        );
+        commentActions.appendChild(editCommentButton);
+
+        commentCard.appendChild(commentActions);
+      }
+
       commentList.appendChild(commentCard);
     });
   } else {
-    commentList.innerHTML = "<p>No comments yet. Be the first to comment!</p>";
+    const noCommentsMessage = document.createElement("p");
+    noCommentsMessage.textContent = "No comments available.";
+    commentList.appendChild(noCommentsMessage);
   }
+
+  // Clear the comment input field
+  document.getElementById("comment-input").value = "";
 }
 
 export async function fetchPostDetails(postId) {

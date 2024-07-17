@@ -206,12 +206,13 @@ a {
 
 .comment {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  width: 60%;
+  align-items: flex-start;
   overflow-wrap: anywhere;
   background-color: var(--card-background-color);
-  padding: 15px 20px;
+  padding: 10px 0 10px 20px;
+  white-space: pre-wrap;
   margin-top: 30px;
   border-radius: var(--border-radius);
   box-shadow: var(--card-shadow);
@@ -247,4 +248,47 @@ a {
 
 .comment-actions .fa-edit:hover {
   color: #3498db;
+}
+
+.fa-solid.fa-thumbs-up.liked {
+  color: blue;
+}
+
+.fa-solid.fa-thumbs-down.disliked {
+  color: red;
+}
+
+.input-area {
+  background-color: var(--card-background-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.input-immitate {
+  background-color: var(--input-background);
+  border: 1px solid var(--input-border);
+  border-radius: var(--border-radius);
+  padding: 10px 0;
+  width: 100%;
+  min-height: 50px;
+  color: var(--text-color);
+  margin-bottom: 10px;
+}
+
+.input-immitate::placeholder {
+  color: var(--input-placeholder);
+}
+
+.submit-comment-div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.comment-note {
+  font-size: 14px;
+  color: var(--text-color);
+  margin-top: 10px;
 }
