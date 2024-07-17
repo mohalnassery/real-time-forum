@@ -108,7 +108,7 @@ export function displayComments(comments) {
       commentCard.innerHTML = `
         <div class="comment-author-avatar">${comment.author.charAt(0).toUpperCase()}</div>
         <div class="comment-content">
-          <p class="comment-author">${comment.author} <span>• ${new Date(comment.creationdate).toLocaleDateString()}</span></p>
+          <p class="comment-author">${comment.author} <span>• ${new Date(comment.creationDate).toLocaleDateString()}</span></p>
           <p class="comment-body">${comment.body}</p>
           <div class="comment-actions">
             <i class="fa-solid fa-thumbs-up" onclick="likeComment(${comment.id})"></i>
@@ -117,7 +117,6 @@ export function displayComments(comments) {
           </div>
         </div>
       `;
-
       commentList.appendChild(commentCard);
     });
   } else {
@@ -125,15 +124,8 @@ export function displayComments(comments) {
   }
 }
 
-export function getPostIdFromURL() {
-  console.log("getPostIdFromURL");
-  const urlParts = window.location.pathname.split("/");
-  return urlParts[urlParts.length - 1];
-}
-
-export async function submitComment() {
+export async function submitComment(postId) {
   console.log("submitComment");
-  const postId = getPostIdFromURL();
   const commentInput = document.getElementById("comment-input");
   const commentBody = commentInput.textContent.trim();
 

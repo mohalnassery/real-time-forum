@@ -31,17 +31,6 @@ body {
   /* border: 0 solid black; */
 }
 
-#login-btn {
-  background-color: white;
-  border: 0.2px solid #a8a8a8;
-}
-
-#signup-btn {
-  background-color: #4a90e2;
-  color: white;
-  border: 0;
-}
-
 .main-container {
   width: 90%;
 }

@@ -1,17 +1,18 @@
-import { getPostIdFromURL, submitComment, fetchPostDetailsFromServer } from './PostDetails.js';
+import { submitComment, fetchPostDetailsFromServer, displayPostDetails, displayComments } from './PostDetails.js';
 
-export async function fetchPosts() {
+export async function fetchPost(postId) {
   try {
-    console.log("fetchPostsAndStatus");
-    const postId = getPostIdFromURL(); // Ensure this function correctly extracts the postId from the URL
+    console.log("fetchPosts");
     const postDetails = await fetchPostDetailsFromServer(postId);
+    console.log(postDetails)
+    displayPostDetails(postDetails.post)
+    displayComments(postDetails.comments)
     // Process postDetails
   } catch (error) {
     const errorElement = document.getElementById('error');
     if (errorElement) {
       errorElement.textContent = 'Failed to load post details.';
     }
-    disableInteractions();
   }
 }
 
@@ -52,9 +53,8 @@ export function enableInteractions() {
   enableCommentEdit();
 }
 
-export async function likePost() {
+export async function likePost(postId) {
   console.log("likePost");
-  const postId = getPostIdFromURL();
   try {
     const response = await fetch(`/posts/${postId}/like`, {
       method: "POST",
@@ -71,9 +71,8 @@ export async function likePost() {
   }
 }
 
-export async function dislikePost() {
+export async function dislikePost(postId) {
   console.log("dislikePost");
-  const postId = getPostIdFromURL();
   try {
     const response = await fetch(`/posts/${postId}/dislike`, {
       method: "POST",

@@ -145,7 +145,7 @@ function displayPosts(posts) {
 
       // Include the postId in the URL when navigating to the post details page
       postInfo.addEventListener("click", () => {
-        window.location.href = `/post-details/${post.post_id}`;
+        window.location.hash = `#post/${post.post_id}`;
       });
       postInfo.appendChild(title);
 

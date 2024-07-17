@@ -1,10 +1,10 @@
 import { checkLoginStatus } from '../components/auth/auth_handling.js';
 
-document.addEventListener("DOMContentLoaded", async () => {
-    await checkLoginStatus();
-    createCategoryCheckboxes();
-    validateImageUpload();
-});
+//document.addEventListener("DOMContentLoaded", async () => {
+//    await checkLoginStatus();
+//    createCategoryCheckboxes();
+//    validateImageUpload();
+//});
 
 function validateImageUpload() {
   const imageInput = document.getElementById("image");

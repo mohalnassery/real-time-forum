@@ -2,7 +2,7 @@ import { createNavBar, updateNavMenu } from './components/nav.js';
 import { initAuth } from './pages/loginRegister_page.js';
 import { initContent } from './pages/home_page.js';
 import { initPostDetails } from './pages/postDetails_page.js';
-// import { initCreatePost } from './pages/createPost_page.js';
+import { initCreatePost } from './pages/createPost_page.js';
 import { loadCSS, unloadCSS } from './components/utils.js'; // Ensure this import is correct
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -32,6 +32,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     } else {
         // Initialize content for logged-in users
         initContent(mainContent);
+        loadCSS('./css/pages/create-post.css');
+        console.log("csss")
         loadCSS('./css/pages/home.css');
     }
 
