@@ -22,6 +22,7 @@ export function createNavBar(navbar) {
                     <p id="nickname">
                     </p>
                 </div>
+                <button class="link-buttons" id="theme-toggle">Toggle Dark Mode</button>
             </div>
         </div>
     `;
@@ -34,7 +35,6 @@ export function createNavBar(navbar) {
     document.getElementById("nickname").addEventListener("click", () => {
         window.location.href = "/activity.html";
     });
-
 
     // Add "Mark all as read" button
     const notificationIcon = document.getElementsByClassName("notification-icon")[0]
@@ -70,6 +70,18 @@ export function createNavBar(navbar) {
             notificationDropdown.classList.remove("show");
         }
     });
+
+    // Add event listener for theme toggle
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const currentTheme = document.body.getAttribute("data-theme");
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+        document.body.setAttribute("data-theme", newTheme);
+        localStorage.setItem("theme", newTheme);
+    });
+
+    // Set the initial theme based on localStorage
+    const savedTheme = localStorage.getItem("theme") || "light";
+    document.body.setAttribute("data-theme", savedTheme);
 }
 
 let isLoggedIn = false; // Variable to track login status

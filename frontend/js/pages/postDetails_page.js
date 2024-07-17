@@ -1,4 +1,4 @@
-import { fetchPost } from '../components/postdetails/interactions.js';
+import { fetchPost, enableInteractions, disableInteractions, likePost, dislikePost, submitComment, deletePost, deleteComment, likeComment, dislikeComment } from '../components/postdetails/interactions.js';
 
 export async function initPostDetails(app, postId) {
   console.log("initPostDetails");
@@ -41,7 +41,7 @@ export async function initPostDetails(app, postId) {
             </div>
           </div>
 
-          <div class="comment">
+          <div class="comment-count">
             <p id="post-comments">10</p>
             <i class="fa-solid fa-comment"></i>
           </div>
@@ -70,5 +70,35 @@ export async function initPostDetails(app, postId) {
   </div>
   `;
 
-  await fetchPost(postId);
+  try {
+    await fetchPost(postId);
+    enableInteractions();
+    addEventListeners(postId);
+  } catch (error) {
+    disableInteractions();
+  }
+}
+
+function addEventListeners(postId) {
+  document.getElementById("like-btn").addEventListener("click", () => likePost(postId));
+  document.getElementById("dislike-btn").addEventListener("click", () => dislikePost(postId));
+  document.getElementById("submit-comment").addEventListener("click", submitComment);
+
+  document.getElementById("comment-section").addEventListener("click", (e) => {
+    if (e.target.classList.contains("fa-trash")) {
+      const commentId = e.target.dataset.commentId;
+      deleteComment(commentId);
+    } else if (e.target.classList.contains("fa-thumbs-up")) {
+      const commentId = e.target.dataset.commentId;
+      likeComment(commentId);
+    } else if (e.target.classList.contains("fa-thumbs-down")) {
+      const commentId = e.target.dataset.commentId;
+      dislikeComment(commentId);
+    }
+  });
+
+  const deletePostButton = document.querySelector("#post-actions .fa-trash");
+  if (deletePostButton) {
+    deletePostButton.addEventListener("click", deletePost);
+  }
 }

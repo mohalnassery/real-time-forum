@@ -2,21 +2,22 @@ body {
   font-family: "Poppins", sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #f8f8f8;
+  background-color: var(--background-color);
   display: flex;
   align-items: center;
-  /* justify-content: center; */
   flex-direction: column;
   width: 100%;
+  color: var(--text-color);
 }
 
 a {
   text-decoration: none;
+  color: var(--text-color);
 }
 
 .header {
-  background-color: #ffffff;
-  box-shadow: 4px 0 5px 0 rgb(0, 0, 0, 0.3);
+  background-color: var(--card-background-color);
+  box-shadow: 4px 0 5px 0 rgba(0, 0, 0, 0.3);
   display: flex;
   justify-content: space-between;
   padding: 10px 30px;
@@ -32,16 +33,15 @@ a {
 .link-buttons {
   padding: 10px 25px;
   border-radius: 15px;
-  /* border: 0 solid black; */
 }
 
 #login-btn {
-  background-color: white;
+  background-color: var(--card-background-color);
   border: 0.2px solid #a8a8a8;
 }
 
 #signup-btn {
-  background-color: #4a90e2;
+  background-color: var(--primary-color);
   color: white;
   border: 0;
 }
@@ -56,16 +56,15 @@ a {
 }
 
 .post-container {
-  background-color: white;
+  background-color: var(--card-background-color);
   padding: 15px 20px;
   margin-top: 30px;
-  border-radius: 10px;
-  box-shadow: 1px 1px 2px 0 rgb(0, 0, 0, 0.2);
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
 }
 
 .top {
   display: flex;
-  /* justify-content: center; */
   align-items: center;
   flex-direction: row;
   gap: 30px;
@@ -85,7 +84,7 @@ a {
   font-size: 18px;
 }
 
-.avatar {
+.avatar , .comment-author-avatar{
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -93,6 +92,13 @@ a {
   background-color: grey;
   width: 30px;
   height: 30px;
+  overflow: hidden;
+}
+
+.avatar img , .comment-author-avatar img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .info {
@@ -127,13 +133,14 @@ a {
 .stats {
   display: flex;
   flex-direction: row;
-  gap: 100px;
+  gap: 30px;
+  align-items: center;
 }
 
 .like-dislike {
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 10px;
 }
 
 .like-dislike div {
@@ -141,185 +148,13 @@ a {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 5px;
 }
 
-.like-dislike p {
-  margin: 0;
-}
-
-.comment {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-  overflow-wrap: anywhere;
-}
-
-/* .fa-thumbs-up {
-  margin-bottom: 5px;
-} */
-
-.fa-solid {
-  font-size: 20px;
-  color: grey;
-}
-.input-wrapper {
-  position: relative;
-  display: inline-block;
-  align-items: center;
-}
-
-.input-area {
+.comment-count {
   display: flex;
   align-items: center;
-  position: relative;
-  display: inline-block;
-}
-
-.input-area p {
-  font-size: 14px;
-  color: #707070;
-}
-
-.input-immitate {
-  background-color: white;
-  color: #b7b5b5;
-  padding: 20px 25px;
-  width: 88%;
-  border-radius: 10px;
-  box-shadow: 1px 1px 2px 0 rgb(0, 0, 0, 0.2);
-  /* margin-left: 10px; */
-  flex: 1;
-  position: relative;
-}
-
-.input-immitate:hover {
-  cursor: text;
-}
-
-.input-immitate:empty:before {
-  content: attr(placeholder);
-  opacity: 0.6;
-}
-
-.comment-section {
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.comment-section .comment {
-  display: flex;
-  flex-direction: column;
-  width: 45%;
-  align-items: flex-start;
-  padding: 10px 0 10px 20px;
-  border-radius: 10px;
-  box-shadow: 1px 1px 2px 0 rgb(0, 0, 0, 0.2);
-  background-color: white;
-  white-space: pre-wrap;
-}
-
-/* .comment-section p {
-  margin: 10px 10px 0 0;
-} */
-
-.comment .info {
-  margin-top: 5px;
-}
-
-.stat-number {
-  margin: 0;
-}
-
-.comment-data {
-  margin: 0 30px 0 0;
-}
-
-.comment .like-dislike {
-  margin-top: 15px;
-}
-
-.fa-thumbs-up.liked {
-  color: blue;
-}
-
-.fa-thumbs-down.disliked {
-  color: red;
-}
-
-.fa-thumbs-up:hover {
-  cursor: pointer;
-  color: rgb(128, 128, 255);
-}
-
-.fa-thumbs-down:hover {
-  cursor: pointer;
-  color: rgb(255, 128, 128);
-}
-
-.fa-trash:hover {
-  cursor: pointer;
-  color: black;
-}
-
-.submit-comment-div {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 92%;
-}
-.submit-button {
-  background-color: #4a90e2;
-  border: none;
-  color: white;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 10px 0;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: background-color 0.3s ease;
-  /* width: 33%; */
-}
-
-.submit-button:hover {
-  background-color: #74a9e6;
-}
-
-.submit-button:disabled {
-  background-color: #cccccc; /* Gray color when disabled */
-  cursor: not-allowed;
-}
-
-#char-count {
-  padding-left: 10px;
-}
-
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  margin-top: 30px;
-}
-
-.tags div {
-  background-color: #f2f2f2;
-  color: #333;
-  padding: 5px 10px;
-  margin-right: 5px;
-  margin-bottom: 5px;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-.disabled-button {
-  opacity: 0.5;
-  pointer-events: none;
-  cursor: not-allowed;
+  gap: 5px;
 }
 
 #char-count {
@@ -330,7 +165,6 @@ a {
   font-size: 14px;
   color: #a12d2d;
   pointer-events: none;
-  /* margin-right: 4rem; */
 }
 
 .char-count-wrapper {
@@ -352,7 +186,7 @@ a {
 }
 
 .save-changes-btn, .save-comment-btn {
-  background-color: #4a90e2;
+  background-color: var(--primary-color);
   border: none;
   color: white;
   padding: 10px 20px;
@@ -362,14 +196,27 @@ a {
   font-size: 16px;
   margin: 10px 0;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   transition: background-color 0.3s ease;
-  /* width: 33%; */
 }
 
 .save-changes-btn:hover, .save-comment-btn:hover {
-  background-color: #74a9e6;
+  background-color: var(--primary-color-dark);
 }
+
+.comment {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  overflow-wrap: anywhere;
+  background-color: var(--card-background-color);
+  padding: 15px 20px;
+  margin-top: 30px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+}
+
 .comment .fa-edit,
 .comment .fa-trash {
   display: inline-block;

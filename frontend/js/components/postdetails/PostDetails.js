@@ -1,3 +1,4 @@
+import { enableInteractions,likeComment,likePost,dislikeComment,dislikePost,deletePost,editPost,deleteComment } from "./interactions.js";
 
 export async function fetchPostDetailsFromServer(postId) {
   try {
@@ -124,34 +125,19 @@ export function displayComments(comments) {
   }
 }
 
-export async function submitComment(postId) {
-  console.log("submitComment");
-  const commentInput = document.getElementById("comment-input");
-  const commentBody = commentInput.textContent.trim();
-
-  if (!commentBody) {
-    document.getElementById("error").textContent = "Comment cannot be empty.";
-    return;
-  }
-
+export async function fetchPostDetails(postId) {
   try {
-    const response = await fetch(`/posts/${postId}/comments`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ body: commentBody }),
-    });
-
-    if (response.ok) {
-      commentInput.textContent = "";
-      fetchPostDetailsFromServer(postId); // Refresh the post details
-    } else {
-      const errorMessage = await response.text();
-      document.getElementById("error").textContent = `Error submitting comment: ${errorMessage}`;
-    }
+    const postDetails = await fetchPostDetailsFromServer(postId);
+    displayPostDetails(postDetails.post);
+    displayComments(postDetails.comments);
+    return postDetails;
   } catch (error) {
-    console.error("Error submitting comment:", error);
-    document.getElementById("error").textContent = "Error submitting comment.";
+    const errorElement = document.getElementById('error');
+    if (errorElement) {
+      errorElement.textContent = 'Failed to load post details.';
+    }
+    disableInteractions();
+    throw error;
   }
 }
+

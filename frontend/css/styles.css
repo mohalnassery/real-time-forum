@@ -1,0 +1,62 @@
+:root {
+    --primary-color: #6200ea;
+    --primary-color-dark: #3700b3;
+    --secondary-color: #03dac6;
+    --background-color: #ffffff;
+    --card-background-color: #ffffff;
+    --text-color: #000000;
+    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --border-radius: 10px;
+    --tag-color: #cccccc;
+    --button-color: #6200ea;
+}
+
+[data-theme="dark"] {
+    --primary-color: #6200ea;
+    --primary-color-dark: #3700b3;
+    --secondary-color: #03dac6;
+    --background-color: #121212;
+    --card-background-color: #1e1e1e;
+    --text-color: #ffffff;
+    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    --tag-color: #333333; /* Changed to a darker color */
+    --button-color: #00346e;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+}
+
+.card {
+    background-color: var(--card-background-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    padding: 20px;
+    margin: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--border-radius);
+    background-color: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: var(--primary-color-dark);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--primary-color);
+}
+
+p {
+    color: var(--text-color);
+}

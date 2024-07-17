@@ -1,13 +1,12 @@
-import { submitComment, fetchPostDetailsFromServer, displayPostDetails, displayComments } from './PostDetails.js';
+import { fetchPostDetailsFromServer, displayPostDetails, displayComments } from './PostDetails.js';
+
+const maxCharacters = 500;
 
 export async function fetchPost(postId) {
   try {
-    console.log("fetchPosts");
     const postDetails = await fetchPostDetailsFromServer(postId);
-    console.log(postDetails)
-    displayPostDetails(postDetails.post)
-    displayComments(postDetails.comments)
-    // Process postDetails
+    displayPostDetails(postDetails.post);
+    displayComments(postDetails.comments);
   } catch (error) {
     const errorElement = document.getElementById('error');
     if (errorElement) {
@@ -17,7 +16,6 @@ export async function fetchPost(postId) {
 }
 
 export function enableInteractions() {
-  console.log("enableInteractions");
   const submitCommentBtn = document.getElementById("submit-comment");
   const likeButton = document.getElementById("like-btn");
   const dislikeButton = document.getElementById("dislike-btn");
@@ -29,22 +27,13 @@ export function enableInteractions() {
   dislikeButton.classList.remove("disabled-button");
   commentInput.removeAttribute("disabled");
 
-  // Event Listeners
   submitCommentBtn.addEventListener("click", submitComment);
   likeButton.addEventListener("click", likePost);
   dislikeButton.addEventListener("click", dislikePost);
   const charCount = document.getElementById("char-count");
 
   commentInput.addEventListener("input", function () {
-    const remainingChars =
-      maxCharacters -
-      commentInput.textContent
-        .replaceAll("<div><br></div>", "\n")
-        .replaceAll("<div>", "\n")
-        .replaceAll("</div>", "")
-        .replaceAll("<br>", "\n")
-        .replaceAll("&nbsp;", " ").length;
-
+    const remainingChars = maxCharacters - commentInput.textContent.replaceAll("<div><br></div>", "\n").replaceAll("<div>", "\n").replaceAll("</div>", "").replaceAll("<br>", "\n").replaceAll("&nbsp;", " ").length;
     charCount.textContent = remainingChars + "/" + maxCharacters;
     submitCommentBtn.disabled = remainingChars < 0;
   });
@@ -53,15 +42,27 @@ export function enableInteractions() {
   enableCommentEdit();
 }
 
-export async function likePost(postId) {
-  console.log("likePost");
-  try {
-    const response = await fetch(`/posts/${postId}/like`, {
-      method: "POST",
-    });
+export function disableInteractions() {
+  const commentInput = document.getElementById("comment-input");
+  commentInput.setAttribute("contenteditable", "false");
+  commentInput.setAttribute("placeholder", "Please login to be able to comment...");
+  document.getElementById("submit-comment").setAttribute("disabled", "");
+  const likeButton = document.getElementById("like-btn");
+  const dislikeButton = document.getElementById("dislike-btn");
+  likeButton.disabled = true;
+  dislikeButton.disabled = true;
+  likeButton.classList.add("disabled-button");
+  dislikeButton.classList.add("disabled-button");
+  likeButton.classList.remove("liked");
+  dislikeButton.classList.remove("disliked");
+}
 
+export async function likePost() {
+  const postId = getPostIdFromURL();
+  try {
+    const response = await fetch(`/posts/${postId}/like`, { method: "POST" });
     if (response.ok) {
-      fetchPostDetailsFromServer(postId); // Refresh the post details
+      fetchPostDetailsFromServer(postId);
     } else {
       const errorMessage = await response.text();
       console.error("Error liking post:", errorMessage);
@@ -71,15 +72,12 @@ export async function likePost(postId) {
   }
 }
 
-export async function dislikePost(postId) {
-  console.log("dislikePost");
+export async function dislikePost() {
+  const postId = getPostIdFromURL();
   try {
-    const response = await fetch(`/posts/${postId}/dislike`, {
-      method: "POST",
-    });
-
+    const response = await fetch(`/posts/${postId}/dislike`, { method: "POST" });
     if (response.ok) {
-      fetchPostDetailsFromServer(postId); // Refresh the post details
+      fetchPostDetailsFromServer(postId);
     } else {
       const errorMessage = await response.text();
       console.error("Error disliking post:", errorMessage);
@@ -87,4 +85,229 @@ export async function dislikePost(postId) {
   } catch (error) {
     console.error("Error disliking post:", error);
   }
+}
+
+export async function deletePost() {
+  const postId = getPostIdFromURL();
+  try {
+    const response = await fetch(`/posts/${postId}`, { method: "DELETE" });
+    if (response.ok) {
+      window.location.href = "/";
+    } else {
+      const errorMessage = await response.text();
+      console.error("Error deleting post:", errorMessage);
+    }
+  } catch (error) {
+    console.error("Error deleting post:", error);
+  }
+}
+
+export function enablePostEdit() {
+  const editPostBtn = document.getElementById("edit-post-btn");
+  const deletePostBtn = document.getElementById("delete-post-btn");
+  
+  if (editPostBtn) {
+    editPostBtn.style.display = "inline-block";
+    editPostBtn.addEventListener("click", editPost);
+  }
+  
+  if (deletePostBtn) {
+    deletePostBtn.style.display = "inline-block";
+    deletePostBtn.addEventListener("click", deletePost);
+  }
+}
+
+export function editPost() {
+  const postTitle = document.getElementById('post-title');
+  const postBody = document.getElementById('post-body');
+  const postActions = document.getElementById('post-actions');
+  const editButton = postActions.querySelector('.fa-edit, .fa-times');
+  const existingSaveButton = postActions.querySelector('.save-changes-btn');
+
+  if (existingSaveButton) {
+    postTitle.contentEditable = false;
+    postBody.contentEditable = false;
+    existingSaveButton.remove();
+    editButton.className = 'fa-solid fa-edit';
+  } else {
+    postTitle.contentEditable = true;
+    postBody.contentEditable = true;
+    
+    const saveButton = document.createElement('button');
+    saveButton.textContent = 'Save Changes';
+    saveButton.className = 'save-changes-btn';
+    saveButton.addEventListener('click', savePostChanges);
+    
+    postActions.appendChild(saveButton);
+    editButton.className = 'fa-solid fa-times';
+  }
+}
+
+export function savePostChanges() {
+  const postId = getPostIdFromURL();
+  const postTitle = document.getElementById('post-title').textContent;
+  const postBody = document.getElementById('post-body').textContent;
+  
+  fetch(`/posts/${postId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title: postTitle, body: postBody }),
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Failed to update post');
+    }
+    document.getElementById('post-title').contentEditable = false;
+    document.getElementById('post-body').contentEditable = false;
+    document.querySelector('#post-actions .save-changes-btn').remove();
+    document.querySelector('#post-actions .fa-times').className = 'fa-solid fa-edit';
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+}
+
+export async function likeComment(commentId) {
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+  if (!isLoggedIn) {
+    console.log("User is not logged in. Cannot like comment.");
+    return;
+  }
+
+  try {
+    const response = await fetch(`/comments/${commentId}/like`, { method: "POST" });
+    if (response.ok) {
+      fetchPostDetailsFromServer(getPostIdFromURL());
+    } else {
+      const errorMessage = await response.text();
+      console.error("Error liking comment:", errorMessage);
+    }
+  } catch (error) {
+    console.error("Error liking comment:", error);
+  }
+}
+
+export async function dislikeComment(commentId) {
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+  if (!isLoggedIn) {
+    console.log("User is not logged in. Cannot dislike comment.");
+    return;
+  }
+
+  try {
+    const response = await fetch(`/comments/${commentId}/dislike`, { method: "POST" });
+    if (response.ok) {
+      fetchPostDetailsFromServer(getPostIdFromURL());
+    } else {
+      const errorMessage = await response.text();
+      console.error("Error disliking comment:", errorMessage);
+    }
+  } catch (error) {
+    console.error("Error disliking comment:", error);
+  }
+}
+
+export async function deleteComment(commentId) {
+  try {
+    const response = await fetch(`/comments/${commentId}`, { method: "DELETE" });
+    if (response.ok) {
+      fetchPostDetailsFromServer(getPostIdFromURL());
+    } else {
+      const errorMessage = await response.text();
+      console.error("Error deleting comment:", errorMessage);
+    }
+  } catch (error) {
+    console.error("Error deleting comment:", error);
+  }
+}
+
+export function enableCommentEdit() {
+  document.getElementById("comment-section").addEventListener("click", (e) => {
+    if (e.target.classList.contains("edit-comment-btn")) {
+      const commentId = e.target.dataset.commentId;
+      editComment(commentId);
+    }
+  });
+}
+
+function editComment(commentId, commentElement) {
+  const commentActions = commentElement.parentElement.querySelector('.comment-actions');
+  const editButton = commentActions.querySelector('.fa-edit, .fa-times');
+  const existingSaveButton = commentActions.querySelector('.save-comment-btn');
+
+  if (existingSaveButton) {
+    commentElement.contentEditable = false;
+    existingSaveButton.remove();
+    editButton.className = 'fa-solid fa-edit';
+  } else {
+    commentElement.contentEditable = true;
+    commentElement.focus();
+    
+    const saveButton = document.createElement('button');
+    saveButton.textContent = 'Save';
+    saveButton.className = 'save-comment-btn';
+    saveButton.addEventListener('click', () => saveCommentChanges(commentId, commentElement));
+    
+    editButton.parentNode.insertBefore(saveButton, editButton);
+    editButton.className = 'fa-solid fa-times';
+  }
+}
+
+export async function saveCommentChanges(commentId, commentElement) {
+  const newBody = commentElement.textContent.trim();
+  
+  try {
+    const response = await fetch(`/comments/${commentId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ body: newBody }),
+    });
+    
+    if (response.ok) {
+      commentElement.contentEditable = false;
+      const saveButton = commentElement.parentElement.querySelector('.save-comment-btn');
+      if (saveButton) saveButton.remove();
+      const editButton = commentElement.parentElement.querySelector('.fa-times');
+      if (editButton) editButton.className = 'fa-solid fa-edit';
+    } else {
+      console.error("Failed to update comment");
+    }
+  } catch (error) {
+    console.error("Error updating comment:", error);
+  }
+}
+
+export async function submitComment() {
+  const postId = getPostIdFromURL();
+  const commentInput = document.getElementById("comment-input");
+  const commentBody = commentInput.textContent.trim();
+
+  if (!commentBody) {
+    document.getElementById("error").textContent = "Comment cannot be empty.";
+    return;
+  }
+
+  try {
+    const response = await fetch(`/posts/${postId}/comments`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ body: commentBody }),
+    });
+
+    if (response.ok) {
+      commentInput.textContent = "";
+      fetchPostDetailsFromServer(postId);
+    } else {
+      const errorMessage = await response.text();
+      document.getElementById("error").textContent = `Error submitting comment: ${errorMessage}`;
+    }
+  } catch (error) {
+    console.error("Error submitting comment:", error);
+    document.getElementById("error").textContent = "Error submitting comment.";
+  }
+}
+
+export function getPostIdFromURL() {
+  const urlParts = window.location.pathname.split("/");
+  return urlParts[urlParts.length - 1];
 }
