@@ -15,6 +15,15 @@ type Hub struct {
 	unregister chan *Client
 }
 
+func NewHub() *Hub {
+	return &Hub{
+		clients:    make(map[*Client]bool),
+		broadcast:  make(chan models.Message),
+		register:   make(chan *Client),
+		unregister: make(chan *Client),
+	}
+}
+
 func (h *Hub) Run() {
 	for {
 		select {

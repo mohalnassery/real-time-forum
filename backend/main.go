@@ -32,7 +32,7 @@ func main() {
 	})
 
 	// WebSocket endpoint
-	hub := &websockets.Hub{}
+	hub := websockets.NewHub()
 	go hub.Run()
 	r.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		websockets.ServeWs(hub, w, r)
