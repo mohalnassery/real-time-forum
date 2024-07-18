@@ -103,7 +103,7 @@ function openChatBox(user) {
         chatBox.className = 'chat-box';
         chatBox.dataset.userId = user.id;
         chatBox.innerHTML = `
-            <div class="header">
+            <div class="chat-header">
                 <span>Chat with ${user.nickname}</span>
                 <button class="close-chat">X</button>
             </div>

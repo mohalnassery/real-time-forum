@@ -92,15 +92,39 @@ p {
     flex-direction: column;
 }
 
-.chat-box .header {
-    background-color: var(--primary-color);
-    color: var(--text-color);
+.chat-box .chat-header {
+    background-color: #2c2c2c; /* Ubuntu header background color */
+    color: #ffffff; /* Text color */
     padding: 10px;
     border-top-left-radius: var(--border-radius);
     border-top-right-radius: var(--border-radius);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
+}
+
+.chat-box .chat-header .close-chat {
+    background-color: #e95420; /* Ubuntu close button color */
+    color: #ffffff;
+    border: none;
+    border-radius: 50%; 
+    width: 24px; 
+    height: 24px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: absolute;
+    right: 10px; 
+}
+
+.chat-box .chat-header .close-chat:hover {
+    background-color: #c84117; 
+}
+
+.chat-box .chat-header .close-chat:hover {
+    background-color: #c84117; 
 }
 
 .chat-box .messages {
