@@ -70,7 +70,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		// Generate a unique filename for the uploaded image
 		ext := filepath.Ext(header.Filename)
 		filename = fmt.Sprintf("%d%s", time.Now().UnixNano(), ext)
-		imagePath = filepath.Join("../client/uploads", filename)
+		imagePath = filepath.Join("../frontend/uploads", filename)
 
 		// Save the uploaded image file
 		dst, err := os.Create(imagePath)

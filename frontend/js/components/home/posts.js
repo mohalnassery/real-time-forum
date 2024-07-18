@@ -2,9 +2,10 @@ import {
   getSelectedCategories,
   getFilterLikes,
   getFilterCreated,
-  getNickname,
   updateSelectedCategories,
 } from './filtering.js';
+
+import { getNickname } from '../nav.js';
 
 export async function fetchCategories() {
     try {

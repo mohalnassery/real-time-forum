@@ -1,4 +1,5 @@
 import { fetchPost, enableInteractions, disableInteractions, likePost, dislikePost, submitComment, deletePost, deleteComment, likeComment, dislikeComment } from '../components/postdetails/interactions.js';
+import { loadCSS } from '../components/utils.js';
 
 export async function initPostDetails(app, postId) {
   console.log("initPostDetails");
@@ -70,6 +71,7 @@ export async function initPostDetails(app, postId) {
   </div>
   `;
 
+  loadCSS('./css/pages/post-details.css');
   try {
     await fetchPost(postId);
     enableInteractions();

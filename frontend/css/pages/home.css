@@ -49,7 +49,6 @@ a {
 }
 
 .main-container {
-  margin: 100px 20px 50px;
   display: flex;
   justify-content: space-between;
 }
@@ -298,12 +297,12 @@ a {
   gap: 20px;
 }
 
-.comment-section {
+/* .comment-section {
   background-color: var(--card-background-color);
   padding: 20px;
   border-radius: var(--border-radius);
   box-shadow: var(--card-shadow);
-}
+} */
 
 .comment-card {
   margin-bottom: 20px;

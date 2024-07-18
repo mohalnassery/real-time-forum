@@ -3,7 +3,7 @@ import { initAuth } from './pages/loginRegister_page.js';
 import { initContent } from './pages/home_page.js';
 import { initPostDetails } from './pages/postDetails_page.js';
 import { initCreatePost } from './pages/createPost_page.js';
-import { loadCSS, unloadCSS } from './components/utils.js';
+import { loadCSS } from './components/utils.js';
 
 document.addEventListener("DOMContentLoaded", async () => {
     const navbar = document.getElementById("navbar");
@@ -27,13 +27,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!isLoggedIn) {
         // Initialize authentication (login/register)
         initAuth(mainContent);
-        loadCSS('./css/components/nav.css');
         loadCSS('./css/pages/login-register.css');
     } else {
         // Initialize content for logged-in users
         initContent(mainContent);
-        loadCSS('./css/components/nav.css');
-        loadCSS('./css/pages/create-post.css');
         loadCSS('./css/pages/home.css');
     }
 
@@ -53,12 +50,6 @@ async function handleNavigation() {
     const mainContent = document.getElementById("main-content");
     const hash = window.location.hash;
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-
-    // Unload all dynamic CSS files
-    unloadCSS('./css/pages/login-register.css');
-    unloadCSS('./css/pages/home.css');
-    unloadCSS('./css/pages/create-post.css');
-    unloadCSS('./css/pages/post-details.css');
 
     if (!isLoggedIn) {
         initAuth(mainContent);

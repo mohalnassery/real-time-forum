@@ -71,3 +71,7 @@ h2 {
 p {
     color: var(--text-color);
 }
+
+#main-content {
+  margin: 100px 20px 50px;
+}

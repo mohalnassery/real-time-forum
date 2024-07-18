@@ -88,6 +88,15 @@ export function createNavBar(navbar) {
     document.getElementById("theme-toggle").checked = savedTheme === "dark";
 }
 
+export function setNickname(newNickname) {
+    document.getElementById("nickname").textContent = newNickname;
+    localStorage.setItem("nickname", newNickname);
+}
+
+export function getNickname() {
+    return localStorage.getItem("nickname");
+}
+
 let isLoggedIn = false; // Variable to track login status
 
 export async function updateNavMenu() {

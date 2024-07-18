@@ -3,7 +3,6 @@ import { fetchPosts } from './posts.js';
 let selectedCategories = [];
 let filterLikes = false;
 let filterCreated = false;
-let nickname = "";
 
 
 export function createFilterListeners() {
@@ -56,10 +55,3 @@ export function getFilterCreated() {
   return filterCreated;
 }
 
-export function getNickname() {
-  return nickname;
-}
-
-export function setNickname(newNickname) {
-  nickname = newNickname;
-}

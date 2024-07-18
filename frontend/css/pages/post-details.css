@@ -46,12 +46,18 @@ a {
   border: 0;
 }
 
+.comment-section {
+  padding: 20px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+}
+
 .main-section {
   display: flex;
   flex-direction: column;
   width: 85%;
   justify-content: center;
-  margin: 70px 20px 50px;
+  margin: 0px 20px 50px;
   gap: 30px;
 }
 
@@ -74,7 +80,7 @@ a {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #d9d9d9;
+  background-color: var(--tag-color);
   border-radius: 50%;
   width: 40px;
   height: 40px;
@@ -291,4 +297,18 @@ a {
   font-size: 14px;
   color: var(--text-color);
   margin-top: 10px;
+}
+
+.tags {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.tags div {
+  background-color: var(--tag-color);
+  padding: 3px 20px;
+  font-size: 14px;
+  border-radius: 3px;
 }

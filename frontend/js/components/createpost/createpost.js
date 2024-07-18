@@ -1,10 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
-  checkLoginStatus();
-  createCategoryCheckboxes();
-  validateImageUpload();
-});
-
-function validateImageUpload() {
+export function validateImageUpload() {
   const imageInput = document.getElementById("image");
   imageInput.addEventListener("change", () => {
     const file = imageInput.files[0];
@@ -23,7 +17,7 @@ function validateImageUpload() {
   });
 }
 
-async function fetchCategories() {
+export async function fetchCategories() {
   try {
     const response = await fetch("/categories");
     if (!response.ok) {
@@ -37,7 +31,7 @@ async function fetchCategories() {
   }
 }
 
-async function createCategoryCheckboxes() {
+export async function createCategoryCheckboxes() {
   const categories = await fetchCategories();
   const container = document.querySelector(".tag-input-container");
   container.innerHTML = "";
@@ -54,7 +48,7 @@ async function createCategoryCheckboxes() {
   });
 }
 
-async function createPost(event) {
+export async function createPost(event) {
   event.preventDefault();
   const form = event.target;
   const formData = new FormData(form);
@@ -62,7 +56,8 @@ async function createPost(event) {
   const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/bmp", "image/webp", "image/tiff", "image/svg+xml"];
   const maxSize = 20 * 1024 * 1024; // 20 MB
 
-  if (file) {
+  if (file.name) {
+    console.log(file.name);
     if (!allowedTypes.includes(file.type)) {
       alert("Only JPEG, PNG, and GIF file types are allowed.");
       return;
