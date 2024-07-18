@@ -1,43 +1,92 @@
-frontend
-├── assets
-│   ├── favicon.ico
-│   └── logo.png
-├── css
-│   ├── components
-│   │   ├── auth.css
-│   │   ├── comments.css
-│   │   ├── create-post.css
-│   │   ├── home.css
-│   │   ├── layout.css
-│   │   ├── login.css
-│   │   ├── messages.css
-│   │   ├── nav.css
-│   │   ├── post-details.css
-│   │   ├── posts.css
-│   │   ├── register.css
-│   │   └── styles.css
-│   └── pages
-│       ├── activity.css
-│       ├── create-post.css
-│       ├── home.css
-│       ├── login.css
-│       ├── post-details.css
-├── js
-│   ├── components
-│   │   ├── auth.js
-│   │   ├── comments.js
-│   │   ├── createPost.js
-│   │   ├── nav.js
-│   │   ├── notifications.mjs
-│   │   ├── posts.js
-│   │   └── websocket.js
-│   ├── pages
-│   │   ├── activity.js
-│   │   ├── createPost.js
-│   │   ├── home.js
-│   │   ├── login.js
-│   │   ├── postDetails.js
-│   ├── app.js
-│   └── main.js
-├── index.html
-└── README.md
+.
+├── backend
+│   ├── database
+│   │   ├── db_activity.go
+│   │   ├── db_category.go
+│   │   ├── db_comment.go
+│   │   ├── db.go
+│   │   ├── db_like.go
+│   │   ├── db_notification.go
+│   │   ├── db_post.go
+│   │   ├── db_user.go
+│   │   └── db_websocket.go
+│   ├── form.db
+│   ├── go.mod
+│   ├── go.sum
+│   ├── handlers
+│   │   ├── auth.go
+│   │   ├── categories.go
+│   │   ├── comments.go
+│   │   ├── likes.go
+│   │   ├── notifications.go
+│   │   ├── posts.go
+│   │   ├── session.go
+│   │   ├── stats.go
+│   │   └── websockets.go
+│   ├── helper
+│   │   └── limiter.go
+│   ├── main.go
+│   ├── models
+│   │   ├── comment_struct.go
+│   │   ├── notification_struct.go
+│   │   ├── post_struct.go
+│   │   ├── stats_struct.go
+│   │   ├── user_struct.go
+│   │   └── websocket_struct.go
+│   └── websockets
+│       ├── client.go
+│       └── hub.go
+├── directory_structure1.txt
+├── folders-files-restructure.sh
+├── frontend
+│   ├── assets
+│   │   ├── favicon.ico
+│   │   └── logo.png
+│   ├── css
+│   │   ├── components
+│   │   │   ├── messages.css
+│   │   │   └── nav.css
+│   │   ├── pages
+│   │   │   ├── create-post.css
+│   │   │   ├── home.css
+│   │   │   ├── login-register.css
+│   │   │   └── post-details.css
+│   │   └── styles.css
+│   ├── index.html
+│   ├── js
+│   │   ├── components
+│   │   │   ├── auth
+│   │   │   │   ├── auth_handling.js
+│   │   │   │   └── loginRegister.js
+│   │   │   ├── createpost
+│   │   │   │   └── createpost.js
+│   │   │   ├── home
+│   │   │   │   ├── burgerMenu.js
+│   │   │   │   ├── filtering.js
+│   │   │   │   ├── posts.js
+│   │   │   │   └── stats.js
+│   │   │   ├── nav.js
+│   │   │   ├── notifications.js
+│   │   │   ├── postdetails
+│   │   │   │   ├── interactions.js
+│   │   │   │   ├── PostDetails.js
+│   │   │   │   └── postdetails_utils.js
+│   │   │   ├── utils.js
+│   │   │   └── websocket
+│   │   │       ├── messages.js
+│   │   │       └── websocket.js
+│   │   ├── main.js
+│   │   └── pages
+│   │       ├── activity_page.js
+│   │       ├── createPost_page.js
+│   │       ├── home_page.js
+│   │       ├── loginRegister_page.js
+│   │       └── postDetails_page.js
+│   └── uploads
+├── objective.md
+├── README.md
+├── todo.md
+├── update_structure.sh
+└── websocket_plan.md
+
+26 directories, 98 files

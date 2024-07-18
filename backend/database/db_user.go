@@ -94,3 +94,21 @@ func GetUserByNickname(db *sql.DB, nickname string) (interface{}, error) {
 	}
 	return user, nil
 }
+
+func GetUsers() ([]models.User, error) {
+	rows, err := DB.Query("SELECT id, nickname FROM users")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []models.User
+	for rows.Next() {
+		var user models.User
+		if err := rows.Scan(&user.ID, &user.Nickname); err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+	return users, nil
+}

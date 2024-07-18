@@ -4,6 +4,7 @@ import { initContent } from './pages/home_page.js';
 import { initPostDetails } from './pages/postDetails_page.js';
 import { initCreatePost } from './pages/createPost_page.js';
 import { loadCSS } from './components/utils.js';
+import { initWebSocket } from './components/websocket/websocket.js';
 
 document.addEventListener("DOMContentLoaded", async () => {
     const navbar = document.getElementById("navbar");
@@ -32,6 +33,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Initialize content for logged-in users
         initContent(mainContent);
         loadCSS('./css/pages/home.css');
+        // Initialize WebSocket connection
+        initWebSocket();
     }
 
     // Handle navigation

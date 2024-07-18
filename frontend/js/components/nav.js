@@ -1,5 +1,6 @@
 import { fetchNotifications, clearNotification, markAllNotificationsAsRead } from './notifications.js';
 import { logout } from './auth/auth_handling.js';
+import { createUserSidebar, sendMessage } from './websocket/websocket.js'; // Import the new function
 
 export function createNavBar(navbar) {
     navbar.innerHTML = `
@@ -26,6 +27,9 @@ export function createNavBar(navbar) {
                     <p id="nickname">
                     </p>
                 </div>
+                <div class="user-icon" id="user-icon" hidden>
+                    <i class="fa-solid fa-users"></i>
+                </div>
             </div>
         </div>
     `;
@@ -40,8 +44,8 @@ export function createNavBar(navbar) {
     });
 
     // Add "Mark all as read" button
-    const notificationIcon = document.getElementsByClassName("notification-icon")[0]
-    const notificationDropdown = document.getElementsByClassName("notification-dropdown")[0]
+    const notificationIcon = document.getElementsByClassName("notification-icon")[0];
+    const notificationDropdown = document.getElementsByClassName("notification-dropdown")[0];
     document.getElementsByClassName("mark-all-read")[0].addEventListener("click", async () => {
         await markAllNotificationsAsRead();
         notificationDropdown.innerHTML = "";
@@ -75,7 +79,8 @@ export function createNavBar(navbar) {
     });
 
     // Add event listener for theme toggle
-    document.getElementById("theme-toggle").addEventListener("change", () => {
+    const themeToggle = document.getElementById("theme-toggle");
+    themeToggle.addEventListener("change", () => {
         const currentTheme = document.body.getAttribute("data-theme");
         const newTheme = currentTheme === "dark" ? "light" : "dark";
         document.body.setAttribute("data-theme", newTheme);
@@ -85,7 +90,23 @@ export function createNavBar(navbar) {
     // Set the initial theme based on localStorage
     const savedTheme = localStorage.getItem("theme") || "light";
     document.body.setAttribute("data-theme", savedTheme);
-    document.getElementById("theme-toggle").checked = savedTheme === "dark";
+    themeToggle.checked = savedTheme === "dark";
+
+    // Initialize the user sidebar
+    createUserSidebar();
+
+    // Add event listener to user icon to toggle sidebar
+    document.getElementById("user-icon").addEventListener("click", () => {
+        document.getElementById("user-sidebar").classList.toggle("show");
+    });
+
+    // Close sidebar when clicking outside of it
+    document.addEventListener("click", (event) => {
+        const sidebar = document.getElementById("user-sidebar");
+        if (sidebar.classList.contains("show") && !sidebar.contains(event.target) && !event.target.matches('.user-icon, .user-icon *')) {
+            sidebar.classList.remove("show");
+        }
+    });
 }
 
 export function setNickname(newNickname) {
@@ -111,6 +132,7 @@ export async function updateNavMenu() {
                 document.getElementById("logout-btn").hidden = false;
                 document.getElementById("logout-btn").disabled = false; // Enable logout button
                 document.querySelector(".notification-icon").hidden = false; // Show bell icon
+                document.getElementById("user-icon").hidden = false; // Show user icon
                 document.getElementById("nickname").textContent = data.nickname;
                 localStorage.setItem("isLoggedIn", "true");
                 localStorage.setItem("nickname", data.nickname);
@@ -121,6 +143,7 @@ export async function updateNavMenu() {
                 document.getElementById("logout-btn").hidden = true;
                 document.getElementById("logout-btn").disabled = true; // Disable logout button
                 document.querySelector(".notification-icon").hidden = true; // Hide bell icon
+                document.getElementById("user-icon").hidden = true; // Hide user icon
                 document.getElementById("nickname").textContent = "";
                 localStorage.removeItem("isLoggedIn");
                 localStorage.removeItem("nickname");
@@ -137,6 +160,7 @@ export async function updateNavMenu() {
             document.getElementById("logout-btn").hidden = true;
             document.getElementById("logout-btn").disabled = true; // Disable logout button
             document.querySelector(".notification-icon").hidden = true; // Hide bell icon
+            document.getElementById("user-icon").hidden = true; // Hide user icon
             document.getElementById("nickname").textContent = "";
             localStorage.removeItem("isLoggedIn");
             localStorage.removeItem("nickname");

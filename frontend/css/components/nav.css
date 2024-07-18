@@ -178,3 +178,47 @@ input:checked + .slider:after {
   left: 10px;
   right: auto;
 }
+
+.user-icon {
+  cursor: pointer;
+  font-size: 24px;
+  color: var(--text-color);
+}
+
+#user-sidebar {
+  position: fixed;
+  right: -300px;
+  top: 0;
+  width: 300px;
+  height: 100%;
+  background-color: var(--card-background-color);
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+  transition: right 0.3s ease;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+#user-sidebar.show {
+  right: 0;
+}
+
+.user-item {
+  padding: 10px;
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+}
+
+.user-item:hover {
+  background-color: var(--hover-background-color);
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text-color);
+}

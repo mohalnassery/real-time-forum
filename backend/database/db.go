@@ -166,6 +166,15 @@ func CreateAllTables(db *sql.DB) error {
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
             FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE
         );
+		CREATE TABLE IF NOT EXISTS messages (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			sender_id INTEGER,
+			receiver_id INTEGER,
+			content TEXT NOT NULL,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
+			FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
+		);
 	`
 	_, err := db.Exec(sqlTable)
 	if err != nil {

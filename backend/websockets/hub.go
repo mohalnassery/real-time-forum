@@ -3,22 +3,16 @@ package websockets
 import (
 	"log"
 	"net/http"
+	"real-time-forum/models"
 
 	"github.com/gorilla/websocket"
 )
 
 type Hub struct {
 	clients    map[*Client]bool
-	broadcast  chan []byte
+	broadcast  chan models.Message
 	register   chan *Client
 	unregister chan *Client
-}
-
-var hub = Hub{
-	broadcast:  make(chan []byte),
-	register:   make(chan *Client),
-	unregister: make(chan *Client),
-	clients:    make(map[*Client]bool),
 }
 
 func (h *Hub) Run() {
@@ -56,7 +50,7 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256)}
+	client := &Client{hub: hub, conn: conn, send: make(chan models.Message, 256)}
 	client.hub.register <- client
 
 	go client.writePump()

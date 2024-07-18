@@ -1,8 +1,10 @@
 package websockets
 
 import (
-	"bytes"
+	"encoding/json"
 	"log"
+	"real-time-forum/database"
+	"real-time-forum/models"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -18,7 +20,7 @@ const (
 type Client struct {
 	hub  *Hub
 	conn *websocket.Conn
-	send chan []byte
+	send chan models.Message
 }
 
 func (c *Client) readPump() {
@@ -30,14 +32,20 @@ func (c *Client) readPump() {
 	c.conn.SetReadDeadline(time.Now().Add(pongWait))
 	c.conn.SetPongHandler(func(string) error { c.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 	for {
-		_, message, err := c.conn.ReadMessage()
+		var message models.Message
+		err := c.conn.ReadJSON(&message)
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				log.Printf("error: %v", err)
 			}
 			break
 		}
-		message = bytes.TrimSpace(bytes.Replace(message, []byte{'\n'}, []byte{' '}, -1))
+		// Save message to the database
+		err = database.CreateMessage(&message)
+		if err != nil {
+			log.Printf("error saving message: %v", err)
+			continue
+		}
 		c.hub.broadcast <- message
 	}
 }
@@ -61,11 +69,11 @@ func (c *Client) writePump() {
 			if err != nil {
 				return
 			}
-			w.Write(message)
+			json.NewEncoder(w).Encode(message)
 
 			n := len(c.send)
 			for i := 0; i < n; i++ {
-				w.Write(<-c.send)
+				json.NewEncoder(w).Encode(<-c.send)
 			}
 
 			if err := w.Close(); err != nil {

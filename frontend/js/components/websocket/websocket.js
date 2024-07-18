@@ -1,24 +1,136 @@
-const socket = new WebSocket("ws://localhost:8080/ws");
+let socket;
 
-socket.onopen = function(event) {
-    console.log("WebSocket is open now.");
-};
+export function initWebSocket() {
+    socket = new WebSocket("ws://localhost:8080/ws");
 
-socket.onmessage = function(event) {
-    const message = JSON.parse(event.data);
-    console.log("WebSocket message received:", message);
+    socket.onopen = function(event) {
+        console.log("WebSocket is open now.");
+    };
+
+    socket.onmessage = function(event) {
+        const message = JSON.parse(event.data);
+        console.log("WebSocket message received:", message);
+        handleWebSocketMessage(message);
+    };
+
+    socket.onclose = function(event) {
+        console.log("WebSocket is closed now.");
+    };
+
+    socket.onerror = function(error) {
+        console.log("WebSocket error:", error);
+    };
+}
+
+export function handleWebSocketMessage(message) {
     // Handle the message (e.g., update the UI)
-};
+    console.log("Handling WebSocket message:", message);
+    displayMessage(message);
+}
 
-socket.onclose = function(event) {
-    console.log("WebSocket is closed now.");
-};
+export function sendMessage(message) {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify(message));
+    } else {
+        console.error("WebSocket is not open. Unable to send message.");
+    }
+}
 
-socket.onerror = function(error) {
-    console.log("WebSocket error:", error);
-};
+export async function getUsers() {
+    const response = await fetch('/users');
+    if (response.ok) {
+        return await response.json();
+    } else {
+        console.error("Failed to fetch users");
+        return [];
+    }
+}
 
-// // Function to send a message
-// export function sendMessage(message) {
-//     socket.send(JSON.stringify(message));
-// }
+function displayMessage(message) {
+    console.log("Displaying message:", message);
+    const chatBox = document.querySelector(`.chat-box[data-user-id="${message.receiverId}"]`);
+    if (chatBox) {
+        const messageElement = document.createElement('div');
+        messageElement.className = 'message';
+        messageElement.textContent = `${message.senderNickname}: ${message.content}`;
+        chatBox.querySelector('.messages').appendChild(messageElement);
+    }
+}
+
+// Function to create the user sidebar
+export function createUserSidebar() {
+    const sidebar = document.createElement('div');
+    sidebar.id = 'user-sidebar';
+    sidebar.className = 'sidebar';
+
+    const closeButton = document.createElement('button');
+    closeButton.className = 'close-button';
+    closeButton.textContent = 'X';
+    closeButton.addEventListener('click', () => {
+        sidebar.classList.remove('show');
+    });
+    sidebar.appendChild(closeButton);
+
+    const userList = document.createElement('div');
+    userList.id = 'user-list';
+    sidebar.appendChild(userList);
+
+    document.body.appendChild(sidebar);
+
+    fetchUsers();
+}
+
+async function fetchUsers() {
+    const users = await getUsers();
+    const userList = document.getElementById('user-list');
+    userList.innerHTML = '';
+
+    users.forEach(user => {
+        const userItem = document.createElement('div');
+        userItem.className = 'user-item';
+        userItem.textContent = user.nickname;
+        userItem.addEventListener('click', () => {
+            openChatBox(user);
+        });
+        userList.appendChild(userItem);
+    });
+}
+
+function openChatBox(user) {
+    let chatBox = document.querySelector(`.chat-box[data-user-id="${user.id}"]`);
+    if (!chatBox) {
+        chatBox = document.createElement('div');
+        chatBox.className = 'chat-box';
+        chatBox.dataset.userId = user.id;
+        chatBox.innerHTML = `
+            <div class="header">
+                <span>Chat with ${user.nickname}</span>
+                <button class="close-chat">X</button>
+            </div>
+            <div class="messages"></div>
+            <div class="input">
+                <input type="text" placeholder="Type a message...">
+                <button class="send-message">Send</button>
+            </div>
+        `;
+        document.body.appendChild(chatBox);
+
+        chatBox.querySelector('.close-chat').addEventListener('click', () => {
+            chatBox.remove();
+        });
+
+        chatBox.querySelector('.send-message').addEventListener('click', () => {
+            const input = chatBox.querySelector('input');
+            const message = {
+                senderId: localStorage.getItem('userId'), // Ensure this is set correctly
+                senderNickname: localStorage.getItem('nickname'), // Ensure this is set correctly
+                receiverId: user.id,
+                content: input.value,
+            };
+            sendMessage(message);
+            displayMessage(message);
+            input.value = '';
+        });
+    }
+    chatBox.classList.add('show');
+}
