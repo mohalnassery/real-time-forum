@@ -46,9 +46,19 @@ export async function getUsers() {
     }
 }
 
+export async function getMessages(senderId, receiverId) {
+    const response = await fetch(`/messages?sender_id=${senderId}&receiver_id=${receiverId}`);
+    if (response.ok) {
+        return await response.json();
+    } else {
+        console.error("Failed to fetch messages");
+        return [];
+    }
+}
+
 function displayMessage(message) {
     console.log("Displaying message:", message);
-    const chatBox = document.querySelector(`.chat-box[data-user-id="${message.receiverId}"]`);
+    const chatBox = document.querySelector(`.chat-box[data-user-id="${message.receiverId}"]`) || document.querySelector(`.chat-box[data-user-id="${message.senderId}"]`);
     if (chatBox) {
         const messageElement = document.createElement('div');
         messageElement.className = 'message';
@@ -96,7 +106,7 @@ async function fetchUsers() {
     });
 }
 
-function openChatBox(user) {
+async function openChatBox(user) {
     let chatBox = document.querySelector(`.chat-box[data-user-id="${user.id}"]`);
     if (!chatBox) {
         chatBox = document.createElement('div');
@@ -130,6 +140,26 @@ function openChatBox(user) {
             sendMessage(message);
             input.value = ''; // Clear the input field after sending the message
         });
+
+        // Add event listener for Enter key press
+        chatBox.querySelector('input').addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                const input = chatBox.querySelector('input');
+                const message = {
+                    senderId: parseInt(localStorage.getItem('userId')), // Ensure this is set correctly
+                    senderNickname: localStorage.getItem('nickname'), // Ensure this is set correctly
+                    receiverId: user.id,
+                    content: input.value,
+                };
+                sendMessage(message);
+                input.value = ''; // Clear the input field after sending the message
+            }
+        });
+
+        // Fetch and display previous messages
+        const senderId = parseInt(localStorage.getItem('userId'));
+        const previousMessages = await getMessages(senderId, user.id);
+        previousMessages.forEach(displayMessage);
     }
     chatBox.classList.add('show');
 }
