@@ -122,14 +122,13 @@ function openChatBox(user) {
         chatBox.querySelector('.send-message').addEventListener('click', () => {
             const input = chatBox.querySelector('input');
             const message = {
-                senderId: localStorage.getItem('userId'), // Ensure this is set correctly
+                senderId: parseInt(localStorage.getItem('userId')), // Ensure this is set correctly
                 senderNickname: localStorage.getItem('nickname'), // Ensure this is set correctly
                 receiverId: user.id,
                 content: input.value,
             };
             sendMessage(message);
-            displayMessage(message);
-            input.value = '';
+            input.value = ''; // Clear the input field after sending the message
         });
     }
     chatBox.classList.add('show');

@@ -6,6 +6,7 @@ import (
 	"real-time-forum/database"
 	"real-time-forum/models"
 	"strconv"
+	"time"
 )
 
 func GetMessagesHandler(w http.ResponseWriter, r *http.Request) {
@@ -38,20 +39,8 @@ func SendMessageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// get session id then change the one in message struct
-	user, err := GetSessionUser(r)
-	if err != nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
-
-	userId, err := database.GetUserID(user.Nickname)
-	if err != nil {
-		http.Error(w, "Failed to retrieve user ID", http.StatusInternalServerError)
-		return
-	}
-
-	message.SenderID = userId
+	// Set the creation time to the current time
+	message.CreatedAt = time.Now()
 
 	err = database.CreateMessage(&message)
 	if err != nil {

@@ -137,6 +137,7 @@ export async function updateNavMenu() {
                 localStorage.setItem("isLoggedIn", "true");
                 localStorage.setItem("nickname", data.nickname);
                 localStorage.setItem("sessionID", data.sessionID);
+                localStorage.setItem("userId", data.userId); // Ensure userId is set
             } else {
                 document.getElementById("toggle-login").hidden = false;
                 document.getElementById("toggle-signup").hidden = false;
@@ -148,6 +149,7 @@ export async function updateNavMenu() {
                 localStorage.removeItem("isLoggedIn");
                 localStorage.removeItem("nickname");
                 localStorage.removeItem("sessionID");
+                localStorage.removeItem("userId"); // Ensure userId is removed
             }
             // Dispatch a custom event to notify the index page
             const event = new CustomEvent("loginStatusUpdate", {
@@ -165,6 +167,7 @@ export async function updateNavMenu() {
             localStorage.removeItem("isLoggedIn");
             localStorage.removeItem("nickname");
             localStorage.removeItem("sessionID");
+            localStorage.removeItem("userId"); // Ensure userId is removed
             // Dispatch a custom event to notify the index page
             const event = new CustomEvent("loginStatusUpdate", {
                 detail: { isLoggedIn: false },

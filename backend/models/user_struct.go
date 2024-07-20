@@ -1,6 +1,7 @@
 package models
 
 type UserRegisteration struct {
+	UserId    int    `json:"userId"`
 	Nickname  string `json:"nickname"`
 	Email     string `json:"email"`
 	Password  string `json:"password"`

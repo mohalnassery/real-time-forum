@@ -3,9 +3,10 @@ package models
 import "time"
 
 type Message struct {
-	ID         int       `json:"id"`
-	SenderID   int       `json:"sender_id"`
-	ReceiverID int       `json:"receiver_id"`
-	Content    string    `json:"content"`
-	CreatedAt  time.Time `json:"created_at"`
+	ID             int       `json:"id"`
+	SenderID       int       `json:"senderId"`
+	SenderNickname string    `json:"senderNickname"`
+	ReceiverID     int       `json:"receiverId"`
+	Content        string    `json:"content"`
+	CreatedAt      time.Time `json:"createdAt"`
 }

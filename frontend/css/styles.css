@@ -105,7 +105,7 @@ p {
 }
 
 .chat-box .chat-header .close-chat {
-    background-color: #e95420; /* Ubuntu close button color */
+    background-color: #e95420; 
     color: #ffffff;
     border: none;
     border-radius: 50%; 

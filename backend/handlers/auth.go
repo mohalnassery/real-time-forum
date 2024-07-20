@@ -32,8 +32,8 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate age
-	if user.Age <= 0 {
-		http.Error(w, "Invalid age", http.StatusBadRequest)
+	if user.Age <= 5 {
+		http.Error(w, "Invalid age, you need to be 6 years old or greater", http.StatusBadRequest)
 		return
 	}
 
@@ -102,9 +102,15 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid password", http.StatusUnauthorized)
 		return
 	}
+	userId, err := database.GetUserID(dbUser.Nickname)
+	if err != nil {
+		http.Error(w, "Failed to retrieve user ID", http.StatusInternalServerError)
+		return
+	}
 
 	// turn dbUser to UserRegisteration
 	user := models.UserRegisteration{
+		UserId:   userId,
 		Nickname: dbUser.Nickname,
 		Email:    dbUser.Email,
 		Password: dbUser.Password,
@@ -134,7 +140,8 @@ func IsLoggedIn(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"userId":    user.UserId,
 		"status":    "logged_in",
 		"nickname":  user.Nickname,
 		"sessionID": UserSessions[user.Nickname],

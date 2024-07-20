@@ -40,6 +40,24 @@ func (c *Client) readPump() {
 			}
 			break
 		}
+
+		// Use senderId directly from the message
+		if message.SenderID == 0 {
+			log.Printf("error: senderId is missing")
+			continue
+		}
+
+		// Retrieve sender nickname from the database
+		sender, err := database.GetUsernameByID(message.SenderID)
+		if err != nil {
+			log.Printf("error retrieving sender nickname: %v", err)
+			continue
+		}
+		message.SenderNickname = sender
+
+		// Set the creation time to the current time
+		message.CreatedAt = time.Now()
+
 		// Save message to the database
 		err = database.CreateMessage(&message)
 		if err != nil {
