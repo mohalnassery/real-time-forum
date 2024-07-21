@@ -4,18 +4,25 @@ import (
 	"encoding/json"
 	"net/http"
 	"real-time-forum/database"
+	"strconv"
 )
 
-func GetUserActivity(w http.ResponseWriter, r *http.Request) {
-	user, err := GetSessionUser(r)
-	if err != nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+func GetUserProfile(w http.ResponseWriter, r *http.Request) {
+	userIDStr := r.URL.Query().Get("user_id")
+	if userIDStr == "" {
+		http.Error(w, "User ID is required", http.StatusBadRequest)
 		return
 	}
 
-	userID, err := database.GetUserID(user.Nickname)
+	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
-		http.Error(w, "Failed to retrieve user ID", http.StatusInternalServerError)
+		http.Error(w, "Invalid User ID", http.StatusBadRequest)
+		return
+	}
+
+	user, err := database.GetUserProfile(userID)
+	if err != nil {
+		http.Error(w, "Failed to retrieve user profile", http.StatusInternalServerError)
 		return
 	}
 
@@ -25,6 +32,14 @@ func GetUserActivity(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	response := struct {
+		User     interface{} `json:"user"`
+		Activity interface{} `json:"activity"`
+	}{
+		User:     user,
+		Activity: activity,
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(activity)
+	json.NewEncoder(w).Encode(response)
 }

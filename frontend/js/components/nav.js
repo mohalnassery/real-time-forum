@@ -39,9 +39,10 @@ export function createNavBar(navbar) {
         await logout();
     });
 
-    // Add event listener to nickname element to redirect to activity page
+    // Add event listener to nickname element to redirect to profile page
     document.getElementById("nickname").addEventListener("click", () => {
-        window.location.href = "/#profile";
+        const userID = localStorage.getItem("userId");
+        window.location.href = `/#profile?user_id=${userID}`;
     });
 
     // Add "Mark all as read" button

@@ -68,9 +68,15 @@ async function handleNavigation() {
         } else if (hash === "#create-post") {
             await initCreatePost(mainContent);
             loadCSS('./css/pages/create-post.css');
-        } else if (hash === "#profile") { // Add condition for profile page
-            await initProfilePage(mainContent);
-            loadCSS('./css/pages/profile.css');
+        } else if (hash.startsWith("#profile")) { // Adjust condition for profile page
+            const urlParams = new URLSearchParams(hash.split('?')[1]);
+            const userID = urlParams.get('user_id');
+            if (userID) {
+                await initProfilePage(mainContent, userID);
+                loadCSS('./css/pages/profile.css');
+            } else {
+                console.error("User ID is missing in the URL");
+            }
         } else {
             await initContent(mainContent);
             loadCSS('./css/pages/home.css');

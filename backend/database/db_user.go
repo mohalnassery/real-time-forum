@@ -112,3 +112,9 @@ func GetUsers() ([]models.User, error) {
 	}
 	return users, nil
 }
+
+func GetUserProfile(userID int) (models.User, error) {
+	var user models.User
+	err := DB.QueryRow("SELECT first_name, last_name, age, nickname, gender FROM users WHERE id = ?", userID).Scan(&user.FirstName, &user.LastName, &user.Age, &user.Nickname, &user.Gender)
+	return user, err
+}

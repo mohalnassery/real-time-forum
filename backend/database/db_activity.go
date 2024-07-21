@@ -1,7 +1,6 @@
 package database
 
 import (
-	"database/sql"
 	"real-time-forum/models"
 )
 
@@ -24,9 +23,9 @@ func GetUserActivity(userID int) (models.UserActivity, error) {
 		activity.CreatedPosts = append(activity.CreatedPosts, post)
 	}
 
-	// Retrieve posts where the user left a like or dislike
+	// Retrieve liked posts
 	rows, err = DB.Query(`
-		SELECT p.post_id, p.title, p.body, p.creation_date, l.liked
+		SELECT p.post_id, p.title, p.body, p.creation_date
 		FROM posts p
 		JOIN "like-posts" l ON p.post_id = l.postID
 		WHERE l.user_id = ?`, userID)
@@ -37,16 +36,31 @@ func GetUserActivity(userID int) (models.UserActivity, error) {
 
 	for rows.Next() {
 		var post models.Post
-		var liked sql.NullBool
-		err := rows.Scan(&post.PostID, &post.Title, &post.Body, &post.CreationDate, &liked)
+		err := rows.Scan(&post.PostID, &post.Title, &post.Body, &post.CreationDate)
 		if err != nil {
 			return activity, err
 		}
-		if liked.Valid && liked.Bool {
-			activity.LikedPosts = append(activity.LikedPosts, post)
-		} else if liked.Valid && !liked.Bool {
-			activity.DislikedPosts = append(activity.DislikedPosts, post)
+		activity.LikedPosts = append(activity.LikedPosts, post)
+	}
+
+	// Retrieve disliked posts
+	rows, err = DB.Query(`
+		SELECT p.post_id, p.title, p.body, p.creation_date
+		FROM posts p
+		JOIN "dislike-posts" d ON p.post_id = d.postID
+		WHERE d.user_id = ?`, userID)
+	if err != nil {
+		return activity, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var post models.Post
+		err := rows.Scan(&post.PostID, &post.Title, &post.Body, &post.CreationDate)
+		if err != nil {
+			return activity, err
 		}
+		activity.DislikedPosts = append(activity.DislikedPosts, post)
 	}
 
 	// Retrieve comments made by the user, along with the corresponding post information

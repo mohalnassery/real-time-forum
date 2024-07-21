@@ -53,11 +53,13 @@ body {
     padding: 20px !important;
     border-radius: var(--border-radius) !important;
     box-shadow: var(--card-shadow) !important;
+    margin-bottom: 20px !important;
   }
   
   .stats h1 {
-    margin: 10px 0 25px 0 !important;
-    font-size: 20px !important;
+    color: var(--primary-color) !important;
+    font-style: italic !important;
+    margin-bottom: 20px !important;
   }
   
   .stats p {
@@ -120,14 +122,18 @@ body {
   .stat-item {
     display: flex !important;
     justify-content: space-between !important;
-    align-items: center !important;
-    margin-bottom: 10px !important;
-    margin-right: 20px !important;
+    padding: 10px 0 !important;
+    border-bottom: 1px solid var(--input-border) !important;
   }
   
   .stat-item p {
     margin: 0 !important;
-    margin-right: 0px !important;
+    font-weight: bold !important;
+    color: var(--text-color) !important;
+  }
+  
+  .stat-item span {
+    color: var(--text-color) !important;
   }
   
   @media screen and (max-width: 768px) {
@@ -194,4 +200,36 @@ body {
   .activity-item p {
     margin: 0 !important;
     font-size: 14px !important;
+  }
+
+  /* Add this new class for the profile information container */
+  .profile-info {
+    background-color: var(--card-background-color) !important;
+    padding: 20px !important;
+    border-radius: var(--border-radius) !important;
+    box-shadow: var(--card-shadow) !important;
+    margin-bottom: 20px !important;
+  }
+
+  .profile-info h1 {
+    color: var(--primary-color) !important;
+    font-style: italic !important;
+    margin-bottom: 20px !important;
+  }
+
+  .profile-item {
+    display: flex !important;
+    justify-content: space-between !important;
+    padding: 10px 0 !important;
+    border-bottom: 1px solid var(--input-border) !important;
+  }
+
+  .profile-item p {
+    margin: 0 !important;
+    font-weight: bold !important;
+    color: var(--text-color) !important;
+  }
+
+  .profile-item span {
+    color: var(--text-color) !important;
   }

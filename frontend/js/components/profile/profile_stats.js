@@ -1,44 +1,31 @@
-// Function to fetch and display user stats
-export async function fetchUserStats() {
-    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-    const loggedInNickname = localStorage.getItem("nickname");
-    if (isLoggedIn && loggedInNickname) {
-        try {
-            const response = await fetch(`/user-stats?nickname=${loggedInNickname}`);
-            if (response.ok) {
-                const stats = await response.json();
-                document.querySelectorAll("#user-posts").forEach((element) => {
-                    element.textContent = stats.posts;
-                });
-                document.querySelectorAll("#user-comments").forEach((element) => {
-                    element.textContent = stats.comments;
-                });
-                document.querySelectorAll("#user-likes").forEach((element) => {
-                    element.textContent = stats.likes;
-                });
-                document.querySelectorAll("#user-dislikes").forEach((element) => {
-                    element.textContent = stats.dislikes;
-                });
-            } else {
-                console.error("Error fetching user stats:", response.status);
-            }
-        } catch (error) {
-            console.error("Error fetching user stats:", error);
+// Function to fetch and display user stats and activities
+export async function fetchUserStats(userID) {
+    try {
+        const response = await fetch(`/user-stats?user_id=${userID}`);
+        if (response.ok) {
+            const stats = await response.json();
+
+            // Display user stats
+            document.querySelectorAll("#user-posts").forEach((element) => {
+                element.textContent = stats.posts;
+            });
+            document.querySelectorAll("#user-comments").forEach((element) => {
+                element.textContent = stats.comments;
+            });
+            document.querySelectorAll("#user-likes").forEach((element) => {
+                element.textContent = stats.likes;
+            });
+            document.querySelectorAll("#user-dislikes").forEach((element) => {
+                element.textContent = stats.dislikes;
+            });
+
+            // Display user activity
+            displayUserActivity(activity);
+        } else {
+            console.error("Error fetching user stats:", response.status);
         }
-    } else {
-        // Clear user stats when the user is not logged in
-        document.querySelectorAll("#user-posts").forEach((element) => {
-            element.textContent = "";
-        });
-        document.querySelectorAll("#user-comments").forEach((element) => {
-            element.textContent = "";
-        });
-        document.querySelectorAll("#user-likes").forEach((element) => {
-            element.textContent = "";
-        });
-        document.querySelectorAll("#user-dislikes").forEach((element) => {
-            element.textContent = "";
-        });
+    } catch (error) {
+        console.error("Error fetching user stats:", error);
     }
 }
   

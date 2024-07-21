@@ -3,11 +3,37 @@ import { loadCSS } from '../components/utils.js';
 import { fetchUserActivity, displayUserActivity } from '../components/profile/activity.js'; // Import functions from activity.js
 
 export function initProfilePage(app) {
+    const urlParams = new URLSearchParams(window.location.hash.split('?')[1]);
+    const userID = urlParams.get('user_id');
+
     app.innerHTML = `
         <div class="main-container">
             <div class="left-section">
+                <div class="profile-info" id="profile-info">
+                    <h1>Profile Information</h1>
+                    <div class="profile-item">
+                        <p>First Name:</p>
+                        <span id="profile-first-name"></span>
+                    </div>
+                    <div class="profile-item">
+                        <p>Last Name:</p>
+                        <span id="profile-last-name"></span>
+                    </div>
+                    <div class="profile-item">
+                        <p>Age:</p>
+                        <span id="profile-age"></span>
+                    </div>
+                    <div class="profile-item">
+                        <p>Nickname:</p>
+                        <span id="profile-nickname"></span>
+                    </div>
+                    <div class="profile-item">
+                        <p>Gender:</p>
+                        <span id="profile-gender"></span>
+                    </div>
+                </div>
                 <div class="stats" id="user-stats">
-                    <h1>My Stats</h1>
+                    <h1>Stats</h1>
                     <div class="stat-item">
                         <p>Number of posts created:</p>
                         <span id="user-posts"></span>
@@ -78,10 +104,11 @@ export function initProfilePage(app) {
         </div>
     `;
 
-    fetchUserStats();
+    fetchUserProfile(userID);
+    fetchUserStats(userID);
     fetchAllUserStats();
     fetchLeaderboard();
-    fetchUserActivity(); // Fetch user activity
+    fetchUserActivity(userID); // Fetch user activity
 
     // Add event listeners for tab buttons
     const tabLinks = document.querySelectorAll(".tablinks");
@@ -93,6 +120,25 @@ export function initProfilePage(app) {
 
     // Open the first tab by default
     document.querySelector(".tablinks").click();
+}
+
+async function fetchUserProfile(userID) {
+    try {
+        const response = await fetch(`/user-profile?user_id=${userID}`);
+        if (response.ok) {
+            const profile = await response.json();
+            const user = profile.user;
+            document.getElementById("profile-first-name").textContent = user.firstName;
+            document.getElementById("profile-last-name").textContent = user.lastName;
+            document.getElementById("profile-age").textContent = user.age;
+            document.getElementById("profile-nickname").textContent = user.nickname;
+            document.getElementById("profile-gender").textContent = user.gender;
+        } else {
+            console.error("Failed to fetch user profile");
+        }
+    } catch (error) {
+        console.error("Error fetching user profile:", error);
+    }
 }
 
 function openTab(event, tabName) {

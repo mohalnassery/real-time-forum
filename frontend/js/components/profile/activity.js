@@ -1,10 +1,11 @@
-export async function fetchUserActivity() {
+export async function fetchUserActivity(userID) {
     try {
-        const response = await fetch("/user-activity");
+        const response = await fetch(`/user-profile?user_id=${userID}`);
         if (!response.ok) {
             throw new Error("Failed to fetch user activity");
         }
-        const activity = await response.json();
+        const data = await response.json();
+        const activity = data.activity;
         console.log(activity); // Log the response to check the structure
 
         // Normalize the creationDate field and ensure properties are initialized
@@ -22,15 +23,15 @@ export async function fetchUserActivity() {
         }));
         activity.comments = (activity.comments || []).map(comment => ({
             ...comment,
-            creationDate: new Date(comment.creationdate)
+            creationDate: new Date(comment.creationDate)
         }));
         activity.likedComments = (activity.likedComments || []).map(comment => ({
             ...comment,
-            creationDate: new Date(comment.creationdate)
+            creationDate: new Date(comment.creationDate)
         }));
         activity.dislikedComments = (activity.dislikedComments || []).map(comment => ({
             ...comment,
-            creationDate: new Date(comment.creationdate)
+            creationDate: new Date(comment.creationDate)
         }));
 
         displayUserActivity(activity);
@@ -71,7 +72,7 @@ export function displayUserActivity(activity) {
             postElement.innerHTML = `
                 <h3><a href="/#post/${post.postID}">${post.title}</a></h3>
                 <p>${post.body}</p>
-                <small>Created on: ${post.creationDate.toLocaleString()}</small>`;
+                <small>Created on: ${post.creationDate instanceof Date && !isNaN(post.creationDate) ? post.creationDate.toLocaleString() : 'Invalid Date'}</small>`;
             createdPostsSection.appendChild(postElement);
         });
     }
@@ -84,7 +85,7 @@ export function displayUserActivity(activity) {
             postElement.innerHTML = `
                 <h3><a href="/#post/${post.postID}">${post.title}</a></h3>
                 <p>${post.body}</p>
-                <small>Created on: ${post.creationDate.toLocaleString()}</small>`;
+                <small>Created on: ${post.creationDate instanceof Date && !isNaN(post.creationDate) ? post.creationDate.toLocaleString() : 'Invalid Date'}</small>`;
             likedPostsSection.appendChild(postElement);
         });
     }
@@ -97,7 +98,7 @@ export function displayUserActivity(activity) {
             postElement.innerHTML = `
                 <h3><a href="/#post/${post.postID}">${post.title}</a></h3>
                 <p>${post.body}</p>
-                <small>Created on: ${post.creationDate.toLocaleString()}</small>`;
+                <small>Created on: ${post.creationDate instanceof Date && !isNaN(post.creationDate) ? post.creationDate.toLocaleString() : 'Invalid Date'}</small>`;
             dislikedPostsSection.appendChild(postElement);
         });
     }
@@ -111,7 +112,7 @@ export function displayUserActivity(activity) {
             commentElement.innerHTML = `
                 <h3>Comment on: <a href="/#post/${comment.postID}">${postTitle}</a></h3>
                 <p>${comment.body}</p>
-                <small>Created on: ${comment.creationDate.toLocaleString()}</small>`;
+                <small>Created on: ${comment.creationDate instanceof Date && !isNaN(comment.creationDate) ? comment.creationDate.toLocaleString() : 'Invalid Date'}</small>`;
             createdCommentsSection.appendChild(commentElement);
         });
     }
@@ -125,7 +126,7 @@ export function displayUserActivity(activity) {
             commentElement.innerHTML = `
                 <h3>Liked Comment on: <a href="/#post/${comment.postID}">${postTitle}</a></h3>
                 <p>${comment.body}</p>
-                <small>Created on: ${comment.creationDate.toLocaleString()}</small>`;
+                <small>Created on: ${comment.creationDate instanceof Date && !isNaN(comment.creationDate) ? comment.creationDate.toLocaleString() : 'Invalid Date'}</small>`;
             likedCommentsSection.appendChild(commentElement);
         });
     }
@@ -139,7 +140,7 @@ export function displayUserActivity(activity) {
             commentElement.innerHTML = `
                 <h3>Disliked Comment on: <a href="/#post/${comment.postID}">${postTitle}</a></h3>
                 <p>${comment.body}</p>
-                <small>Created on: ${comment.creationDate.toLocaleString()}</small>`;
+                <small>Created on: ${comment.creationDate instanceof Date && !isNaN(comment.creationDate) ? comment.creationDate.toLocaleString() : 'Invalid Date'}</small>`;
             dislikedCommentsSection.appendChild(commentElement);
         });
     }

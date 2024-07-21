@@ -2,22 +2,22 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"real-time-forum/database"
 	"real-time-forum/models"
+	"strconv"
 )
 
 func GetUserStats(w http.ResponseWriter, r *http.Request) {
-	user, err := GetSessionUser(r)
-	if err != nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+	userIDStr := r.URL.Query().Get("user_id")
+	if userIDStr == "" {
+		http.Error(w, "User ID is required", http.StatusBadRequest)
 		return
 	}
 
-	userId, err := database.GetUserID(user.Nickname)
+	userId, err := strconv.Atoi(userIDStr)
 	if err != nil {
-		http.Error(w, "Failed to retrieve user ID", http.StatusInternalServerError)
+		http.Error(w, "Invalid User ID", http.StatusBadRequest)
 		return
 	}
 
@@ -38,16 +38,15 @@ func GetUserStats(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Count user's likes
-	err = database.DB.QueryRow(`SELECT (SELECT COUNT(*) FROM "like-posts" WHERE user_id = ?)+(SELECT COUNT(*) FROM "like-comments" WHERE user_id = ?) AS SumCount`, userId, userId).Scan(&stats.Likes)
+	// Count user's likes on posts
+	err = database.DB.QueryRow(`SELECT COUNT(*) FROM "like-posts" WHERE user_id = ?`, userId).Scan(&stats.Likes)
 	if err != nil {
-		fmt.Println("df")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// Count user's dislikes
-	err = database.DB.QueryRow(`SELECT (SELECT COUNT(*) FROM "dislike-posts" WHERE user_id = ?)+(SELECT COUNT(*) FROM "dislike-comments" WHERE user_id = ?) AS SumCount`, userId, userId).Scan(&stats.Dislikes)
+	// Count user's dislikes on posts
+	err = database.DB.QueryRow(`SELECT COUNT(*) FROM "dislike-posts" WHERE user_id = ?`, userId).Scan(&stats.Dislikes)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

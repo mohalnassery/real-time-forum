@@ -73,8 +73,9 @@ export function initContent(app) {
     `;
 
     // Fetch initial data
+    const userID = localStorage.getItem("userId");
     fetchPosts();
-    fetchUserStats();
+    fetchUserStats(userID);
     fetchAllUserStats();
     fetchLeaderboard();
     createCategoryElements();

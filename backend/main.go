@@ -93,7 +93,6 @@ func main() {
 	r.Handle("/auth/is-logged-in", helper.LimitMiddleware(authLimiter, http.HandlerFunc(handlers.IsLoggedIn)))
 	r.Handle("/auth/logout", helper.LimitMiddleware(authLimiter, http.HandlerFunc(handlers.Logout)))
 	r.Handle("/user-stats", helper.LimitMiddleware(generalLimiter, http.HandlerFunc(handlers.GetUserStats)))
-	r.Handle("/user-activity", helper.LimitMiddleware(generalLimiter, http.HandlerFunc(handlers.GetUserActivity)))
 
 	// General statistics and leaderboard
 	r.Handle("/all-stats", helper.LimitMiddleware(generalLimiter, http.HandlerFunc(handlers.GetAllStats)))
@@ -106,6 +105,9 @@ func main() {
 
 	// New endpoint for fetching users
 	r.Handle("/users", helper.LimitMiddleware(generalLimiter, http.HandlerFunc(handlers.GetUsersHandler)))
+
+	// New endpoint for fetching user profile and activity
+	r.Handle("/user-profile", helper.LimitMiddleware(generalLimiter, http.HandlerFunc(handlers.GetUserProfile)))
 
 	// Serving static files
 	r.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("../frontend/js"))))
