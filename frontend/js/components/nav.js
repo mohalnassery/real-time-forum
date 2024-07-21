@@ -15,6 +15,7 @@ export function createNavBar(navbar) {
                 </label>
                 <div class="notification-icon" hidden>
                     <i class="fa-solid fa-bell"></i>
+                    <div class="notification-counter" id="notification-counter" hidden></div>
                     <div class="notification-dropdown">
                         <div class="mark-all-read">
                         </div>
@@ -49,6 +50,7 @@ export function createNavBar(navbar) {
     document.getElementsByClassName("mark-all-read")[0].addEventListener("click", async () => {
         await markAllNotificationsAsRead();
         notificationDropdown.innerHTML = "";
+        updateNotificationCounter(0); // Reset counter
     });
 
     // Add event listener to toggle dropdown visibility and fetch notifications
@@ -127,6 +129,7 @@ export async function updateNavMenu() {
                 localStorage.setItem("nickname", data.nickname);
                 localStorage.setItem("sessionID", data.sessionID);
                 localStorage.setItem("userId", data.userId); // Ensure userId is set
+                await fetchAndDisplayNotifications(); // Fetch notifications on login
             } else {
                 document.getElementById("toggle-login").hidden = false;
                 document.getElementById("toggle-signup").hidden = false;
@@ -173,3 +176,13 @@ export async function updateNavMenu() {
 document.addEventListener("DOMContentLoaded", () => {
     updateNavMenu();
 });
+
+export function updateNotificationCounter(count) {
+    const counterElement = document.getElementById("notification-counter");
+    if (count > 0) {
+        counterElement.textContent = count > 99 ? "99+" : count;
+        counterElement.hidden = false;
+    } else {
+        counterElement.hidden = true;
+    }
+}

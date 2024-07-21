@@ -1,8 +1,13 @@
+import { updateNotificationCounter } from './nav.js';
+
 async function fetchNotifications() {
   try {
     const response = await fetch("/notifications");
     if (response.ok) {
-      const notifications = await response.json();
+      const data = await response.json();
+      const notifications = data.notifications;
+      const unreadCount = data.unreadCount;
+      updateNotificationCounter(unreadCount); // Update the counter
       return notifications; // Return notifications
     } else {
       console.error("Error fetching notifications:", response.status);

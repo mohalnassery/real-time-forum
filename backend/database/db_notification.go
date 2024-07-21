@@ -7,6 +7,15 @@ func InsertNotification(userID int, message string, postID int) error {
 	return err
 }
 
+func GetUnreadNotificationCount(userID int) (int, error) {
+	var count int
+	err := DB.QueryRow("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = 0", userID).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
 func GetNotifications(userID int) ([]models.Notification, error) {
 	rows, err := DB.Query("SELECT id, message, created_at, is_read FROM notifications WHERE user_id = ? ORDER BY created_at DESC", userID)
 	if err != nil {

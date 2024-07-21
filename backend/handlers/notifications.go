@@ -50,8 +50,19 @@ func GetNotifications(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	unreadCount, err := database.GetUnreadNotificationCount(userID)
+	if err != nil {
+		http.Error(w, "Failed to retrieve unread notification count", http.StatusInternalServerError)
+		return
+	}
+
+	response := map[string]interface{}{
+		"notifications": notifications,
+		"unreadCount":   unreadCount,
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(notifications)
+	json.NewEncoder(w).Encode(response)
 }
 
 func ClearNotification(w http.ResponseWriter, r *http.Request) {
