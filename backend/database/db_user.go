@@ -96,7 +96,7 @@ func GetUserByNickname(db *sql.DB, nickname string) (interface{}, error) {
 }
 
 func GetUsers() ([]models.User, error) {
-	rows, err := DB.Query("SELECT id, nickname FROM users")
+	rows, err := DB.Query("SELECT id, nickname FROM users ORDER BY nickname")
 	if err != nil {
 		return nil, err
 	}

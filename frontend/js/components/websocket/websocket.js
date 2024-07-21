@@ -65,7 +65,40 @@ function displayMessage(message) {
     if (chatBox) {
         const messageElement = document.createElement('div');
         messageElement.className = 'message';
-        messageElement.textContent = `${message.senderNickname}: ${message.content}`;
+
+        // Create the profile picture element
+        const profilePicture = document.createElement('div');
+        profilePicture.className = 'profile-picture';
+        profilePicture.textContent = message.senderNickname.charAt(0).toUpperCase();
+
+        // Create the message content container
+        const messageContentContainer = document.createElement('div');
+        messageContentContainer.className = 'message-content-container';
+
+        // Create the message header element
+        const messageHeader = document.createElement('div');
+        messageHeader.className = 'message-header';
+        
+        // Format the date
+        const date = new Date(message.createdAt);
+        const formattedDate = date.toLocaleString();
+
+        // Set the message header content with sender's name and date
+        messageHeader.innerHTML = `<strong>${message.senderNickname}</strong> <em>${formattedDate}</em>`;
+
+        // Create the message content element
+        const messageContent = document.createElement('div');
+        messageContent.className = 'message-content';
+        messageContent.textContent = message.content;
+
+        // Append the header and content to the message content container
+        messageContentContainer.appendChild(messageHeader);
+        messageContentContainer.appendChild(messageContent);
+
+        // Append the profile picture and content container to the message element
+        messageElement.appendChild(profilePicture);
+        messageElement.appendChild(messageContentContainer);
+
         chatBox.querySelector('.messages').appendChild(messageElement);
     }
 }
@@ -139,6 +172,7 @@ async function openChatBox(user) {
                 senderNickname: localStorage.getItem('nickname'), // Ensure this is set correctly
                 receiverId: user.id,
                 content: input.value,
+                timestamp: new Date().toISOString() // Add timestamp
             };
             sendMessage(message);
             input.value = ''; // Clear the input field after sending the message
@@ -153,6 +187,7 @@ async function openChatBox(user) {
                     senderNickname: localStorage.getItem('nickname'), // Ensure this is set correctly
                     receiverId: user.id,
                     content: input.value,
+                    timestamp: new Date().toISOString() // Add timestamp
                 };
                 sendMessage(message);
                 input.value = ''; // Clear the input field after sending the message
