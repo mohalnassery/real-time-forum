@@ -57,7 +57,6 @@ export async function createPost(event) {
   const maxSize = 20 * 1024 * 1024; // 20 MB
 
   if (file.name) {
-    console.log(file.name);
     if (!allowedTypes.includes(file.type)) {
       alert("Only JPEG, PNG, and GIF file types are allowed.");
       return;

@@ -24,7 +24,6 @@ export function initWebSocket() {
 
 export function handleWebSocketMessage(message) {
     // Handle the message (e.g., update the UI)
-    console.log("Handling WebSocket message:", message);
     displayMessage(message);
 }
 
@@ -47,17 +46,21 @@ export async function getUsers() {
 }
 
 export async function getMessages(senderId, receiverId) {
-    const response = await fetch(`/messages?sender_id=${senderId}&receiver_id=${receiverId}`);
-    if (response.ok) {
-        return await response.json();
-    } else {
-        console.error("Failed to fetch messages");
+    try {
+        const response = await fetch(`/messages?sender_id=${senderId}&receiver_id=${receiverId}`);
+        if (response.ok) {
+            return await response.json();
+        } else {
+            console.error("Failed to fetch messages");
+            return [];
+        }
+    } catch (error) {
+        console.error("Error fetching messages:", error);
         return [];
     }
 }
 
 function displayMessage(message) {
-    console.log("Displaying message:", message);
     const chatBox = document.querySelector(`.chat-box[data-user-id="${message.receiverId}"]`) || document.querySelector(`.chat-box[data-user-id="${message.senderId}"]`);
     if (chatBox) {
         const messageElement = document.createElement('div');
@@ -159,7 +162,9 @@ async function openChatBox(user) {
         // Fetch and display previous messages
         const senderId = parseInt(localStorage.getItem('userId'));
         const previousMessages = await getMessages(senderId, user.id);
-        previousMessages.forEach(displayMessage);
+        if (Array.isArray(previousMessages) && previousMessages.length > 0) {
+            previousMessages.forEach(displayMessage);
+        }
     }
     chatBox.classList.add('show');
 }

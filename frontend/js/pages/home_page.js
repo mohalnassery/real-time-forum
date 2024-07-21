@@ -3,7 +3,6 @@ import { fetchUserStats, fetchAllUserStats, fetchLeaderboard } from '../componen
 import { createFilterListeners } from '../components/home/filtering.js';
 
 export function initContent(app) {
-    console.log("initContent");
     app.innerHTML = `
         <div class="main-container">
             <div class="left-section">

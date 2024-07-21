@@ -2,7 +2,6 @@ import { fetchPost, enableInteractions, disableInteractions, likePost, dislikePo
 import { loadCSS } from '../components/utils.js';
 
 export async function initPostDetails(app, postId) {
-  console.log("initPostDetails");
   app.innerHTML = `
   <div class="main-section">
     <div class="post-container">
@@ -82,22 +81,24 @@ export async function initPostDetails(app, postId) {
 }
 
 function addEventListeners(postId) {
-  document.getElementById("like-btn").addEventListener("click", () => likePost(postId));
-  document.getElementById("dislike-btn").addEventListener("click", () => dislikePost(postId));
-  document.getElementById("submit-comment").addEventListener("click", submitComment);
+  const likeButton = document.getElementById("like-btn");
+  const dislikeButton = document.getElementById("dislike-btn");
+  const submitCommentBtn = document.getElementById("submit-comment");
 
-  document.getElementById("comment-section").addEventListener("click", (e) => {
-    if (e.target.classList.contains("fa-trash")) {
-      const commentId = e.target.dataset.commentId;
-      deleteComment(commentId);
-    } else if (e.target.classList.contains("fa-thumbs-up")) {
-      const commentId = e.target.dataset.commentId;
-      likeComment(commentId);
-    } else if (e.target.classList.contains("fa-thumbs-down")) {
-      const commentId = e.target.dataset.commentId;
-      dislikeComment(commentId);
-    }
-  });
+  // Ensure event listeners are not added multiple times
+  if (!likeButton.hasAttribute("data-listener")) {
+    likeButton.addEventListener("click", () => likePost(postId));
+    likeButton.setAttribute("data-listener", "true");
+  }
+  if (!dislikeButton.hasAttribute("data-listener")) {
+    dislikeButton.addEventListener("click", () => dislikePost(postId));
+    dislikeButton.setAttribute("data-listener", "true");
+  }
+  if (!submitCommentBtn.hasAttribute("data-listener")) {
+    submitCommentBtn.addEventListener("click", submitComment);
+    submitCommentBtn.setAttribute("data-listener", "true");
+  }
+
 
   const deletePostButton = document.querySelector("#post-actions .fa-trash");
   if (deletePostButton) {

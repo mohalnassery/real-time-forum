@@ -1,4 +1,4 @@
-import { fetchNotifications, clearNotification, markAllNotificationsAsRead } from './notifications.js';
+import { fetchAndDisplayNotifications, clearNotification, markAllNotificationsAsRead } from './notifications.js';
 import { logout } from './auth/auth_handling.js';
 import { createUserSidebar, sendMessage } from './websocket/websocket.js'; // Import the new function
 
@@ -56,18 +56,7 @@ export function createNavBar(navbar) {
         event.stopPropagation();
         notificationDropdown.classList.toggle("show");
         if (notificationDropdown.classList.contains("show")) {
-            const notifications = await fetchNotifications();
-            notificationDropdown.innerHTML = "";
-            notifications.forEach((notification) => {
-                const item = document.createElement("div");
-                item.className = "notification-item";
-                item.textContent = notification.message;
-                item.addEventListener("click", async () => {
-                    await clearNotification(notification.id);
-                    item.remove();
-                });
-                notificationDropdown.appendChild(item);
-            });
+            await fetchAndDisplayNotifications();
         }
     });
 

@@ -1,4 +1,4 @@
-import { fetchPostDetailsFromServer, displayPostDetails, displayComments } from './PostDetails.js';
+import { fetchPostDetailsFromServer, displayPostDetails, displayComments, fetchPostDetails } from './PostDetails.js';
 
 const maxCharacters = 500;
 
@@ -27,9 +27,20 @@ export function enableInteractions() {
   dislikeButton.classList.remove("disabled-button");
   commentInput.removeAttribute("disabled");
 
-  submitCommentBtn.addEventListener("click", submitComment);
-  likeButton.addEventListener("click", likePost);
-  dislikeButton.addEventListener("click", dislikePost);
+  // Ensure event listeners are not added multiple times
+  if (!submitCommentBtn.hasAttribute("data-listener")) {
+    submitCommentBtn.addEventListener("click", submitComment);
+    submitCommentBtn.setAttribute("data-listener", "true");
+  }
+  if (!likeButton.hasAttribute("data-listener")) {
+    likeButton.addEventListener("click", likePost);
+    likeButton.setAttribute("data-listener", "true");
+  }
+  if (!dislikeButton.hasAttribute("data-listener")) {
+    dislikeButton.addEventListener("click", dislikePost);
+    dislikeButton.setAttribute("data-listener", "true");
+  }
+
   const charCount = document.getElementById("char-count");
 
   commentInput.addEventListener("input", function () {
@@ -57,34 +68,49 @@ export function disableInteractions() {
   dislikeButton.classList.remove("disliked");
 }
 
+async function handleRequestWithButtonState(button, requestFunction) {
+  button.disabled = true;
+  try {
+    await requestFunction();
+  } finally {
+    button.disabled = false;
+  }
+}
+
 export async function likePost() {
   const postId = getPostIdFromURL();
-  try {
-    const response = await fetch(`/posts/${postId}/like`, { method: "POST" });
-    if (response.ok) {
-      fetchPostDetailsFromServer(postId);
-    } else {
-      const errorMessage = await response.text();
-      console.error("Error liking post:", errorMessage);
+  const likeButton = document.getElementById("like-btn");
+  await handleRequestWithButtonState(likeButton, async () => {
+    try {
+      const response = await fetch(`/posts/${postId}/like`, { method: "POST" });
+      if (response.ok) {
+        await fetchPostDetails(postId); // Re-fetch post details
+      } else {
+        const errorMessage = await response.text();
+        console.error("Error liking post:", errorMessage);
+      }
+    } catch (error) {
+      console.error("Error liking post:", error);
     }
-  } catch (error) {
-    console.error("Error liking post:", error);
-  }
+  });
 }
 
 export async function dislikePost() {
   const postId = getPostIdFromURL();
-  try {
-    const response = await fetch(`/posts/${postId}/dislike`, { method: "POST" });
-    if (response.ok) {
-      fetchPostDetailsFromServer(postId);
-    } else {
-      const errorMessage = await response.text();
-      console.error("Error disliking post:", errorMessage);
+  const dislikeButton = document.getElementById("dislike-btn");
+  await handleRequestWithButtonState(dislikeButton, async () => {
+    try {
+      const response = await fetch(`/posts/${postId}/dislike`, { method: "POST" });
+      if (response.ok) {
+        await fetchPostDetails(postId); // Re-fetch post details
+      } else {
+        const errorMessage = await response.text();
+        console.error("Error disliking post:", errorMessage);
+      }
+    } catch (error) {
+      console.error("Error disliking post:", error);
     }
-  } catch (error) {
-    console.error("Error disliking post:", error);
-  }
+  });
 }
 
 export async function deletePost() {
@@ -177,7 +203,7 @@ export async function likeComment(commentId) {
   try {
     const response = await fetch(`/comments/${commentId}/like`, { method: "POST" });
     if (response.ok) {
-      fetchPostDetailsFromServer(getPostIdFromURL());
+      await fetchPostDetails(getPostIdFromURL()); // Re-fetch post details
     } else {
       const errorMessage = await response.text();
       console.error("Error liking comment:", errorMessage);
@@ -197,7 +223,7 @@ export async function dislikeComment(commentId) {
   try {
     const response = await fetch(`/comments/${commentId}/dislike`, { method: "POST" });
     if (response.ok) {
-      fetchPostDetailsFromServer(getPostIdFromURL());
+      await fetchPostDetails(getPostIdFromURL()); // Re-fetch post details
     } else {
       const errorMessage = await response.text();
       console.error("Error disliking comment:", errorMessage);
@@ -211,7 +237,7 @@ export async function deleteComment(commentId) {
   try {
     const response = await fetch(`/comments/${commentId}`, { method: "DELETE" });
     if (response.ok) {
-      fetchPostDetailsFromServer(getPostIdFromURL());
+      await fetchPostDetails(getPostIdFromURL()); // Re-fetch post details
     } else {
       const errorMessage = await response.text();
       console.error("Error deleting comment:", errorMessage);
@@ -230,7 +256,7 @@ export function enableCommentEdit() {
   });
 }
 
-function editComment(commentId, commentElement) {
+export function editComment(commentId, commentElement) {
   const commentActions = commentElement.parentElement.querySelector('.comment-actions');
   const editButton = commentActions.querySelector('.fa-edit, .fa-times');
   const existingSaveButton = commentActions.querySelector('.save-comment-btn');
@@ -296,7 +322,7 @@ export async function submitComment() {
 
     if (response.ok) {
       commentInput.textContent = "";
-      fetchPostDetailsFromServer(postId);
+      await fetchPostDetails(postId); // Re-fetch post details
     } else {
       const errorMessage = await response.text();
       document.getElementById("error").textContent = `Error submitting comment: ${errorMessage}`;
@@ -310,6 +336,5 @@ export async function submitComment() {
 export function getPostIdFromURL() {
   const hash = window.location.hash;
   const postId = hash.split("/")[1];
-  console.log("Extracted postId from URL:", postId);
   return postId;
 }

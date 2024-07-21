@@ -3,14 +3,14 @@ async function fetchNotifications() {
     const response = await fetch("/notifications");
     if (response.ok) {
       const notifications = await response.json();
-      displayNotifications(notifications);
+      return notifications; // Return notifications
     } else {
       console.error("Error fetching notifications:", response.status);
-      displayNotifications([]); // Display "NO NEW NOTIFICATION" if there's an error
+      return []; // Return empty array
     }
   } catch (error) {
     console.error("Error fetching notifications:", error);
-    displayNotifications([]); // Display "NO NEW NOTIFICATION" if there's an error
+    return []; // Return empty array
   }
 }
 
@@ -18,15 +18,20 @@ function displayNotifications(notifications) {
   const notificationDropdown = document.querySelector(".notification-dropdown");
   notificationDropdown.innerHTML = ""; // Clear existing notifications
 
+  // Ensure notifications is an array
+  if (!Array.isArray(notifications)) {
+    notifications = [];
+  }
+
   // Filter out read notifications
   const unreadNotifications = notifications.filter(notification => !notification.is_read);
 
   if (unreadNotifications.length > 0) {
-    unreadNotifications.forEach((notification) => {
+    unreadNotifications.forEach((unreadNotification) => {
       const notificationItem = document.createElement("div");
       notificationItem.className = "notification-item";
-      notificationItem.textContent = notification.message;
-      notificationItem.addEventListener("click", () => clearNotification(notification.id));
+      notificationItem.textContent = unreadNotification.message;
+      notificationItem.addEventListener("click", () => clearNotification(unreadNotification.id));
       notificationDropdown.appendChild(notificationItem);
     });
 
@@ -53,7 +58,7 @@ async function clearNotification(notificationId) {
       const data = await response.json();
       const postID = data.postID;
       if (postID) {
-        window.location.href = `/post-details/${postID}`; // Redirect to the post details page
+        window.location.href = `/#post/${postID}`; // Redirect to the new URL format
       } else {
         console.error("Post ID not found in the response");
       }
@@ -65,14 +70,13 @@ async function clearNotification(notificationId) {
   }
 }
 
-
 async function markAllNotificationsAsRead() {
   try {
     const response = await fetch("/notifications/mark-all-read", {
       method: "POST",
     });
     if (response.ok) {
-      fetchNotifications(); // Refresh notifications
+      fetchAndDisplayNotifications(); // Refresh notifications
     } else {
       console.error("Error marking all notifications as read:", response.status);
     }
@@ -81,5 +85,10 @@ async function markAllNotificationsAsRead() {
   }
 }
 
+async function fetchAndDisplayNotifications() {
+  const notifications = await fetchNotifications();
+  displayNotifications(notifications);
+}
+
 // Export functions to be used in other files
-export { fetchNotifications, clearNotification, markAllNotificationsAsRead };
+export { fetchAndDisplayNotifications, clearNotification, markAllNotificationsAsRead };

@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const navbar = document.getElementById("navbar");
     const mainContent = document.getElementById("main-content");
 
-    console.log("DOMContentLoaded");
 
     // Create and append the navigation bar
     createNavBar(navbar);
@@ -48,7 +47,6 @@ async function handleNavigation() {
     if (isNavigating) return;
     isNavigating = true;
 
-    console.log("handleNavigation");
 
     const mainContent = document.getElementById("main-content");
     const hash = window.location.hash;

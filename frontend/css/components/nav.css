@@ -222,3 +222,57 @@ input:checked + .slider:after {
   cursor: pointer;
   color: var(--text-color);
 }
+
+.notification-icon {
+  position: relative;
+  cursor: pointer;
+}
+
+.notification-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background-color: var(--card-background-color);
+  box-shadow: var(--card-shadow);
+  width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 1000;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  border-radius: var(--border-radius);
+  padding: 10px 0;
+}
+
+.notification-dropdown.show {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.notification-item {
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--input-border);
+  cursor: pointer;
+}
+
+.notification-item:hover {
+  background-color: var(--input-background);
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.mark-all-read {
+  padding: 10px 20px;
+  text-align: center;
+  cursor: pointer;
+  background-color: var(--input-background);
+}
+
+.mark-all-read:hover {
+  background-color: var(--input-border);
+}

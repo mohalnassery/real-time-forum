@@ -1,7 +1,6 @@
 import { handleRegister, handleLogin } from '../components/auth/loginRegister.js';
 
 export function initAuth(parentElement, showLogin = true) {
-    console.log("initAuth");
     const authContainer = document.createElement("div");
     authContainer.id = "auth";
     authContainer.className = "auth-container";

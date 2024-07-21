@@ -1,8 +1,7 @@
-import { enableInteractions,likeComment,likePost,dislikeComment,dislikePost,deletePost,editPost,deleteComment } from "./interactions.js";
+import { enableInteractions, likeComment, likePost, dislikeComment, dislikePost, deletePost, editPost, deleteComment, editComment } from "./interactions.js";
 
 export async function fetchPostDetailsFromServer(postId) {
   try {
-    console.log("fetchPostDetailsFromServer");
     const response = await fetch(`/posts/${postId}`, {
       method: 'GET',
       headers: {
@@ -24,7 +23,6 @@ export async function fetchPostDetailsFromServer(postId) {
 }
 
 export function displayPostDetails(post) {
-  console.log("displayPostDetails");
   document.getElementById("post-author-avatar").textContent = post.author
     .charAt(0)
     .toUpperCase();
@@ -223,4 +221,3 @@ export async function fetchPostDetails(postId) {
     throw error;
   }
 }
-
