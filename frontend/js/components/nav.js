@@ -41,7 +41,7 @@ export function createNavBar(navbar) {
 
     // Add event listener to nickname element to redirect to activity page
     document.getElementById("nickname").addEventListener("click", () => {
-        window.location.href = "/activity.html";
+        window.location.href = "/#profile";
     });
 
     // Add "Mark all as read" button

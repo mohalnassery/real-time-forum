@@ -1,0 +1,197 @@
+body {
+    font-family: "Poppins", sans-serif !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background-color: var(--background-color) !important;
+    color: var(--text-color) !important;
+  }
+  
+  a {
+    text-decoration: none !important;
+    color: var(--text-color) !important;
+  }
+  
+  .header {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 10px 30px !important;
+    background-color: var(--card-background-color) !important;
+    box-shadow: 4px 0 5px 0 rgba(0, 0, 0, 0.3) !important;
+    z-index: 999 !important;
+  }
+  
+  .user-auth {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+  
+  .link-buttons {
+    padding: 10px 25px !important;
+    border-radius: 15px !important;
+  }
+  
+  .main-container {
+    display: flex !important;
+    justify-content: space-between !important;
+  }
+  
+  .left-section {
+    flex: 0 0 300px !important;
+    display: flex !important;
+    gap: 20px !important;
+    flex-direction: column !important;
+  }
+  
+  .stats {
+    background-color: var(--card-background-color) !important;
+    padding: 20px !important;
+    border-radius: var(--border-radius) !important;
+    box-shadow: var(--card-shadow) !important;
+  }
+  
+  .stats h1 {
+    margin: 10px 0 25px 0 !important;
+    font-size: 20px !important;
+  }
+  
+  .stats p {
+    margin: 0 0 10px 0 !important;
+    font-size: 14px !important;
+  }
+  
+  .middle-section {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+    padding-left: 2vw !important;
+    padding-right: 2vw !important;
+  }
+  
+  .right-section {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 15px !important;
+  }
+  
+  .leaderboard {
+    background-color: var(--card-background-color) !important;
+    height: auto !important;
+    padding: 10px 20px !important;
+    width: 16vw !important;
+    border-radius: var(--border-radius) !important;
+    box-shadow: var(--card-shadow) !important;
+  }
+  
+  .leaderboard h1 {
+    padding: 0 !important;
+    margin: 0 !important;
+    font-size: 25px !important;
+  }
+  
+  .user-profile {
+    display: flex !important;
+    justify-content: space-between !important;
+  }
+  
+  .user-data {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    justify-content: space-between !important;
+  }
+  
+  .avatar {
+    border-radius: 50% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    background-color: grey !important;
+    width: 30px !important;
+    height: 30px !important;
+  }
+  
+  .stat-item {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 10px !important;
+    margin-right: 20px !important;
+  }
+  
+  .stat-item p {
+    margin: 0 !important;
+    margin-right: 0px !important;
+  }
+  
+  @media screen and (max-width: 768px) {
+    .main-container .left-section,
+    .main-container .right-section {
+      display: none !important;
+    }
+  }
+  
+  /* Tab styles */
+  .tab {
+    overflow: hidden !important;
+    border: 1px solid var(--tab-border-color) !important;
+    background-color: var(--card-background-color) !important;
+    margin-top: 20px !important;
+  }
+  
+  .tab button {
+    background-color: inherit !important;
+    float: left !important;
+    border: none !important;
+    outline: none !important;
+    cursor: pointer !important;
+    padding: 14px 16px !important;
+    transition: 0.3s !important;
+    color: var(--text-color) !important;
+  }
+  
+  .tab button:hover {
+    background-color: var(--secondary-color) !important;
+  }
+  
+  .tab button.active {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+  }
+  
+  .tabcontent {
+    display: none !important;
+    padding: 6px 12px !important;
+    border: 1px solid var(--tab-border-color) !important;
+    border-top: none !important;
+  }
+  
+  .tabcontent.active {
+    display: block !important;
+    color: var(--text-color) !important;
+  }
+  
+  /* Activity item styles */
+  .activity-item {
+    background-color: var(--card-background-color) !important;
+    padding: 10px !important;
+    margin-bottom: 10px !important;
+    border-radius: var(--border-radius) !important;
+    box-shadow: var(--card-shadow) !important;
+  }
+  
+  .activity-item h3 {
+    margin: 0 0 10px 0 !important;
+    font-size: 18px !important;
+  }
+  
+  .activity-item p {
+    margin: 0 !important;
+    font-size: 14px !important;
+  }

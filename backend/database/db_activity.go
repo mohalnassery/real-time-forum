@@ -9,7 +9,7 @@ func GetUserActivity(userID int) (models.UserActivity, error) {
 	var activity models.UserActivity
 
 	// Retrieve user-created posts
-	rows, err := DB.Query("SELECT post_id, title, body FROM posts WHERE author = ?", userID)
+	rows, err := DB.Query("SELECT post_id, title, body, creation_date FROM posts WHERE author = ?", userID)
 	if err != nil {
 		return activity, err
 	}
@@ -17,7 +17,7 @@ func GetUserActivity(userID int) (models.UserActivity, error) {
 
 	for rows.Next() {
 		var post models.Post
-		err := rows.Scan(&post.PostID, &post.Title, &post.Body)
+		err := rows.Scan(&post.PostID, &post.Title, &post.Body, &post.CreationDate)
 		if err != nil {
 			return activity, err
 		}
@@ -26,7 +26,7 @@ func GetUserActivity(userID int) (models.UserActivity, error) {
 
 	// Retrieve posts where the user left a like or dislike
 	rows, err = DB.Query(`
-		SELECT p.post_id, p.title, p.body, l.liked
+		SELECT p.post_id, p.title, p.body, p.creation_date, l.liked
 		FROM posts p
 		JOIN "like-posts" l ON p.post_id = l.postID
 		WHERE l.user_id = ?`, userID)
@@ -38,7 +38,7 @@ func GetUserActivity(userID int) (models.UserActivity, error) {
 	for rows.Next() {
 		var post models.Post
 		var liked sql.NullBool
-		err := rows.Scan(&post.PostID, &post.Title, &post.Body, &liked)
+		err := rows.Scan(&post.PostID, &post.Title, &post.Body, &post.CreationDate, &liked)
 		if err != nil {
 			return activity, err
 		}
@@ -51,7 +51,7 @@ func GetUserActivity(userID int) (models.UserActivity, error) {
 
 	// Retrieve comments made by the user, along with the corresponding post information
 	rows, err = DB.Query(`
-		SELECT c.id, c.body, p.post_id, p.title, p.body
+		SELECT c.id, c.body, c.creation_date, p.post_id, p.title, p.body, p.creation_date
 		FROM comments c
 		JOIN posts p ON c.post_id = p.post_id
 		WHERE c.author = ?`, userID)
@@ -63,7 +63,7 @@ func GetUserActivity(userID int) (models.UserActivity, error) {
 	for rows.Next() {
 		var comment models.CommentHome
 		var post models.Post
-		err := rows.Scan(&comment.ID, &comment.Body, &post.PostID, &post.Title, &post.Body)
+		err := rows.Scan(&comment.ID, &comment.Body, &comment.CreationDate, &post.PostID, &post.Title, &post.Body, &post.CreationDate)
 		if err != nil {
 			return activity, err
 		}
@@ -74,7 +74,7 @@ func GetUserActivity(userID int) (models.UserActivity, error) {
 
 	// Retrieve comments liked by the user
 	rows, err = DB.Query(`
-		SELECT c.id, c.body, p.post_id, p.title, p.body
+		SELECT c.id, c.body, c.creation_date, p.post_id, p.title, p.body, p.creation_date
 		FROM comments c
 		JOIN posts p ON c.post_id = p.post_id
 		JOIN "like-comments" lc ON c.id = lc.comment_id
@@ -87,7 +87,7 @@ func GetUserActivity(userID int) (models.UserActivity, error) {
 	for rows.Next() {
 		var comment models.CommentHome
 		var post models.Post
-		err := rows.Scan(&comment.ID, &comment.Body, &post.PostID, &post.Title, &post.Body)
+		err := rows.Scan(&comment.ID, &comment.Body, &comment.CreationDate, &post.PostID, &post.Title, &post.Body, &post.CreationDate)
 		if err != nil {
 			return activity, err
 		}
@@ -98,7 +98,7 @@ func GetUserActivity(userID int) (models.UserActivity, error) {
 
 	// Retrieve comments disliked by the user
 	rows, err = DB.Query(`
-		SELECT c.id, c.body, p.post_id, p.title, p.body
+		SELECT c.id, c.body, c.creation_date, p.post_id, p.title, p.body, p.creation_date
 		FROM comments c
 		JOIN posts p ON c.post_id = p.post_id
 		JOIN "dislike-comments" dc ON c.id = dc.comment_id
@@ -111,7 +111,7 @@ func GetUserActivity(userID int) (models.UserActivity, error) {
 	for rows.Next() {
 		var comment models.CommentHome
 		var post models.Post
-		err := rows.Scan(&comment.ID, &comment.Body, &post.PostID, &post.Title, &post.Body)
+		err := rows.Scan(&comment.ID, &comment.Body, &comment.CreationDate, &post.PostID, &post.Title, &post.Body, &post.CreationDate)
 		if err != nil {
 			return activity, err
 		}

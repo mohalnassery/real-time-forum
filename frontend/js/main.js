@@ -5,6 +5,7 @@ import { initPostDetails } from './pages/postDetails_page.js';
 import { initCreatePost } from './pages/createPost_page.js';
 import { loadCSS } from './components/utils.js';
 import { initWebSocket } from './components/websocket/websocket.js';
+import { initProfilePage } from './pages/profile_page.js'; // Import the profile page initialization function
 
 document.addEventListener("DOMContentLoaded", async () => {
     const navbar = document.getElementById("navbar");
@@ -67,6 +68,9 @@ async function handleNavigation() {
         } else if (hash === "#create-post") {
             await initCreatePost(mainContent);
             loadCSS('./css/pages/create-post.css');
+        } else if (hash === "#profile") { // Add condition for profile page
+            await initProfilePage(mainContent);
+            loadCSS('./css/pages/profile.css');
         } else {
             await initContent(mainContent);
             loadCSS('./css/pages/home.css');
