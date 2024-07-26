@@ -83,7 +83,7 @@ func CreateAllTables(db *sql.DB) error {
 			email TEXT NOT NULL,
 			password TEXT,
 			auth_type TEXT NOT NULL,
-			age INTEGER,
+			dob DATE,
 			gender TEXT,
 			first_name TEXT,
 			last_name TEXT
@@ -199,12 +199,12 @@ func SeedCategories(db *sql.DB) error {
 func SeedFakeData(db *sql.DB) error {
 	// Create sample users
 	users := []models.UserRegisteration{
-		{Nickname: "johndoe", Email: "johndoe@example.com", Password: "johndoe", AuthType: "local", Age: 25, Gender: "Male", FirstName: "John", LastName: "Doe"},
-		{Nickname: "janedoe", Email: "janedoe@example.com", Password: "janedoe", AuthType: "local", Age: 28, Gender: "Female", FirstName: "Jane", LastName: "Doe"},
-		{Nickname: "bobsmith", Email: "bobsmith@example.com", Password: "bobsmith", AuthType: "local", Age: 30, Gender: "Male", FirstName: "Bob", LastName: "Smith"},
-		{Nickname: "alicejones", Email: "alicejones@example.com", Password: "alicejones", AuthType: "local", Age: 25, Gender: "Female", FirstName: "Alice", LastName: "Jones"},
-		{Nickname: "mikebrown", Email: "mikebrown@example.com", Password: "mikebrown", AuthType: "local", Age: 35, Gender: "Male", FirstName: "Mike", LastName: "Brown"},
-		{Nickname: "example1234", Email: "example1234@example.com", Password: "example1234", AuthType: "local", Age: 25, Gender: "Male", FirstName: "Example", LastName: "1234"},
+		{Nickname: "johndoe", Email: "johndoe@example.com", Password: "johndoe", AuthType: "local", DOB: "1990-01-01", Gender: "Male", FirstName: "John", LastName: "Doe"},
+		{Nickname: "janedoe", Email: "janedoe@example.com", Password: "janedoe", AuthType: "local", DOB: "1992-02-02", Gender: "Female", FirstName: "Jane", LastName: "Doe"},
+		{Nickname: "bobsmith", Email: "bobsmith@example.com", Password: "bobsmith", AuthType: "local", DOB: "1988-03-03", Gender: "Male", FirstName: "Bob", LastName: "Smith"},
+		{Nickname: "alicejones", Email: "alicejones@example.com", Password: "alicejones", AuthType: "local", DOB: "1995-04-04", Gender: "Female", FirstName: "Alice", LastName: "Jones"},
+		{Nickname: "mikebrown", Email: "mikebrown@example.com", Password: "mikebrown", AuthType: "local", DOB: "1985-05-05", Gender: "Male", FirstName: "Mike", LastName: "Brown"},
+		{Nickname: "example1234", Email: "example1234@example.com", Password: "example1234", AuthType: "local", DOB: "1990-06-06", Gender: "Male", FirstName: "Example", LastName: "1234"},
 	}
 
 	for _, user := range users {
@@ -212,7 +212,7 @@ func SeedFakeData(db *sql.DB) error {
 		if err != nil {
 			return err
 		}
-		_, err = db.Exec("INSERT INTO users (nickname, email, password, auth_type, age, gender, first_name, last_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", user.Nickname, user.Email, string(hashedPassword), user.AuthType, user.Age, user.Gender, user.FirstName, user.LastName)
+		_, err = db.Exec("INSERT INTO users (nickname, email, password, auth_type, dob, gender, first_name, last_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", user.Nickname, user.Email, string(hashedPassword), user.AuthType, user.DOB, user.Gender, user.FirstName, user.LastName)
 		if err != nil {
 			return err
 		}

@@ -128,9 +128,10 @@ async function fetchUserProfile(userID) {
         if (response.ok) {
             const profile = await response.json();
             const user = profile.user;
-            document.getElementById("profile-first-name").textContent = user.firstName;
-            document.getElementById("profile-last-name").textContent = user.lastName;
-            document.getElementById("profile-age").textContent = user.age;
+            const age = calculateAge(new Date(user.dob)); // Calculate age from dob
+            document.getElementById("profile-first-name").textContent = user.first_name;
+            document.getElementById("profile-last-name").textContent = user.last_name;
+            document.getElementById("profile-age").textContent = age;
             document.getElementById("profile-nickname").textContent = user.nickname;
             document.getElementById("profile-gender").textContent = user.gender;
         } else {
@@ -139,6 +140,12 @@ async function fetchUserProfile(userID) {
     } catch (error) {
         console.error("Error fetching user profile:", error);
     }
+}
+
+function calculateAge(dob) {
+    const diff = Date.now() - dob.getTime();
+    const ageDate = new Date(diff);
+    return Math.abs(ageDate.getUTCFullYear() - 1970);
 }
 
 function openTab(event, tabName) {

@@ -52,7 +52,7 @@ h1 {
 }
 
 .form-input {
-    width: 100%;
+    width: -webkit-fill-available;
     padding-left: 40px;
     border: none;
     border-bottom: 1px solid var(--primary-color);
@@ -81,6 +81,7 @@ form button {
     color: white;
     cursor: pointer;
     transition: background-color 0.3s;
+    grid-column: span 2;
 }
 
 form button:hover {
@@ -113,3 +114,27 @@ form button:hover {
     color: var(--text-color);
     text-decoration: none;
 }
+
+option {
+    color: var(--text-color);
+    background-color: var(--card-background-color);
+}
+
+.register-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+
+
+
+}
+
+
+#switch-to-signup, #switch-to-login {
+    color: var(--primary-color);
+    font-size: 14px;
+    width: fit-content;
+    margin-top: 10px;
+}
+
+

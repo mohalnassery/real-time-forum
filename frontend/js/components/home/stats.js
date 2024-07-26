@@ -71,6 +71,7 @@ export async function fetchLeaderboard() {
             leaderboardContainer.innerHTML = ""; // Clear existing content
 
             leaderboard.forEach((user) => {
+                
                 const userProfile = document.createElement("div");
                 userProfile.className = "user-profile";
 
@@ -99,3 +100,4 @@ export async function fetchLeaderboard() {
         console.log(error.message);
     }
 }
+
