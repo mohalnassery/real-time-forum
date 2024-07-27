@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"real-time-forum/models"
+	"strconv"
 
 	"github.com/gorilla/websocket"
 )
@@ -35,12 +36,17 @@ func (h *Hub) Run() {
 				close(client.send)
 			}
 		case message := <-h.broadcast:
-			for client := range h.clients {
-				select {
-				case client.send <- message:
-				default:
-					close(client.send)
-					delete(h.clients, client)
+			switch message.Type {
+			case "chat":
+				for client := range h.clients {
+					if client.id == message.SenderID || client.id == message.ReceiverID {
+						select {
+						case client.send <- message:
+						default:
+							close(client.send)
+							delete(h.clients, client)
+						}
+					}
 				}
 			}
 		}
@@ -54,14 +60,18 @@ var upgrader = websocket.Upgrader{
 }
 
 func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
+	clientId, err := strconv.Atoi(r.URL.Query().Get("clientId"))
+	if err != nil {
+		log.Println(err)
+		return
+	}
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	client := &Client{hub: hub, conn: conn, send: make(chan models.Message, 256)}
+	client := &Client{hub: hub, conn: conn, send: make(chan models.Message, 256), id: clientId}
 	client.hub.register <- client
-
 	go client.writePump()
 	go client.readPump()
 }

@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
 
     if (isLoggedIn) {
-        initWebSocket();
+        initWebSocket(localStorage.getItem("userId"));
     }
 
     // Handle navigation

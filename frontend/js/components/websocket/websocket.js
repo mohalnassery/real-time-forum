@@ -1,8 +1,8 @@
 let socket;
 let throttler = false;
 
-export function initWebSocket() {
-    socket = new WebSocket("ws://localhost:8080/ws");
+export function initWebSocket(id) {
+    socket = new WebSocket(`ws://localhost:8080/ws?clientId=${id}`);
 
     socket.onopen = function(event) {
         console.log("WebSocket is open now.");
@@ -25,7 +25,12 @@ export function initWebSocket() {
 
 export function handleWebSocketMessage(message) {
     // Handle the message (e.g., update the UI)
-    displayMessage(message);
+    
+    if (message.type === "chat") {
+        displayMessage(message,false);
+        const messageWindow = document.querySelector('.messages')
+        messageWindow.scrollTo(0, messageWindow.scrollHeight)
+    }
 }
 
 export function sendMessage(message) {
@@ -61,7 +66,7 @@ export async function getMessages(senderId, receiverId) {
     }
 }
 
-function displayMessage(message) {
+function displayMessage(message, start=true) {
     const chatBox = document.querySelector(`.chat-box[data-user-id="${message.receiverId}"]`) || document.querySelector(`.chat-box[data-user-id="${message.senderId}"]`);
     if (chatBox) {
         const messageElement = document.createElement('div');
@@ -102,8 +107,11 @@ function displayMessage(message) {
 
         //chatBox.querySelector('.messages').appendChild(messageElement);
         const messageWindow = chatBox.querySelector('.messages')
-
-        messageWindow.insertBefore(messageElement, messageWindow.firstChild)
+        if (start) {
+            messageWindow.insertBefore(messageElement, messageWindow.firstChild)
+        } else {
+            messageWindow.appendChild(messageElement)
+        }
     }
 }
 
@@ -179,7 +187,7 @@ async function openChatBox(user) {
                 receiverId: user.id,
                 content: input.value,
                 timestamp: new Date().toISOString(), // Add timestamp
-                type: "message"
+                type: "chat"
             };
             sendMessage(message);
             input.value = ''; // Clear the input field after sending the message
@@ -195,7 +203,7 @@ async function openChatBox(user) {
                     receiverId: user.id,
                     content: input.value,
                     timestamp: new Date().toISOString(), // Add timestamp
-                    type: "message"
+                    type: "chat"
                 };
                 sendMessage(message);
                 input.value = ''; // Clear the input field after sending the message
@@ -212,7 +220,7 @@ async function openChatBox(user) {
             const remainingMessages = Math.max(messageCount-10,0)
             messageWindow.dataset.remainingMessages = remainingMessages;
             for (let i=messageCount-1; i>=remainingMessages;i--) {
-                displayMessage(previousMessages[i])
+                displayMessage(previousMessages[i],true)
             }
             messageWindow.scrollTo(0, messageWindow.scrollHeight)
         }
@@ -228,7 +236,7 @@ async function openChatBox(user) {
                 const newRemainingMessages = Math.max(remainingMessages-10,0);
                 messageWindow.dataset.remainingMessages = newRemainingMessages;
                 for (let i=remainingMessages-1; i>=newRemainingMessages;i--) {
-                    displayMessage(previousMessages[i])
+                    displayMessage(previousMessages[i], true)
                 }
                 
                 messageWindow.scrollTo(0, messageWindow.scrollHeight - prevScrollHeight)

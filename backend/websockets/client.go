@@ -2,6 +2,7 @@ package websockets
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"real-time-forum/database"
 	"real-time-forum/models"
@@ -21,9 +22,11 @@ type Client struct {
 	hub  *Hub
 	conn *websocket.Conn
 	send chan models.Message
+	id   int
 }
 
 func (c *Client) readPump() {
+	fmt.Println("readpump")
 	defer func() {
 		c.hub.unregister <- c
 		c.conn.Close()
@@ -69,6 +72,7 @@ func (c *Client) readPump() {
 }
 
 func (c *Client) writePump() {
+	fmt.Println("writepump")
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
