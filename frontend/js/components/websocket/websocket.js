@@ -1,4 +1,5 @@
 let socket;
+let throttler = false;
 
 export function initWebSocket() {
     socket = new WebSocket("ws://localhost:8080/ws");
@@ -99,7 +100,10 @@ function displayMessage(message) {
         messageElement.appendChild(profilePicture);
         messageElement.appendChild(messageContentContainer);
 
-        chatBox.querySelector('.messages').appendChild(messageElement);
+        //chatBox.querySelector('.messages').appendChild(messageElement);
+        const messageWindow = chatBox.querySelector('.messages')
+
+        messageWindow.insertBefore(messageElement, messageWindow.firstChild)
     }
 }
 
@@ -174,7 +178,8 @@ async function openChatBox(user) {
                 senderNickname: localStorage.getItem('nickname'), // Ensure this is set correctly
                 receiverId: user.id,
                 content: input.value,
-                timestamp: new Date().toISOString() // Add timestamp
+                timestamp: new Date().toISOString(), // Add timestamp
+                type: "message"
             };
             sendMessage(message);
             input.value = ''; // Clear the input field after sending the message
@@ -189,19 +194,52 @@ async function openChatBox(user) {
                     senderNickname: localStorage.getItem('nickname'), // Ensure this is set correctly
                     receiverId: user.id,
                     content: input.value,
-                    timestamp: new Date().toISOString() // Add timestamp
+                    timestamp: new Date().toISOString(), // Add timestamp
+                    type: "message"
                 };
                 sendMessage(message);
                 input.value = ''; // Clear the input field after sending the message
             }
         });
+        
+        const messageWindow = chatBox.querySelector('.messages')
 
         // Fetch and display previous messages
         const senderId = parseInt(localStorage.getItem('userId'));
         const previousMessages = await getMessages(senderId, user.id);
         if (Array.isArray(previousMessages) && previousMessages.length > 0) {
-            previousMessages.forEach(displayMessage);
+            const messageCount = previousMessages.length
+            const remainingMessages = Math.max(messageCount-10,0)
+            messageWindow.dataset.remainingMessages = remainingMessages;
+            for (let i=messageCount-1; i>=remainingMessages;i--) {
+                displayMessage(previousMessages[i])
+            }
+            messageWindow.scrollTo(0, messageWindow.scrollHeight)
         }
+
+        // scroll event listener
+        messageWindow.addEventListener('scrollend', () => {
+            let remainingMessages = messageWindow.dataset.remainingMessages;
+            if (messageWindow.scrollTop <= 5 && remainingMessages > 0 && !throttler) {
+                throttler = true;
+
+                
+                const prevScrollHeight = messageWindow.scrollHeight
+                const newRemainingMessages = Math.max(remainingMessages-10,0);
+                messageWindow.dataset.remainingMessages = newRemainingMessages;
+                for (let i=remainingMessages-1; i>=newRemainingMessages;i--) {
+                    displayMessage(previousMessages[i])
+                }
+                
+                messageWindow.scrollTo(0, messageWindow.scrollHeight - prevScrollHeight)
+
+                setTimeout(() => {
+                    throttler = false
+                },1000)
+            }
+        });
+
+
     }
     chatBox.classList.add('show');
 }
