@@ -9,4 +9,5 @@ type Message struct {
 	ReceiverID     int       `json:"receiverId"`
 	Content        string    `json:"content"`
 	CreatedAt      time.Time `json:"createdAt"`
+	Type           string    `json:"type"`
 }

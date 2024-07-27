@@ -45,10 +45,19 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	user.Password = string(hashedPassword)
 
+	user.AuthType = "local"
+
 	// Call CreateUser method to save the user in the database
 	err = database.CreateUser(database.DB, user)
 	if err != nil {
 		http.Error(w, "Failed to insert into database", http.StatusInternalServerError)
+		return
+	}
+
+
+	user.UserId, err = database.GetUserID(user.Nickname)
+	if err != nil {
+		http.Error(w, "Failed to get User ID", http.StatusInternalServerError)
 		return
 	}
 

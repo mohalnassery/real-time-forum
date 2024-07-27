@@ -30,6 +30,10 @@ export function initAuth(parentElement, showLogin = true) {
                     <input type="password" class="form-input" id="register_password" placeholder="Password" required>
                 </div>
                 <div class="input-container">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" class="form-input" id="register_confirm_password" placeholder="Confirm Password" required>
+                </div>
+                <div class="input-container">
                     <i class="fas fa-calendar"></i>
                     <input type="number" class="form-input" id="register_age" placeholder="Age" required>
                 </div>

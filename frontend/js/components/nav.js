@@ -174,10 +174,6 @@ export async function updateNavMenu() {
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    updateNavMenu();
-});
-
 export function updateNotificationCounter(count) {
     const counterElement = document.getElementById("notification-counter");
     if (count > 0) {

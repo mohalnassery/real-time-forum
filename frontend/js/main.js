@@ -9,7 +9,6 @@ import { initProfilePage } from './pages/profile_page.js'; // Import the profile
 
 document.addEventListener("DOMContentLoaded", async () => {
     const navbar = document.getElementById("navbar");
-    const mainContent = document.getElementById("main-content");
 
 
     // Create and append the navigation bar
@@ -25,15 +24,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Check if user is logged in
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
 
-    if (!isLoggedIn) {
-        // Initialize authentication (login/register)
-        initAuth(mainContent);
-        loadCSS('./css/pages/login-register.css');
-    } else {
-        // Initialize content for logged-in users
-        initContent(mainContent);
-        loadCSS('./css/pages/home.css');
-        // Initialize WebSocket connection
+    if (isLoggedIn) {
         initWebSocket();
     }
 
@@ -66,19 +57,19 @@ async function handleNavigation() {
             await initPostDetails(mainContent, postId);
             loadCSS('./css/pages/post-details.css');
         } else if (hash === "#create-post") {
-            await initCreatePost(mainContent);
+            initCreatePost(mainContent);
             loadCSS('./css/pages/create-post.css');
         } else if (hash.startsWith("#profile")) { // Adjust condition for profile page
             const urlParams = new URLSearchParams(hash.split('?')[1]);
             const userID = urlParams.get('user_id');
             if (userID) {
-                await initProfilePage(mainContent, userID);
+                initProfilePage(mainContent, userID);
                 loadCSS('./css/pages/profile.css');
             } else {
                 console.error("User ID is missing in the URL");
             }
         } else {
-            await initContent(mainContent);
+            initContent(mainContent);
             loadCSS('./css/pages/home.css');
         }
     } catch (error) {

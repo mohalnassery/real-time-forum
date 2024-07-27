@@ -18,9 +18,7 @@ export async function fetchUserStats(userID) {
             document.querySelectorAll("#user-dislikes").forEach((element) => {
                 element.textContent = stats.dislikes;
             });
-
-            // Display user activity
-            displayUserActivity(activity);
+            
         } else {
             console.error("Error fetching user stats:", response.status);
         }
