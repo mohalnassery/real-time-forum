@@ -132,13 +132,15 @@ async function fetchUsers() {
     userList.innerHTML = '';
 
     users.forEach(user => {
-        const userItem = document.createElement('div');
-        userItem.className = 'user-item';
-        userItem.textContent = user.nickname;
-        userItem.addEventListener('click', () => {
-            openChatBox(user);
-        });
-        userList.appendChild(userItem);
+        if (user.nickname != localStorage.getItem("nickname")) {
+            const userItem = document.createElement('div');
+            userItem.className = 'user-item';
+            userItem.textContent = user.nickname;
+            userItem.addEventListener('click', () => {
+                openChatBox(user);
+            });
+            userList.appendChild(userItem);
+        }
     });
 }
 
