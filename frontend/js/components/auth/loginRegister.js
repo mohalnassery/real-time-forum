@@ -35,10 +35,10 @@ export async function handleRegister(event) {
     const email = document.getElementById("register_email").value;
     const password = document.getElementById("register_password").value;
     const confirmPassword = document.getElementById("register_confirm_password").value;
-    const age = parseInt(document.getElementById("register_age").value, 10);
+    const dob = document.getElementById("register_dob").value;
     const gender = document.getElementById("register_gender").value;
-    const firstName = document.getElementById("register_firstName").value;
-    const lastName = document.getElementById("register_lastName").value;
+    const first_name = document.getElementById("register_first_name").value;
+    const last_name = document.getElementById("register_last_name").value;
 
     if (password !== confirmPassword) {
         document.getElementById("register-error").innerText = "Passwords do not match.";
@@ -51,7 +51,7 @@ export async function handleRegister(event) {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ nickname, email, password, age, gender, firstName, lastName })
+            body: JSON.stringify({ nickname, email, password, dob, gender, first_name, last_name })
         });
 
         if (!res.ok) {
@@ -59,6 +59,10 @@ export async function handleRegister(event) {
             throw new Error(errorMessage);
         }
 
+        const data = await res.json(); // Get the response data
+        localStorage.setItem("userId", data.userId); // Set the userId in localStorage
+
+        await updateNavMenu();
         window.location.href = '/';
     } catch (error) {
         document.getElementById("register-error").innerText = error.message;

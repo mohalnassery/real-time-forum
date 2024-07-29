@@ -6,10 +6,10 @@ type UserRegisteration struct {
 	Email     string `json:"email"`
 	Password  string `json:"password"`
 	AuthType  string `json:"auth_type"`
-	Age       int    `json:"age"`
+	DOB       string `json:"dob"` // Change age to dob
 	Gender    string `json:"gender"`
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
 }
 
 type UserLogin struct {
@@ -30,11 +30,12 @@ type UserActivity struct {
 type User struct {
 	ID        int    `json:"id"`
 	Nickname  string `json:"nickname"`
-	Age       int    `json:"age"`
-	Gender    string `json:"gender"`
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
 	Email     string `json:"email"`
 	Password  string `json:"password"`
 	AuthType  string `json:"auth_type"`
+	DOB       string `json:"dob"` // Change age to dob
+	Gender    string `json:"gender"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Age       int    `json:"age"` // Add age field for profile display
 }

@@ -7,6 +7,7 @@ import (
 	"real-time-forum/models"
 	"regexp"
 	"strings"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -31,9 +32,46 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Adjust the layout to match the expected format without the time component
+	parsedDOB, err := time.Parse("2006-01-02", user.DOB)
+	if err != nil {
+		http.Error(w, "Failed to parse date of birth", http.StatusBadRequest)
+		return
+	}
+	age := time.Now().Year() - parsedDOB.Year()
+	if time.Now().YearDay() < parsedDOB.YearDay() {
+		age--
+	}
+
+	// if nickname is too long or too short
+	if len(user.Nickname) > 20 || len(user.Nickname) < 3 {
+		http.Error(w, "Nickname is too long or too short", http.StatusBadRequest)
+		return
+	}
+
+	// if nickname isn't alphanumeric
+	match, err = regexp.MatchString(`^[a-zA-Z0-9]+$`, user.Nickname)
+	if err != nil || !match {
+		http.Error(w, "Nickname is not alphanumeric", http.StatusBadRequest)
+		return
+	}
 	// Validate age
-	if user.Age <= 5 {
+	if age <= 5 {
 		http.Error(w, "Invalid age, you need to be 6 years old or greater", http.StatusBadRequest)
+		return
+	}
+
+	// check if the nickname is already taken
+	_, err = database.GetUserByNickname(database.DB, user.Nickname)
+	if err == nil {
+		http.Error(w, "Nickname already taken", http.StatusBadRequest)
+		return
+	}
+
+	// check if the email is already taken
+	_, err = database.GetUserByEmail(database.DB, user.Email)
+	if err == nil {
+		http.Error(w, "Email already taken", http.StatusBadRequest)
 		return
 	}
 
@@ -54,10 +92,10 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
-	user.UserId, err = database.GetUserID(user.Nickname)
+	// Retrieve the user ID
+	userId, err := database.GetUserID(user.Nickname)
 	if err != nil {
-		http.Error(w, "Failed to get User ID", http.StatusInternalServerError)
+		http.Error(w, "Failed to retrieve user ID", http.StatusInternalServerError)
 		return
 	}
 
@@ -68,9 +106,12 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Return a success response
+	// Return a success response with the user ID
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("User registered successfully"))
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"message": "User registered successfully",
+		"userId":  userId,
+	})
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -123,7 +164,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		Nickname: dbUser.Nickname,
 		Email:    dbUser.Email,
 		Password: dbUser.Password,
-		Age:      dbUser.Age,
+		DOB:      dbUser.DOB,
 		Gender:   dbUser.Gender,
 	}
 
@@ -138,6 +179,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Login successful"))
 }
+
 func IsLoggedIn(w http.ResponseWriter, r *http.Request) {
 	user, err := GetSessionUser(r)
 	if err != nil {
@@ -148,9 +190,15 @@ func IsLoggedIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userId, err := database.GetUserID(user.Nickname)
+	if err != nil {
+		http.Error(w, "Failed to retrieve user ID", http.StatusInternalServerError)
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"userId":    user.UserId,
+		"userId":    userId,
 		"status":    "logged_in",
 		"nickname":  user.Nickname,
 		"sessionID": UserSessions[user.Nickname],

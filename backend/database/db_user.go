@@ -16,7 +16,7 @@ func InsertUser(user *models.UserRegisteration) error {
 	}
 	hashedPassword := string(bytes)
 
-	_, err = DB.Exec("INSERT INTO users (nickname, email, password, auth_type) VALUES (?, ?, ?, ?)", user.Nickname, user.Email, hashedPassword, user.AuthType)
+	_, err = DB.Exec("INSERT INTO users (nickname, email, password, auth_type, dob, gender, first_name, last_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", user.Nickname, user.Email, hashedPassword, user.AuthType, user.DOB, user.Gender, user.FirstName, user.LastName)
 	if err != nil {
 		return err
 	}
@@ -73,7 +73,7 @@ func GetUsernameByID(userID int) (string, error) {
 }
 
 func CreateUser(db *sql.DB, user models.UserRegisteration) error {
-	_, err := db.Exec("INSERT INTO users (nickname, email, password, auth_type, age, gender, first_name, last_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", user.Nickname, user.Email, user.Password, user.AuthType, user.Age, user.Gender, user.FirstName, user.LastName)
+	_, err := db.Exec("INSERT INTO users (nickname, email, password, auth_type, dob, gender, first_name, last_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", user.Nickname, user.Email, user.Password, user.AuthType, user.DOB, user.Gender, user.FirstName, user.LastName)
 	return err
 }
 
@@ -115,6 +115,6 @@ func GetUsers() ([]models.User, error) {
 
 func GetUserProfile(userID int) (models.User, error) {
 	var user models.User
-	err := DB.QueryRow("SELECT first_name, last_name, age, nickname, gender FROM users WHERE id = ?", userID).Scan(&user.FirstName, &user.LastName, &user.Age, &user.Nickname, &user.Gender)
+	err := DB.QueryRow("SELECT first_name, last_name, dob, nickname, gender FROM users WHERE id = ?", userID).Scan(&user.FirstName, &user.LastName, &user.DOB, &user.Nickname, &user.Gender)
 	return user, err
 }

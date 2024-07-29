@@ -40,7 +40,16 @@ export function createNavBar(navbar) {
     });
 
     // Add event listener to nickname element to redirect to profile page
-    document.getElementById("nickname").addEventListener("click", () => {
+    document.getElementById("nickname").addEventListener("click", async () => {
+        // fetching and set user ID again
+        const response = await fetch("/auth/is-logged-in");
+        if (response.ok) {
+            const data = await response.json();
+            console.log("data", data);
+            localStorage.setItem("userId", data.userId);
+        } else {
+            console.error("Failed to fetch user ID:", response.status);
+        }
         const userID = localStorage.getItem("userId");
         window.location.href = `/#profile?user_id=${userID}`;
     });

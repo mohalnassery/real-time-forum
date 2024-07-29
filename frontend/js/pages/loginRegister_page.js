@@ -35,19 +35,23 @@ export function initAuth(parentElement, showLogin = true) {
                 </div>
                 <div class="input-container">
                     <i class="fas fa-calendar"></i>
-                    <input type="number" class="form-input" id="register_age" placeholder="Age" required>
+                    <input type="date" class="form-input" id="register_dob" placeholder="Date of Birth" required>
                 </div>
                 <div class="input-container">
                     <i class="fas fa-venus-mars"></i>
-                    <input type="text" class="form-input" id="register_gender" placeholder="Gender" required>
+                    <select class="form-input" id="register_gender" required>
+                        <option value="" disabled selected>Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
                 </div>
                 <div class="input-container">
                     <i class="fas fa-user"></i>
-                    <input type="text" class="form-input" id="register_firstName" placeholder="First Name" required>
+                    <input type="text" class="form-input" id="register_first_name" placeholder="First Name" required>
                 </div>
                 <div class="input-container">
                     <i class="fas fa-user"></i>
-                    <input type="text" class="form-input" id="register_lastName" placeholder="Last Name" required>
+                    <input type="text" class="form-input" id="register_last_name" placeholder="Last Name" required>
                 </div>
                 <div class="error-container" id="register-error"></div>
                 <button type="submit">Register</button>
