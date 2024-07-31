@@ -34,7 +34,7 @@ export function initAuth(parentElement, showLogin = true) {
                     <input type="password" class="form-input" id="register_confirm_password" placeholder="Confirm Password" required>
                 </div>
                 <div class="input-container">
-                    <i class="fas fa-calendar"></i>
+                    <i class="fas fa-cake-candles"></i>
                     <input type="date" class="form-input" id="register_dob" placeholder="Date of Birth" required>
                 </div>
                 <div class="input-container">
