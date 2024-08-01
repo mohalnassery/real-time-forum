@@ -11,7 +11,6 @@ import { initChatPage } from './pages/chat_page.js'; // Import the chat page ini
 document.addEventListener("DOMContentLoaded", async () => {
     const navbar = document.getElementById("navbar");
 
-
     // Create and append the navigation bar
     createNavBar(navbar);
 
@@ -39,7 +38,6 @@ let isNavigating = false;
 async function handleNavigation() {
     if (isNavigating) return;
     isNavigating = true;
-
 
     const mainContent = document.getElementById("main-content");
     const hash = window.location.hash;

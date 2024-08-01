@@ -1,6 +1,6 @@
 import { loadCSS } from '../components/utils.js';
-import { openChat, sendMessageHandler } from '../components/chat/chat.js';
-import { getUsers } from '../components/websocket/websocket.js';
+import { openChat, sendMessageHandler, populateUserList } from '../components/chat/chat.js';
+import { initWebSocket } from '../components/websocket/websocket.js';
 
 export async function initChatPage(mainContent) {
     mainContent.innerHTML = `
@@ -24,24 +24,14 @@ export async function initChatPage(mainContent) {
     `;
 
     loadCSS('./css/pages/chat.css');
-
-    const users = await getUsers();
-    const chatSidebar = document.getElementById('chat-sidebar');
-    users.forEach(user => {
-        if (user.lastMessageTime && user.lastMessageTime !== "0001-01-01T00:00:00Z") {
-            const userItem = document.createElement('div');
-            userItem.className = 'user-item';
-            const lastMessageTime = new Date(user.lastMessageTime).toLocaleString();
-            userItem.textContent = `${user.nickname} (${lastMessageTime})`;
-            userItem.addEventListener('click', () => openChat(user.id, user.nickname));
-            chatSidebar.appendChild(userItem);
-        }
-    });
-
-    document.getElementById('chat-send-button').addEventListener('click', sendMessageHandler);
+    await populateUserList('chat-sidebar');
+    document.getElementById('chat-send-button').addEventListener('click', () => sendMessageHandler());
     document.getElementById('chat-message-input').addEventListener('keypress', (event) => {
         if (event.key === 'Enter') {
             sendMessageHandler();
         }
     });
+
+    const userId = localStorage.getItem('userId');
+    // initWebSocket(userId);
 }

@@ -1,6 +1,6 @@
 import { fetchAndDisplayNotifications, clearNotification, markAllNotificationsAsRead } from './notifications.js';
 import { logout } from './auth/auth_handling.js';
-import { createUserSidebar, sendMessage } from './websocket/websocket.js'; // Import the new function
+import { createUserSidebar } from '../components/websocket/messages.js';
 
 export function createNavBar(navbar) {
     navbar.innerHTML = `
@@ -31,7 +31,7 @@ export function createNavBar(navbar) {
                 <div class="user-icon" id="user-icon" hidden>
                     <i class="fa-solid fa-users"></i>
                 </div>
-                <button class="link-buttons" id="chat-btn" hidden>Chat</button> <!-- Add this line -->
+                <button class="link-buttons" id="chat-btn" hidden>Chat</button>
             </div>
         </div>
     `;
@@ -39,6 +39,28 @@ export function createNavBar(navbar) {
     document.getElementById("logout-btn").addEventListener("click", async () => {
         await logout();
     });
+
+    document.getElementById("chat-btn").addEventListener("click", () => {
+        const chatBox = document.getElementById("chat-box");
+        if (chatBox) {
+            chatBox.hidden = !chatBox.hidden;
+        }
+    });
+
+    const chatSendButton = document.getElementById('chat-send-button');
+    const chatMessageInput = document.getElementById('chat-message-input');
+
+    if (chatSendButton) {
+        chatSendButton.addEventListener('click', () => sendMessageHandler('chat-messages'));
+    }
+
+    if (chatMessageInput) {
+        chatMessageInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                sendMessageHandler('chat-messages');
+            }
+        });
+    }
 
     // Add event listener to nickname element to redirect to profile page
     document.getElementById("nickname").addEventListener("click", async () => {
@@ -201,3 +223,4 @@ export function updateNotificationCounter(count) {
         counterElement.hidden = true;
     }
 }
+

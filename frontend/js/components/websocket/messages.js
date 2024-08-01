@@ -1,0 +1,189 @@
+import { getUsers,getMessages,sendMessage } from './websocket.js';
+
+
+
+// Function to create the user sidebar
+export function createUserSidebar() {
+    const sidebar = document.createElement('div');
+    sidebar.id = 'user-sidebar';
+    sidebar.className = 'sidebar';
+
+    const closeButton = document.createElement('button');
+    closeButton.className = 'close-button';
+    closeButton.textContent = 'X';
+    closeButton.addEventListener('click', () => {
+        sidebar.classList.remove('show');
+    });
+    sidebar.appendChild(closeButton);
+
+    const userList = document.createElement('div');
+    userList.id = 'user-list';
+    sidebar.appendChild(userList);
+
+    document.body.appendChild(sidebar);
+
+    fetchUsers();
+}
+
+async function fetchUsers() {
+    const users = await getUsers();
+    const userList = document.getElementById('user-list');
+    userList.innerHTML = '';
+
+    // Sort users by nickname
+    users.sort((a, b) => a.nickname.localeCompare(b.nickname));
+
+    users.forEach(user => {
+        if (user.nickname != localStorage.getItem("nickname")) {
+            const userItem = document.createElement('div');
+            userItem.className = 'user-item';
+            userItem.textContent = user.nickname;
+            userItem.addEventListener('click', () => {
+                openChatBox(user);
+            });
+            userList.appendChild(userItem);
+        }
+    });
+}
+
+
+export function displayMessage(message, start = true) {
+    const chatBox = document.querySelector(`.chat-box[data-user-id="${message.receiverId}"]`) || document.querySelector(`.chat-box[data-user-id="${message.senderId}"]`);
+    if (chatBox) {
+        const messageElement = document.createElement('div');
+        messageElement.className = 'message';
+
+        // Create the profile picture element
+        const profilePicture = document.createElement('div');
+        profilePicture.className = 'profile-picture';
+        profilePicture.textContent = message.senderNickname.charAt(0).toUpperCase();
+
+        // Create the message content container
+        const messageContentContainer = document.createElement('div');
+        messageContentContainer.className = 'message-content-container';
+
+        // Create the message header element
+        const messageHeader = document.createElement('div');
+        messageHeader.className = 'message-header';
+        
+        // Format the date
+        const date = new Date(message.createdAt);
+        const formattedDate = date.toLocaleString();
+
+        // Set the message header content with sender's name and date
+        messageHeader.innerHTML = `<strong>${message.senderNickname}</strong> <em>${formattedDate}</em>`;
+
+        // Create the message content element
+        const messageContent = document.createElement('div');
+        messageContent.className = 'message-content';
+        messageContent.textContent = message.content;
+
+        // Append the header and content to the message content container
+        messageContentContainer.appendChild(messageHeader);
+        messageContentContainer.appendChild(messageContent);
+
+        // Append the profile picture and content container to the message element
+        messageElement.appendChild(profilePicture);
+        messageElement.appendChild(messageContentContainer);
+
+        // Append the message element to the chat messages container
+        const messageWindow = chatBox.querySelector('.messages');
+        if (start) {
+            messageWindow.insertBefore(messageElement, messageWindow.firstChild);
+        } else {
+            messageWindow.appendChild(messageElement);
+        }
+    }
+}
+
+export async function openChatBox(user) {
+    let chatBox = document.querySelector(`.chat-box[data-user-id="${user.id}"]`);
+    if (!chatBox) {
+        chatBox = document.createElement('div');
+        chatBox.className = 'chat-box';
+        chatBox.dataset.userId = user.id;
+        chatBox.innerHTML = `
+            <div class="chat-header">
+                <span>Chat with ${user.nickname}</span>
+                <button class="close-chat">X</button>
+            </div>
+            <div class="messages"></div>
+            <div class="input">
+                <input type="text" placeholder="Type a message...">
+                <button class="send-message">Send</button>
+            </div>
+        `;
+        document.body.appendChild(chatBox);
+
+        chatBox.querySelector('.close-chat').addEventListener('click', () => {
+            chatBox.remove();
+        });
+
+        chatBox.querySelector('.send-message').addEventListener('click', () => {
+            const input = chatBox.querySelector('input');
+            const message = {
+                senderId: parseInt(localStorage.getItem('userId')),
+                senderNickname: localStorage.getItem('nickname'),
+                receiverId: user.id,
+                content: input.value,
+                createdAt: new Date().toISOString(), // Add timestamp
+                type: "chat"
+            };
+            sendMessage(message);
+            input.value = ''; // Clear the input field after sending the message
+        });
+
+        // Add event listener for Enter key press
+        chatBox.querySelector('input').addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                const input = chatBox.querySelector('input');
+                const message = {
+                    senderId: parseInt(localStorage.getItem('userId')),
+                    senderNickname: localStorage.getItem('nickname'),
+                    receiverId: user.id,
+                    content: input.value,
+                    createdAt: new Date().toISOString(), // Add timestamp
+                    type: "chat"
+                };
+                sendMessage(message);
+                input.value = ''; // Clear the input field after sending the message
+            }
+        });
+
+        const messageWindow = chatBox.querySelector('.messages');
+        const senderId = parseInt(localStorage.getItem('userId'));
+        const previousMessages = await getMessages(senderId, user.id);
+        if (Array.isArray(previousMessages) && previousMessages.length > 0) {
+            const messageCount = previousMessages.length;
+            const remainingMessages = Math.max(messageCount - 10, 0);
+            messageWindow.dataset.remainingMessages = remainingMessages;
+            for (let i = messageCount - 1; i >= remainingMessages; i--) {
+                displayMessage(previousMessages[i], true);
+            }
+            messageWindow.scrollTo(0, messageWindow.scrollHeight);
+        }
+
+        // Scroll event listener
+        messageWindow.addEventListener('scroll', () => {
+            let remainingMessages = messageWindow.dataset.remainingMessages;
+            if (messageWindow.scrollTop <= 5 && remainingMessages > 0 && !throttler) {
+                throttler = true;
+
+                const prevScrollHeight = messageWindow.scrollHeight;
+                const newRemainingMessages = Math.max(remainingMessages - 10, 0);
+                messageWindow.dataset.remainingMessages = newRemainingMessages;
+                for (let i = remainingMessages - 1; i >= newRemainingMessages; i--) {
+                    displayMessage(previousMessages[i], true);
+                }
+
+                messageWindow.scrollTo(0, messageWindow.scrollHeight - prevScrollHeight);
+
+                setTimeout(() => {
+                    throttler = false;
+                }, 1000);
+            }
+        });
+    }
+    chatBox.classList.add('show');
+}
+
