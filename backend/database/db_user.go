@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"real-time-forum/models"
 	"strings"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/crypto/bcrypt"
@@ -95,8 +96,15 @@ func GetUserByNickname(db *sql.DB, nickname string) (interface{}, error) {
 	return user, nil
 }
 
-func GetUsers() ([]models.User, error) {
-	rows, err := DB.Query("SELECT id, nickname FROM users ORDER BY nickname")
+func GetUsers(loggedInUserID int) ([]models.User, error) {
+	rows, err := DB.Query(`
+		SELECT u.id, u.nickname, MAX(m.created_at) as last_message_time
+		FROM users u
+		LEFT JOIN messages m ON (u.id = m.sender_id AND m.receiver_id = ?) OR (u.id = m.receiver_id AND m.sender_id = ?)
+		WHERE u.id != ?
+		GROUP BY u.id
+		ORDER BY last_message_time DESC
+	`, loggedInUserID, loggedInUserID, loggedInUserID)
 	if err != nil {
 		return nil, err
 	}
@@ -105,8 +113,15 @@ func GetUsers() ([]models.User, error) {
 	var users []models.User
 	for rows.Next() {
 		var user models.User
-		if err := rows.Scan(&user.ID, &user.Nickname); err != nil {
+		var lastMessageTime sql.NullString
+		if err := rows.Scan(&user.ID, &user.Nickname, &lastMessageTime); err != nil {
 			return nil, err
+		}
+		if lastMessageTime.Valid {
+			user.LastMessageTime, err = time.Parse("2006-01-02 15:04:05.999999999Z07:00", lastMessageTime.String)
+			if err != nil {
+				return nil, err
+			}
 		}
 		users = append(users, user)
 	}

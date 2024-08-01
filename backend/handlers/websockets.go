@@ -52,7 +52,16 @@ func SendMessageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUsersHandler(w http.ResponseWriter, r *http.Request) {
-	users, err := database.GetUsers()
+	// use GetSessionUser to get the logged in user ID
+	loggedInUser, err := GetSessionUser(r)
+	if err != nil {
+		http.Error(w, "Failed to retrieve logged in user ID", http.StatusInternalServerError)
+		return
+	}
+
+	loggedInUserID := loggedInUser.UserId
+
+	users, err := database.GetUsers(loggedInUserID)
 	if err != nil {
 		http.Error(w, "Failed to retrieve users", http.StatusInternalServerError)
 		return

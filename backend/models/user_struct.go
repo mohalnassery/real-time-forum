@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type UserRegisteration struct {
 	UserId    int    `json:"userId"`
 	Nickname  string `json:"nickname"`
@@ -28,14 +30,15 @@ type UserActivity struct {
 
 // User represents a user in the system
 type User struct {
-	ID        int    `json:"id"`
-	Nickname  string `json:"nickname"`
-	Email     string `json:"email"`
-	Password  string `json:"password"`
-	AuthType  string `json:"auth_type"`
-	DOB       string `json:"dob"` // Change age to dob
-	Gender    string `json:"gender"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Age       int    `json:"age"` // Add age field for profile display
+	ID              int       `json:"id"`
+	Nickname        string    `json:"nickname"`
+	Email           string    `json:"email"`
+	Password        string    `json:"password"`
+	AuthType        string    `json:"auth_type"`
+	DOB             string    `json:"dob"` // Change age to dob
+	Gender          string    `json:"gender"`
+	FirstName       string    `json:"first_name"`
+	LastName        string    `json:"last_name"`
+	Age             int       `json:"age"` // Add age field for profile display
+	LastMessageTime time.Time `json:"lastMessageTime,omitempty"`
 }

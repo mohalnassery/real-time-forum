@@ -5,7 +5,8 @@ import { initPostDetails } from './pages/postDetails_page.js';
 import { initCreatePost } from './pages/createPost_page.js';
 import { loadCSS } from './components/utils.js';
 import { initWebSocket } from './components/websocket/websocket.js';
-import { initProfilePage } from './pages/profile_page.js'; // Import the profile page initialization function
+import { initProfilePage } from './pages/profile_page.js';
+import { initChatPage } from './pages/chat_page.js'; // Import the chat page initialization function
 
 document.addEventListener("DOMContentLoaded", async () => {
     const navbar = document.getElementById("navbar");
@@ -68,6 +69,9 @@ async function handleNavigation() {
             } else {
                 console.error("User ID is missing in the URL");
             }
+        } else if (hash === "#chat") { // Add this condition for chat page
+            await initChatPage(mainContent);
+            loadCSS('./css/pages/chat.css');
         } else {
             initContent(mainContent);
             loadCSS('./css/pages/home.css');

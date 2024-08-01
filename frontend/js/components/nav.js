@@ -31,6 +31,7 @@ export function createNavBar(navbar) {
                 <div class="user-icon" id="user-icon" hidden>
                     <i class="fa-solid fa-users"></i>
                 </div>
+                <button class="link-buttons" id="chat-btn" hidden>Chat</button> <!-- Add this line -->
             </div>
         </div>
     `;
@@ -108,6 +109,11 @@ export function createNavBar(navbar) {
             sidebar.classList.remove("show");
         }
     });
+
+    // Add event listener to chat button to navigate to chat page
+    document.getElementById("chat-btn").addEventListener("click", () => {
+        window.location.hash = "#chat";
+    });
 }
 
 export function setNickname(newNickname) {
@@ -132,6 +138,7 @@ export async function updateNavMenu() {
                 document.getElementById("toggle-signup").hidden = true;
                 document.getElementById("logout-btn").hidden = false;
                 document.getElementById("logout-btn").disabled = false; // Enable logout button
+                document.getElementById("chat-btn").hidden = false; // Show chat button
                 document.querySelector(".notification-icon").hidden = false; // Show bell icon
                 document.getElementById("user-icon").hidden = false; // Show user icon
                 document.getElementById("nickname").textContent = data.nickname;
@@ -147,6 +154,7 @@ export async function updateNavMenu() {
                 document.getElementById("logout-btn").disabled = true; // Disable logout button
                 document.querySelector(".notification-icon").hidden = true; // Hide bell icon
                 document.getElementById("user-icon").hidden = true; // Hide user icon
+                document.getElementById("chat-btn").hidden = true; // Hide chat button
                 document.getElementById("nickname").textContent = "";
                 localStorage.removeItem("isLoggedIn");
                 localStorage.removeItem("nickname");
@@ -165,6 +173,7 @@ export async function updateNavMenu() {
             document.getElementById("logout-btn").disabled = true; // Disable logout button
             document.querySelector(".notification-icon").hidden = true; // Hide bell icon
             document.getElementById("user-icon").hidden = true; // Hide user icon
+            document.getElementById("chat-btn").hidden = true; // Hide chat button
             document.getElementById("nickname").textContent = "";
             localStorage.removeItem("isLoggedIn");
             localStorage.removeItem("nickname");

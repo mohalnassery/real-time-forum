@@ -27,7 +27,7 @@ export function handleWebSocketMessage(message) {
     // Handle the message (e.g., update the UI)
     
     if (message.type === "chat") {
-        displayMessage(message,false);
+        displayMessage(message, false);
         const messageWindow = document.querySelector('.messages')
         messageWindow.scrollTo(0, messageWindow.scrollHeight)
     }
@@ -42,7 +42,8 @@ export function sendMessage(message) {
 }
 
 export async function getUsers() {
-    const response = await fetch('/users');
+    const userId = localStorage.getItem('userId');
+    const response = await fetch(`/users?user_id=${userId}`);
     if (response.ok) {
         return await response.json();
     } else {
@@ -142,6 +143,9 @@ async function fetchUsers() {
     const users = await getUsers();
     const userList = document.getElementById('user-list');
     userList.innerHTML = '';
+
+    // Sort users by nickname
+    users.sort((a, b) => a.nickname.localeCompare(b.nickname));
 
     users.forEach(user => {
         if (user.nickname != localStorage.getItem("nickname")) {
