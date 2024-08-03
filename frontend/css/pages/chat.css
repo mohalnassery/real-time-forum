@@ -1,6 +1,6 @@
 .chat-container {
     display: flex;
-    height: calc(100vh - 100px); /* Adjust height to account for the top margin */
+    height: calc(100vh - 150px); /* Adjust height to account for the top margin */
     overflow: hidden; /* Prevents the entire container from scrolling */
     margin: 100px 0 0 0; /* Add 100px margin on top */
 }
@@ -41,6 +41,7 @@
     padding: 10px;
     overflow-y: auto; /* Makes the chat messages area scrollable */
     background-color: var(--background-color);
+    margin: 0; 
 }
 
 #chat-spacer {
@@ -52,6 +53,7 @@
     padding: 10px;
     border-top: 1px solid var(--input-border);
     flex-shrink: 0; /* Prevents the input area from shrinking */
+    margin: 0; 
 }
 
 #chat-message-input {

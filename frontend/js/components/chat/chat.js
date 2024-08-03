@@ -1,6 +1,7 @@
 import { getMessages, sendMessage, getUsers, sendTyping, sendStopTyping } from '../websocket/websocket.js';
 
 let throttler = false;
+let scrollListener = null;
 
 export async function openChat(userId, nickname) {
     const chatHeader = document.getElementById('chat-header');
@@ -9,6 +10,11 @@ export async function openChat(userId, nickname) {
 
     const chatMessages = document.getElementById('chat-messages');
     chatMessages.innerHTML = '';
+
+    // Remove existing scroll event listener if it exists
+    if (scrollListener) {
+        chatMessages.removeEventListener('scroll', scrollListener);
+    }
 
     const messages = await getMessages(localStorage.getItem('userId'), userId);
     // Sort messages by timestamp
@@ -22,11 +28,13 @@ export async function openChat(userId, nickname) {
         }
     }
 
-    // Add a spacer element to the top of the chat messages container
-    const spacer = document.createElement('div');
-    spacer.id = 'chat-spacer';
-    spacer.style.height = '300px'; // Adjust height as needed
-    chatMessages.insertBefore(spacer, chatMessages.firstChild);
+    // Add a spacer element to the top of the chat messages container if necessary
+    if (chatMessages.scrollHeight <= chatMessages.clientHeight) {
+        const spacer = document.createElement('div');
+        spacer.id = 'chat-spacer';
+        spacer.style.height = '300px'; // Adjust height as needed
+        chatMessages.insertBefore(spacer, chatMessages.firstChild);
+    }
 
     // Set the initial scroll position to the bottom
     chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -44,7 +52,7 @@ export async function openChat(userId, nickname) {
     });
 
     // Scroll event listener
-    chatMessages.addEventListener('scroll', async () => {
+    scrollListener = async () => {
         let remainingMessages = chatMessages.dataset.remainingMessages;
         if (chatMessages.scrollTop <= 5 && remainingMessages > 0 && !throttler) {
             throttler = true;
@@ -65,12 +73,17 @@ export async function openChat(userId, nickname) {
                 }
             }, 500);
         }
-    });
+    };
+
+    chatMessages.addEventListener('scroll', scrollListener);
 
     // Ensure there's always enough space to scroll
     if (chatMessages.scrollHeight <= chatMessages.clientHeight) {
         chatMessages.style.minHeight = '300px';
     }
+
+    // Reset throttler
+    throttler = false;
 }
 
 export function displayChatMessage(message, container, start = true) {
@@ -119,23 +132,23 @@ export function displayChatMessage(message, container, start = true) {
     } else {
         chatMessages.appendChild(messageElement);
     }
-    // Scroll to the bottom of the chat messages container
-    chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 export function sendMessageHandler() {
     const input = document.getElementById('chat-message-input');
-    const message = {
-        senderId: parseInt(localStorage.getItem('userId')),
-        senderNickname: localStorage.getItem('nickname'),
-        receiverId: parseInt(document.getElementById('chat-header').dataset.userId),
-        content: input.value,
-        createdAt: new Date().toISOString(), // Add timestamp
-        type: 'chat'
-    };
-    sendMessage(message);
-    input.value = '';
-    populateUserList('chat-sidebar');
+    if (input.value.trim() !== '') {
+        const message = {
+            senderId: parseInt(localStorage.getItem('userId')),
+            senderNickname: localStorage.getItem('nickname'),
+            receiverId: parseInt(document.getElementById('chat-header').dataset.userId),
+            content: input.value,
+            createdAt: new Date().toISOString(), // Add timestamp
+            type: 'chat'
+        };
+        sendMessage(message);
+        input.value = '';
+        populateUserList('chat-sidebar');
+    }
 }
 
 export async function populateUserList(chatSidebarId) {

@@ -136,7 +136,7 @@ export async function openChatBox(user) {
             </div>
             <div class="messages"></div>
             <div class="input">
-                <input type="text" placeholder="Type a message...">
+                <input type="text" placeholder="Type a message..." maxlength="500">
                 <button class="send-message">Send</button>
             </div>
         `;
@@ -158,22 +158,24 @@ export async function openChatBox(user) {
         });
 
         chatBox.querySelector('.send-message').addEventListener('click', () => {
-            const message = {
-                senderId: parseInt(localStorage.getItem('userId')),
-                senderNickname: localStorage.getItem('nickname'),
-                receiverId: user.id,
-                content: input.value,
-                createdAt: new Date().toISOString(), // Add timestamp
-                type: "chat"
-            };
-            sendMessage(message);
-            input.value = ''; // Clear the input field after sending the message
-            sendStopTyping(user.id);
+            if (input.value.trim() !== '' && input.value.length <= 500) {
+                const message = {
+                    senderId: parseInt(localStorage.getItem('userId')),
+                    senderNickname: localStorage.getItem('nickname'),
+                    receiverId: user.id,
+                    content: input.value,
+                    createdAt: new Date().toISOString(), // Add timestamp
+                    type: "chat"
+                };
+                sendMessage(message);
+                input.value = ''; // Clear the input field after sending the message
+                sendStopTyping(user.id);
+            }
         });
 
         // Add event listener for Enter key press
         input.addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') {
+            if (event.key === 'Enter' && input.value.trim() !== '' && input.value.length <= 500) {
                 const message = {
                     senderId: parseInt(localStorage.getItem('userId')),
                     senderNickname: localStorage.getItem('nickname'),

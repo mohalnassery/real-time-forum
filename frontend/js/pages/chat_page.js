@@ -17,7 +17,7 @@ export async function initChatPage(mainContent) {
                     <!-- Chat messages will be dynamically added here -->
                 </div>
                 <div class="chat-input" id="chat-input">
-                    <input type="text" id="chat-message-input" placeholder="Type a message...">
+                    <input type="text" id="chat-message-input" placeholder="Type a message..." maxlength="500">
                     <button id="chat-send-button">Send</button>
                 </div>
             </div>
@@ -26,9 +26,15 @@ export async function initChatPage(mainContent) {
 
     loadCSS('./css/pages/chat.css');
     await populateUserList('chat-sidebar');
-    document.getElementById('chat-send-button').addEventListener('click', () => sendMessageHandler());
+    document.getElementById('chat-send-button').addEventListener('click', () => {
+        const input = document.getElementById('chat-message-input');
+        if (input.value.trim() !== '' && input.value.length <= 500) {
+            sendMessageHandler();
+        }
+    });
     document.getElementById('chat-message-input').addEventListener('keypress', (event) => {
-        if (event.key === 'Enter') {
+        const input = event.target;
+        if (event.key === 'Enter' && input.value.trim() !== '' && input.value.length <= 500) {
             sendMessageHandler();
         }
     });
