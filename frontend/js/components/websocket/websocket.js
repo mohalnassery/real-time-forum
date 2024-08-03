@@ -90,12 +90,11 @@ export function handleWebSocketMessage(message) {
             displayChatMessage(message, chatPageContainer, false); // Update chat messages dynamically on the chat page
             chatPageContainer.scrollTo(0, chatPageContainer.scrollHeight);
             
-        } else {
-            displayMessage(message, false);
-            const messageWindow = document.querySelector(`.chat-box[data-user-id="${message.receiverId}"] .messages`) || document.querySelector(`.chat-box[data-user-id="${message.senderId}"] .messages`);
-            if (messageWindow) {
-                messageWindow.scrollTo(0, messageWindow.scrollHeight);
-            }
+        }
+        displayMessage(message, false);
+        const messageWindow = document.querySelector(`.chat-box[data-user-id="${message.receiverId}"] .messages`) || document.querySelector(`.chat-box[data-user-id="${message.senderId}"] .messages`);
+        if (messageWindow) {
+            messageWindow.scrollTo(0, messageWindow.scrollHeight);
         }
     } else if (message.type === "status") {
         updateUserStatus(message.senderId, message.content);
@@ -132,4 +131,27 @@ export function hideTypingIndicator(userId) {
     if (chatBoxIndicator) {
         chatBoxIndicator.style.display = 'none';
     }
+}
+
+export function debounce(func, timeout = 500){
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => { func.apply(this, args); }, timeout);
+    };
+}
+
+  
+export function throttle(mainFunction, delay = 500) {
+    let timerFlag = null; // Variable to keep track of the timer
+  
+    // Returning a throttled version 
+    return (...args) => {
+      if (timerFlag === null) { // If there is no timer currently running
+        mainFunction(...args); // Execute the main function 
+        timerFlag = setTimeout(() => { // Set a timer to clear the timerFlag after the specified delay
+          timerFlag = null; // Clear the timerFlag to allow the main function to be executed again
+        }, delay);
+      }
+    };
 }

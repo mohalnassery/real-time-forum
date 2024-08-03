@@ -47,13 +47,16 @@ export async function openChat(userId, nickname) {
     const input = document.getElementById('chat-message-input');
     let typingTimeout;
 
-    input.addEventListener('input', () => {
-        clearTimeout(typingTimeout);
-        sendTyping(userId);
-        typingTimeout = setTimeout(() => {
-            sendStopTyping(userId);
-        }, 3000);
-    });
+    input.addEventListener('keyup', throttle( () => {
+        let prevTyping = input.dataset.status
+            if (input.value && !prevTyping) {
+                sendTyping(user.id);
+                input.dataset.status = "typing";
+            } else if (!input.value && prevTyping) {
+                sendStopTyping(user.id);
+                input.dataset.status = "";
+            }
+    }));
 
     // Scroll event listener
     scrollListener = async () => {
