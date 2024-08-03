@@ -234,3 +234,4 @@ export function updateUserStatus(userId, status) {
         userItem.className = `status-indicator ${status}`;
     }
 }
+

@@ -1,3 +1,4 @@
+
 import { displayChatMessage } from '../chat/chat.js';
 import { displayMessage, updateUserStatus } from './chat_box.js';
 
@@ -90,6 +91,11 @@ export function handleWebSocketMessage(message) {
             displayChatMessage(message, chatPageContainer, false); // Update chat messages dynamically on the chat page
             chatPageContainer.scrollTo(0, chatPageContainer.scrollHeight);
             
+        }
+        displayMessage(message, false);
+        const messageWindow = document.querySelector(`.chat-box[data-user-id="${message.receiverId}"] .messages`) || document.querySelector(`.chat-box[data-user-id="${message.senderId}"] .messages`);
+        if (messageWindow) {
+            messageWindow.scrollTo(0, messageWindow.scrollHeight);
         }
         displayMessage(message, false);
         const messageWindow = document.querySelector(`.chat-box[data-user-id="${message.receiverId}"] .messages`) || document.querySelector(`.chat-box[data-user-id="${message.senderId}"] .messages`);
