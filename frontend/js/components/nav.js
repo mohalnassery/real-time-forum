@@ -44,8 +44,9 @@ export function createNavBar(navbar) {
         if (chatBox) {
             chatBox.hidden = !chatBox.hidden;
         }
+        window.location.hash = "#chat";
     });
-
+    
     const chatSendButton = document.getElementById('chat-send-button');
     const chatMessageInput = document.getElementById('chat-message-input');
 

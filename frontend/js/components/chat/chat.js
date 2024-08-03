@@ -1,5 +1,7 @@
 import { getMessages, sendMessage, getUsers, sendTyping, sendStopTyping } from '../websocket/websocket.js';
 
+let throttler = false;
+
 export async function openChat(userId, nickname) {
     const chatHeader = document.getElementById('chat-header');
     chatHeader.textContent = `Chat with ${nickname}`;
@@ -11,9 +13,15 @@ export async function openChat(userId, nickname) {
     const messages = await getMessages(localStorage.getItem('userId'), userId);
     // Sort messages by timestamp
     messages.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-    messages.forEach(message => {
-        displayChatMessage(message, chatMessages, false); // Ensure start is false for initial load
-    });
+    if (Array.isArray(messages) && messages.length > 0) {
+        const messageCount = messages.length;
+        const remainingMessages = Math.max(messageCount - 10, 0);
+        chatMessages.dataset.remainingMessages = remainingMessages;
+        for (let i = messageCount - 1; i >= remainingMessages; i--) {
+            displayChatMessage(messages[i], chatMessages, true);
+        }
+        chatMessages.scrollTo(0, chatMessages.scrollHeight);
+    }
 
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
@@ -28,9 +36,27 @@ export async function openChat(userId, nickname) {
             sendStopTyping(userId);
         }, 3000);
     });
+
+    // Scroll event listener
+    chatMessages.addEventListener('scroll', () => {
+        let remainingMessages = chatMessages.dataset.remainingMessages;
+        if (chatMessages.scrollTop <= 5 && remainingMessages > 0 && !throttler) {
+            throttler = true;
+            setTimeout(() => {
+                const prevScrollHeight = chatMessages.scrollHeight;
+                const newRemainingMessages = Math.max(remainingMessages - 10, 0);
+                chatMessages.dataset.remainingMessages = newRemainingMessages;
+                for (let i = remainingMessages - 1; i >= newRemainingMessages; i--) {
+                    displayChatMessage(messages[i],chatMessages, true);
+                }
+                chatMessages.scrollTo(0, chatMessages.scrollHeight - prevScrollHeight);
+                throttler = false;
+            }, 500);
+        }
+    });
 }
 
-export function displayChatMessage(message, container, start = false) {
+export function displayChatMessage(message, container, start = true) {
     const chatMessages = typeof container === 'string' ? document.getElementById(container) : container;
     if (!chatMessages) return;
 
@@ -71,8 +97,11 @@ export function displayChatMessage(message, container, start = false) {
     messageElement.appendChild(messageContentContainer);
 
     // Append the message element to the chat messages container
-    chatMessages.appendChild(messageElement);
-
+    if (start) {
+        chatMessages.insertBefore(messageElement, chatMessages.firstChild);
+    } else {
+        chatMessages.appendChild(messageElement);
+    }
     // Scroll to the bottom of the chat messages container
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }

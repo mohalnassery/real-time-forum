@@ -37,11 +37,6 @@ export function createUserSidebar() {
             sidebar.classList.remove("show");
         }
     });
-
-    // Add event listener to chat button to navigate to chat page
-    document.getElementById("chat-btn").addEventListener("click", () => {
-        window.location.hash = "#chat";
-    });
 }
 
 async function fetchUsers() {
@@ -125,6 +120,7 @@ export function displayMessage(message, start = true) {
     }
 }
 
+
 export async function openChatBox(user) {
     let chatBox = document.querySelector(`.chat-box[data-user-id="${user.id}"]`);
     if (!chatBox) {
@@ -193,8 +189,7 @@ export async function openChatBox(user) {
         });
 
         const messageWindow = chatBox.querySelector('.messages');
-        const senderId = parseInt(localStorage.getItem('userId'));
-        const previousMessages = await getMessages(senderId, user.id);
+        const previousMessages = await getMessages(localStorage.getItem('userId'), user.id);
         if (Array.isArray(previousMessages) && previousMessages.length > 0) {
             const messageCount = previousMessages.length;
             const remainingMessages = Math.max(messageCount - 10, 0);
