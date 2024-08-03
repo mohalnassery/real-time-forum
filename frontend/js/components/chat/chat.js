@@ -1,4 +1,3 @@
-
 import { getMessages, sendMessage, getUsers, sendTyping, sendStopTyping, throttle } from '../websocket/websocket.js';
 
 let throttler = false;
@@ -49,7 +48,7 @@ export async function openChat(userId, nickname) {
     let typingTimeout;
 
     input.addEventListener('keyup', throttle( () => {
-        let prevTyping = input.dataset.status
+        let prevTyping = input.dataset.status;
             if (input.value && !prevTyping) {
                 sendTyping(user.id);
                 input.dataset.status = "typing";
