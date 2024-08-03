@@ -41,4 +41,5 @@ type User struct {
 	LastName        string    `json:"last_name"`
 	Age             int       `json:"age"` // Add age field for profile display
 	LastMessageTime time.Time `json:"lastMessageTime,omitempty"`
+	Status          string    `json:"status"` // Add status field
 }

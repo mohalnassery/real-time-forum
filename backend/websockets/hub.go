@@ -14,6 +14,7 @@ type Hub struct {
 	broadcast  chan models.Message
 	register   chan *Client
 	unregister chan *Client
+	status     map[int]string // Add this to track user status
 }
 
 func NewHub() *Hub {
@@ -22,6 +23,7 @@ func NewHub() *Hub {
 		broadcast:  make(chan models.Message),
 		register:   make(chan *Client),
 		unregister: make(chan *Client),
+		status:     make(map[int]string), // Initialize status map
 	}
 }
 
@@ -30,10 +32,12 @@ func (h *Hub) Run() {
 		select {
 		case client := <-h.register:
 			h.clients[client] = true
+			h.status[client.id] = "online" // Set status to online
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
 				delete(h.clients, client)
 				close(client.send)
+				h.status[client.id] = "offline" // Set status to offline
 			}
 		case message := <-h.broadcast:
 			switch message.Type {
@@ -51,6 +55,21 @@ func (h *Hub) Run() {
 			}
 		}
 	}
+}
+
+func (h *Hub) GetUsersWithStatus(users []models.User) []models.User {
+	if h == nil || h.status == nil {
+		log.Println("Hub or status map is nil")
+		return users
+	}
+	for i := range users {
+		if status, ok := h.status[users[i].ID]; ok {
+			users[i].Status = status
+		} else {
+			users[i].Status = "offline"
+		}
+	}
+	return users
 }
 
 var upgrader = websocket.Upgrader{

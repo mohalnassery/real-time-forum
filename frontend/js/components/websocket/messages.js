@@ -1,12 +1,10 @@
-import { getUsers,getMessages,sendMessage } from './websocket.js';
-
-
+import { getUsers, getMessages, sendMessage } from './websocket.js';
 
 // Function to create the user sidebar
 export function createUserSidebar() {
     const sidebar = document.createElement('div');
     sidebar.id = 'user-sidebar';
-    sidebar.className = 'sidebar';
+    sidebar.className = 'sidebar show';
 
     const closeButton = document.createElement('button');
     closeButton.className = 'close-button';
@@ -37,7 +35,17 @@ async function fetchUsers() {
         if (user.nickname != localStorage.getItem("nickname")) {
             const userItem = document.createElement('div');
             userItem.className = 'user-item';
-            userItem.textContent = user.nickname;
+
+            // Create status indicator
+            const statusIndicator = document.createElement('div');
+            statusIndicator.className = `status-indicator ${user.status}`;
+
+            const userName = document.createElement('span');
+            userName.textContent = user.nickname;
+
+            userItem.appendChild(statusIndicator);
+            userItem.appendChild(userName);
+
             userItem.addEventListener('click', () => {
                 openChatBox(user);
             });
@@ -45,7 +53,6 @@ async function fetchUsers() {
         }
     });
 }
-
 
 export function displayMessage(message, start = true) {
     const chatBox = document.querySelector(`.chat-box[data-user-id="${message.receiverId}"]`) || document.querySelector(`.chat-box[data-user-id="${message.senderId}"]`);
@@ -104,6 +111,7 @@ export async function openChatBox(user) {
         chatBox.dataset.userId = user.id;
         chatBox.innerHTML = `
             <div class="chat-header">
+                <div class="status-indicator ${user.status}"></div>
                 <span>Chat with ${user.nickname}</span>
                 <button class="close-chat">X</button>
             </div>
@@ -186,4 +194,3 @@ export async function openChatBox(user) {
     }
     chatBox.classList.add('show');
 }
-

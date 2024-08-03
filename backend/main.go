@@ -34,6 +34,7 @@ func main() {
 	// WebSocket endpoint
 	hub := websockets.NewHub()
 	go hub.Run()
+	handlers.InitHub(hub) // Initialize the hub in handlers
 	r.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		websockets.ServeWs(hub, w, r)
 	})

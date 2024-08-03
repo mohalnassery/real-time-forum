@@ -63,7 +63,6 @@ export function displayChatMessage(message, container, start = false) {
 
     // Scroll to the bottom of the chat messages container
     chatMessages.scrollTop = chatMessages.scrollHeight;
-    
 }
 
 export function sendMessageHandler() {
@@ -91,8 +90,18 @@ export async function populateUserList(chatSidebarId) {
             const userItem = document.createElement('div');
             userItem.className = 'user-item';
             userItem.dataset.userId = user.id; // Store userId in dataset
+
+            // Create status indicator
+            const statusIndicator = document.createElement('div');
+            statusIndicator.className = `status-indicator ${user.status}`;
+
+            const userName = document.createElement('span');
             const lastMessageTime = new Date(user.lastMessageTime).toLocaleString();
-            userItem.textContent = `${user.nickname} (${lastMessageTime})`;
+            userName.textContent = `${user.nickname} (${lastMessageTime})`;
+
+            userItem.appendChild(statusIndicator);
+            userItem.appendChild(userName);
+
             userItem.addEventListener('click', () => openChat(user.id, user.nickname));
             chatSidebar.appendChild(userItem);
         }

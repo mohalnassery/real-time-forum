@@ -104,6 +104,14 @@ p {
     position: relative;
 }
 
+.chat-box .chat-header .status-indicator {
+    margin-right: 10px;
+}
+
+.chat-box .chat-header span {
+    flex-grow: 1; /* Make the span take up the remaining space */
+}
+
 .chat-box .chat-header .close-chat {
     background-color: #e95420; 
     color: #ffffff;
@@ -117,10 +125,6 @@ p {
     cursor: pointer;
     position: absolute;
     right: 10px; 
-}
-
-.chat-box .chat-header .close-chat:hover {
-    background-color: #c84117; 
 }
 
 .chat-box .chat-header .close-chat:hover {
@@ -193,4 +197,31 @@ p {
 
 .message-content {
     white-space: pre-wrap; /* Preserve whitespace and line breaks */
+}
+
+/* Add this to your CSS file */
+.user-item {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+}
+
+.status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.online {
+    background-color: rgb(0, 255, 0);
+}
+
+.offline {
+    background-color: red;
+}
+
+.chat-header {
+    display: flex;
+    align-items: center;
 }

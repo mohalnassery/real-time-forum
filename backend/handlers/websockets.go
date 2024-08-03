@@ -5,9 +5,16 @@ import (
 	"net/http"
 	"real-time-forum/database"
 	"real-time-forum/models"
+	"real-time-forum/websockets"
 	"strconv"
 	"time"
 )
+
+var hub *websockets.Hub
+
+func InitHub(h *websockets.Hub) {
+	hub = h
+}
 
 func GetMessagesHandler(w http.ResponseWriter, r *http.Request) {
 	senderID, err := strconv.Atoi(r.URL.Query().Get("sender_id"))
@@ -67,6 +74,13 @@ func GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if hub == nil {
+		http.Error(w, "Hub is not initialized", http.StatusInternalServerError)
+		return
+	}
+
+	usersWithStatus := hub.GetUsersWithStatus(users)
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(users)
+	json.NewEncoder(w).Encode(usersWithStatus)
 }
