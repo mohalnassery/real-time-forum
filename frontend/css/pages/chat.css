@@ -43,6 +43,10 @@
     background-color: var(--background-color);
 }
 
+#chat-spacer {
+    height: 300px; /* Adjust height as needed */
+}
+
 .chat-input {
     display: flex;
     padding: 10px;

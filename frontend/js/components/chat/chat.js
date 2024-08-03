@@ -20,9 +20,15 @@ export async function openChat(userId, nickname) {
         for (let i = messageCount - 1; i >= remainingMessages; i--) {
             displayChatMessage(messages[i], chatMessages, true);
         }
-        chatMessages.scrollTo(0, chatMessages.scrollHeight);
     }
 
+    // Add a spacer element to the top of the chat messages container
+    const spacer = document.createElement('div');
+    spacer.id = 'chat-spacer';
+    spacer.style.height = '300px'; // Adjust height as needed
+    chatMessages.insertBefore(spacer, chatMessages.firstChild);
+
+    // Set the initial scroll position to the bottom
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
     // Add typing event listeners
@@ -38,22 +44,33 @@ export async function openChat(userId, nickname) {
     });
 
     // Scroll event listener
-    chatMessages.addEventListener('scroll', () => {
+    chatMessages.addEventListener('scroll', async () => {
         let remainingMessages = chatMessages.dataset.remainingMessages;
         if (chatMessages.scrollTop <= 5 && remainingMessages > 0 && !throttler) {
             throttler = true;
-            setTimeout(() => {
+            setTimeout(async () => {
                 const prevScrollHeight = chatMessages.scrollHeight;
                 const newRemainingMessages = Math.max(remainingMessages - 10, 0);
                 chatMessages.dataset.remainingMessages = newRemainingMessages;
                 for (let i = remainingMessages - 1; i >= newRemainingMessages; i--) {
-                    displayChatMessage(messages[i],chatMessages, true);
+                    displayChatMessage(messages[i], chatMessages, true);
                 }
                 chatMessages.scrollTo(0, chatMessages.scrollHeight - prevScrollHeight);
                 throttler = false;
+
+                // Remove the spacer if it exists
+                const existingSpacer = document.getElementById('chat-spacer');
+                if (existingSpacer) {
+                    chatMessages.removeChild(existingSpacer);
+                }
             }, 500);
         }
     });
+
+    // Ensure there's always enough space to scroll
+    if (chatMessages.scrollHeight <= chatMessages.clientHeight) {
+        chatMessages.style.minHeight = '300px';
+    }
 }
 
 export function displayChatMessage(message, container, start = true) {

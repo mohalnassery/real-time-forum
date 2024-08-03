@@ -107,15 +107,29 @@ export function handleWebSocketMessage(message) {
 }
 
 export function showTypingIndicator(userId) {
-    const chatHeader = document.querySelector(`.chat-header[data-user-id="${userId}"] .typing-indicator`);
-    if (chatHeader) {
-        chatHeader.style.display = 'inline';
+    // Check for typing indicator in chat header
+    const chatHeaderIndicator = document.querySelector(`.chat-header[data-user-id="${userId}"] .typing-indicator`);
+    if (chatHeaderIndicator) {
+        chatHeaderIndicator.style.display = 'inline';
+    }
+
+    // Check for typing indicator in chat box
+    const chatBoxIndicator = document.querySelector(`.chat-box[data-user-id="${userId}"] .typing-indicator`);
+    if (chatBoxIndicator) {
+        chatBoxIndicator.style.display = 'inline';
     }
 }
 
 export function hideTypingIndicator(userId) {
-    const chatHeader = document.querySelector(`.chat-header[data-user-id="${userId}"] .typing-indicator`);
-    if (chatHeader) {
-        chatHeader.style.display = 'none';
+    // Check for typing indicator in chat header
+    const chatHeaderIndicator = document.querySelector(`.chat-header[data-user-id="${userId}"] .typing-indicator`);
+    if (chatHeaderIndicator) {
+        chatHeaderIndicator.style.display = 'none';
+    }
+
+    // Check for typing indicator in chat box
+    const chatBoxIndicator = document.querySelector(`.chat-box[data-user-id="${userId}"] .typing-indicator`);
+    if (chatBoxIndicator) {
+        chatBoxIndicator.style.display = 'none';
     }
 }

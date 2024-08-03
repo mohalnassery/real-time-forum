@@ -10,8 +10,8 @@ export async function initChatPage(mainContent) {
             </div>
             <div class="chat-main" id="chat-main">
                 <div class="chat-header" id="chat-header" data-user-id="">
-                    <!-- Chat header will be dynamically added here -->
-                    <span class="typing-indicator" id="typing-indicator" style="display: none;"> is typing...</span>
+                    <div class="status-indicator"></div>
+                    <span class="typing-indicator" style="display: none;">typing...</span>
                 </div>
                 <div class="chat-messages" id="chat-messages">
                     <!-- Chat messages will be dynamically added here -->
