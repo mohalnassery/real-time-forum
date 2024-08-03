@@ -1,6 +1,5 @@
 import { fetchAndDisplayNotifications, clearNotification, markAllNotificationsAsRead } from './notifications.js';
 import { logout } from './auth/auth_handling.js';
-import { createUserSidebar } from './websocket/chat_box.js';
 
 export function createNavBar(navbar) {
     navbar.innerHTML = `
@@ -116,26 +115,6 @@ export function createNavBar(navbar) {
     document.body.setAttribute("data-theme", savedTheme);
     themeToggle.checked = savedTheme === "dark";
 
-    // Initialize the user sidebar
-    createUserSidebar();
-
-    // Add event listener to user icon to toggle sidebar
-    document.getElementById("user-icon").addEventListener("click", () => {
-        document.getElementById("user-sidebar").classList.toggle("show");
-    });
-
-    // Close sidebar when clicking outside of it
-    document.addEventListener("click", (event) => {
-        const sidebar = document.getElementById("user-sidebar");
-        if (sidebar.classList.contains("show") && !sidebar.contains(event.target) && !event.target.matches('.user-icon, .user-icon *')) {
-            sidebar.classList.remove("show");
-        }
-    });
-
-    // Add event listener to chat button to navigate to chat page
-    document.getElementById("chat-btn").addEventListener("click", () => {
-        window.location.hash = "#chat";
-    });
 }
 
 export function setNickname(newNickname) {

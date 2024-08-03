@@ -7,6 +7,7 @@ import { loadCSS } from './components/utils.js';
 import { initWebSocket } from './components/websocket/websocket.js';
 import { initProfilePage } from './pages/profile_page.js';
 import { initChatPage } from './pages/chat_page.js'; // Import the chat page initialization function
+import { createUserSidebar } from './components/websocket/chat_box.js';
 
 document.addEventListener("DOMContentLoaded", async () => {
     const navbar = document.getElementById("navbar");
@@ -25,7 +26,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
 
     if (isLoggedIn) {
-        initWebSocket(localStorage.getItem("userId"));
+        initWebSocket(localStorage.getItem("userId")); 
+        createUserSidebar();
     }
 
     // Handle navigation

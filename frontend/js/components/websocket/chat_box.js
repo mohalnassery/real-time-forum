@@ -4,7 +4,7 @@ import { getUsers, getMessages, sendMessage, sendTyping, sendStopTyping } from '
 export function createUserSidebar() {
     const sidebar = document.createElement('div');
     sidebar.id = 'user-sidebar';
-    sidebar.className = 'sidebar show';
+    sidebar.className = 'sidebar';
 
     const closeButton = document.createElement('button');
     closeButton.className = 'close-button';
@@ -21,6 +21,25 @@ export function createUserSidebar() {
     document.body.appendChild(sidebar);
 
     fetchUsers();
+
+    
+    // Add event listener to user icon to toggle sidebar
+    document.getElementById("user-icon").addEventListener("click", () => {
+        document.getElementById("user-sidebar").classList.toggle("show");
+    });
+
+    // Close sidebar when clicking outside of it
+    document.addEventListener("click", (event) => {
+        const sidebar = document.getElementById("user-sidebar");
+        if (sidebar.classList.contains("show") && !sidebar.contains(event.target) && !event.target.matches('.user-icon, .user-icon *')) {
+            sidebar.classList.remove("show");
+        }
+    });
+
+    // Add event listener to chat button to navigate to chat page
+    document.getElementById("chat-btn").addEventListener("click", () => {
+        window.location.hash = "#chat";
+    });
 }
 
 async function fetchUsers() {
