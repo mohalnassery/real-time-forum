@@ -1,5 +1,7 @@
 import { getUsers, getMessages, sendMessage, sendTyping, sendStopTyping } from './websocket.js';
 
+let throttler = false;
+
 // Function to create the user sidebar
 export function createUserSidebar() {
     const sidebar = document.createElement('div');
@@ -208,19 +210,17 @@ export async function openChatBox(user) {
             let remainingMessages = messageWindow.dataset.remainingMessages;
             if (messageWindow.scrollTop <= 5 && remainingMessages > 0 && !throttler) {
                 throttler = true;
-
-                const prevScrollHeight = messageWindow.scrollHeight;
-                const newRemainingMessages = Math.max(remainingMessages - 10, 0);
-                messageWindow.dataset.remainingMessages = newRemainingMessages;
-                for (let i = remainingMessages - 1; i >= newRemainingMessages; i--) {
-                    displayMessage(previousMessages[i], true);
-                }
-
-                messageWindow.scrollTo(0, messageWindow.scrollHeight - prevScrollHeight);
-
                 setTimeout(() => {
+                    const prevScrollHeight = messageWindow.scrollHeight;
+                    const newRemainingMessages = Math.max(remainingMessages - 10, 0);
+                    messageWindow.dataset.remainingMessages = newRemainingMessages;
+                    for (let i = remainingMessages - 1; i >= newRemainingMessages; i--) {
+                        displayMessage(previousMessages[i], true);
+                    }
+
+                    messageWindow.scrollTo(0, messageWindow.scrollHeight - prevScrollHeight);
                     throttler = false;
-                }, 1000);
+                }, 500);
             }
         });
     }
