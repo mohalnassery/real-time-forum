@@ -5,11 +5,15 @@ let scrollListener = null;
 
 export async function openChat(userId, nickname) {
     const chatHeader = document.getElementById('chat-header');
-    chatHeader.textContent = `Chat with ${nickname}`;
     chatHeader.dataset.userId = userId; // Store userId in dataset
+    document.getElementById('chat-nickname').textContent = nickname;
 
     const chatMessages = document.getElementById('chat-messages');
     chatMessages.innerHTML = '';
+
+    // Make the chat-main element visible
+    const chatMain = document.getElementById('chat-main');
+    chatMain.classList.add('visible');
 
     // Remove existing scroll event listener if it exists
     if (scrollListener) {

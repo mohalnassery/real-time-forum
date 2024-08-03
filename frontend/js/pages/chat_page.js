@@ -11,6 +11,7 @@ export async function initChatPage(mainContent) {
             <div class="chat-main" id="chat-main">
                 <div class="chat-header" id="chat-header" data-user-id="">
                     <div class="status-indicator"></div>
+                    <span>Chat with <span id="chat-nickname"></span></span>
                     <span class="typing-indicator" style="display: none;">typing...</span>
                 </div>
                 <div class="chat-messages" id="chat-messages">

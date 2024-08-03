@@ -19,7 +19,11 @@
 .chat-main {
     width: 75%;
     margin-left: 25%; /* Adjusts the main chat area to the right of the sidebar */
-    display: flex;
+    display: none; /* Initially hide the chat-main element */
+}
+
+.chat-main.visible {
+    display: flex; /* Show the chat-main element when the visible class is added */
     flex-direction: column;
     height: calc(100vh - 100px); /* Adjust height to account for the top margin */
     overflow: hidden; /* Prevents the main chat area from scrolling */
