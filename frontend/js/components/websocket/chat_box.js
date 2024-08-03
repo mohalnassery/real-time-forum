@@ -1,6 +1,8 @@
-import { getUsers, getMessages, sendMessage, sendTyping, sendStopTyping } from './websocket.js';
+import { getUsers, getMessages, sendMessage, sendTyping, sendStopTyping, debounce, throttle } from './websocket.js';
 
 let throttler = false;
+let typingTimeout;
+
 
 // Function to create the user sidebar
 export function createUserSidebar() {
@@ -147,15 +149,17 @@ export async function openChatBox(user) {
         });
 
         const input = chatBox.querySelector('input');
-        let typingTimeout;
 
-        input.addEventListener('input', () => {
-            clearTimeout(typingTimeout);
-            sendTyping(user.id);
-            typingTimeout = setTimeout(() => {
-                sendStopTyping(user.id);
-            }, 3000);
-        });
+        input.addEventListener('keyup', throttle( () => {
+            let prevTyping = input.dataset.status
+                if (input.value && !prevTyping) {
+                    sendTyping(user.id);
+                    input.dataset.status = "typing";
+                } else if (!input.value && prevTyping) {
+                    sendStopTyping(user.id);
+                    input.dataset.status = "";
+                }
+        }));
 
         chatBox.querySelector('.send-message').addEventListener('click', () => {
             if (input.value.trim() !== '' && input.value.length <= 500) {
