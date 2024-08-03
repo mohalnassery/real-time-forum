@@ -1,4 +1,4 @@
-import { getUsers, getMessages, sendMessage } from './websocket.js';
+import { getUsers, getMessages, sendMessage, sendTyping, sendStopTyping } from './websocket.js';
 
 // Function to create the user sidebar
 export function createUserSidebar() {
@@ -111,9 +111,10 @@ export async function openChatBox(user) {
         chatBox.className = 'chat-box';
         chatBox.dataset.userId = user.id;
         chatBox.innerHTML = `
-            <div class="chat-header">
+            <div class="chat-header" data-user-id="${user.id}">
                 <div class="status-indicator ${user.status}"></div>
                 <span>Chat with ${user.nickname}</span>
+                <span class="typing-indicator" style="display: none;">typing...</span>
                 <button class="close-chat">X</button>
             </div>
             <div class="messages"></div>
@@ -128,8 +129,18 @@ export async function openChatBox(user) {
             chatBox.remove();
         });
 
+        const input = chatBox.querySelector('input');
+        let typingTimeout;
+
+        input.addEventListener('input', () => {
+            clearTimeout(typingTimeout);
+            sendTyping(user.id);
+            typingTimeout = setTimeout(() => {
+                sendStopTyping(user.id);
+            }, 3000);
+        });
+
         chatBox.querySelector('.send-message').addEventListener('click', () => {
-            const input = chatBox.querySelector('input');
             const message = {
                 senderId: parseInt(localStorage.getItem('userId')),
                 senderNickname: localStorage.getItem('nickname'),
@@ -140,12 +151,12 @@ export async function openChatBox(user) {
             };
             sendMessage(message);
             input.value = ''; // Clear the input field after sending the message
+            sendStopTyping(user.id);
         });
 
         // Add event listener for Enter key press
-        chatBox.querySelector('input').addEventListener('keypress', (event) => {
+        input.addEventListener('keypress', (event) => {
             if (event.key === 'Enter') {
-                const input = chatBox.querySelector('input');
                 const message = {
                     senderId: parseInt(localStorage.getItem('userId')),
                     senderNickname: localStorage.getItem('nickname'),
@@ -156,6 +167,7 @@ export async function openChatBox(user) {
                 };
                 sendMessage(message);
                 input.value = ''; // Clear the input field after sending the message
+                sendStopTyping(user.id);
             }
         });
 

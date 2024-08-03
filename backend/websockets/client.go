@@ -59,12 +59,18 @@ func (c *Client) readPump() {
 		// Set the creation time to the current time
 		message.CreatedAt = time.Now()
 
-		// Save message to the database
-		err = database.CreateMessage(&message)
-		if err != nil {
-			log.Printf("error saving message: %v", err)
-			continue
+		// Only save chat messages to the database
+		if message.Type == "chat" {
+			// if message is not empty and not over 9999 characters
+			if message.Content != "" && len(message.Content) < 9999 {
+				err = database.CreateMessage(&message)
+				if err != nil {
+					log.Printf("error saving message: %v", err)
+					continue
+				}
+			}
 		}
+
 		c.hub.broadcast <- message
 	}
 }

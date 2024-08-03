@@ -1,5 +1,5 @@
 import { displayChatMessage } from '../chat/chat.js';
-import { displayMessage, updateUserStatus } from './messages.js'; 
+import { displayMessage, updateUserStatus } from './chat_box.js';
 
 let socket;
 
@@ -30,6 +30,28 @@ export function sendMessage(message) {
         socket.send(JSON.stringify(message));
     } else {
         console.error("WebSocket is not open. Unable to send message.");
+    }
+}
+
+export function sendTyping(receiverId) {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        const message = {
+            type: "typing",
+            senderId: parseInt(localStorage.getItem('userId')),
+            receiverId: receiverId,
+        };
+        socket.send(JSON.stringify(message));
+    }
+}
+
+export function sendStopTyping(receiverId) {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        const message = {
+            type: "stop typing",
+            senderId: parseInt(localStorage.getItem('userId')),
+            receiverId: receiverId,
+        };
+        socket.send(JSON.stringify(message));
     }
 }
 
@@ -77,5 +99,23 @@ export function handleWebSocketMessage(message) {
         }
     } else if (message.type === "status") {
         updateUserStatus(message.senderId, message.content);
+    } else if (message.type === "typing") {
+        showTypingIndicator(message.senderId);
+    } else if (message.type === "stop typing") {
+        hideTypingIndicator(message.senderId);
+    }
+}
+
+export function showTypingIndicator(userId) {
+    const chatHeader = document.querySelector(`.chat-header[data-user-id="${userId}"] .typing-indicator`);
+    if (chatHeader) {
+        chatHeader.style.display = 'inline';
+    }
+}
+
+export function hideTypingIndicator(userId) {
+    const chatHeader = document.querySelector(`.chat-header[data-user-id="${userId}"] .typing-indicator`);
+    if (chatHeader) {
+        chatHeader.style.display = 'none';
     }
 }

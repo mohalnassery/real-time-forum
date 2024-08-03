@@ -43,7 +43,7 @@ func (h *Hub) Run() {
 			}
 		case message := <-h.broadcast:
 			switch message.Type {
-			case "chat":
+			case "chat", "typing", "stop typing":
 				for client := range h.clients {
 					if client.id == message.SenderID || client.id == message.ReceiverID {
 						select {
@@ -52,19 +52,6 @@ func (h *Hub) Run() {
 							close(client.send)
 							delete(h.clients, client)
 						}
-					}
-				}
-			case "status":
-				// Handle status change messages
-				userID := message.SenderID
-				status := message.Content
-				h.status[userID] = status
-				for client := range h.clients {
-					select {
-					case client.send <- message:
-					default:
-						close(client.send)
-						delete(h.clients, client)
 					}
 				}
 			}

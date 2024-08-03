@@ -1,6 +1,6 @@
 import { fetchAndDisplayNotifications, clearNotification, markAllNotificationsAsRead } from './notifications.js';
 import { logout } from './auth/auth_handling.js';
-import { createUserSidebar } from '../components/websocket/messages.js';
+import { createUserSidebar } from './websocket/chat_box.js';
 
 export function createNavBar(navbar) {
     navbar.innerHTML = `

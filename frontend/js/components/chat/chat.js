@@ -1,4 +1,4 @@
-import { getMessages, sendMessage, getUsers } from '../websocket/websocket.js';
+import { getMessages, sendMessage, getUsers, sendTyping, sendStopTyping } from '../websocket/websocket.js';
 
 export async function openChat(userId, nickname) {
     const chatHeader = document.getElementById('chat-header');
@@ -16,6 +16,18 @@ export async function openChat(userId, nickname) {
     });
 
     chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // Add typing event listeners
+    const input = document.getElementById('chat-message-input');
+    let typingTimeout;
+
+    input.addEventListener('input', () => {
+        clearTimeout(typingTimeout);
+        sendTyping(userId);
+        typingTimeout = setTimeout(() => {
+            sendStopTyping(userId);
+        }, 3000);
+    });
 }
 
 export function displayChatMessage(message, container, start = false) {
