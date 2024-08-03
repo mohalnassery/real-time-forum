@@ -1,6 +1,5 @@
 import { displayChatMessage } from '../chat/chat.js';
-import { displayMessage } from './messages.js';
-
+import { displayMessage, updateUserStatus } from './messages.js'; 
 
 let socket;
 
@@ -76,5 +75,7 @@ export function handleWebSocketMessage(message) {
                 messageWindow.scrollTo(0, messageWindow.scrollHeight);
             }
         }
+    } else if (message.type === "status") {
+        updateUserStatus(message.senderId, message.content);
     }
 }

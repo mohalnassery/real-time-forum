@@ -35,6 +35,7 @@ async function fetchUsers() {
         if (user.nickname != localStorage.getItem("nickname")) {
             const userItem = document.createElement('div');
             userItem.className = 'user-item';
+            userItem.dataset.userId = user.id; // Add user ID to the dataset
 
             // Create status indicator
             const statusIndicator = document.createElement('div');
@@ -193,4 +194,11 @@ export async function openChatBox(user) {
         });
     }
     chatBox.classList.add('show');
+}
+
+export function updateUserStatus(userId, status) {
+    const userItem = document.querySelector(`.user-item[data-user-id="${userId}"] .status-indicator`);
+    if (userItem) {
+        userItem.className = `status-indicator ${status}`;
+    }
 }

@@ -33,11 +33,13 @@ func (h *Hub) Run() {
 		case client := <-h.register:
 			h.clients[client] = true
 			h.status[client.id] = "online" // Set status to online
+			h.broadcastStatusChange(client.id, "online")
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
 				delete(h.clients, client)
 				close(client.send)
 				h.status[client.id] = "offline" // Set status to offline
+				h.broadcastStatusChange(client.id, "offline")
 			}
 		case message := <-h.broadcast:
 			switch message.Type {
@@ -52,7 +54,36 @@ func (h *Hub) Run() {
 						}
 					}
 				}
+			case "status":
+				// Handle status change messages
+				userID := message.SenderID
+				status := message.Content
+				h.status[userID] = status
+				for client := range h.clients {
+					select {
+					case client.send <- message:
+					default:
+						close(client.send)
+						delete(h.clients, client)
+					}
+				}
 			}
+		}
+	}
+}
+
+func (h *Hub) broadcastStatusChange(userID int, status string) {
+	statusMessage := models.Message{
+		Type:     "status",
+		SenderID: userID,
+		Content:  status,
+	}
+	for client := range h.clients {
+		select {
+		case client.send <- statusMessage:
+		default:
+			close(client.send)
+			delete(h.clients, client)
 		}
 	}
 }
