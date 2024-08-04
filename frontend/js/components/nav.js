@@ -1,5 +1,7 @@
-import { fetchAndDisplayNotifications, clearNotification, markAllNotificationsAsRead } from './notifications.js';
+import { fetchAndDisplayNotifications, markAllNotificationsAsRead, updateNotificationCounter } from './notifications.js';
 import { logout } from './auth/auth_handling.js';
+
+let isLoggedIn = false; // Variable to track login status
 
 export function createNavBar(navbar) {
     navbar.innerHTML = `
@@ -127,8 +129,6 @@ export function getNickname() {
     return localStorage.getItem("nickname");
 }
 
-let isLoggedIn = false; // Variable to track login status
-
 export async function updateNavMenu() {
     try {
         const response = await fetch("/auth/is-logged-in");
@@ -193,14 +193,3 @@ export async function updateNavMenu() {
         console.error("Failed to update navigation menu:", error);
     }
 }
-
-export function updateNotificationCounter(count) {
-    const counterElement = document.getElementById("notification-counter");
-    if (count > 0) {
-        counterElement.textContent = count > 99 ? "99+" : count;
-        counterElement.hidden = false;
-    } else {
-        counterElement.hidden = true;
-    }
-}
-

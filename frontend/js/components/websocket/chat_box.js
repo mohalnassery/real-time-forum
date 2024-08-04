@@ -1,4 +1,4 @@
-import { getUsers, getMessages, sendMessage, sendTyping, sendStopTyping, debounce, throttle } from './websocket.js';
+import { getUsers, getMessages, sendMessage, sendTyping, sendStopTyping, throttle } from './websocket.js';
 
 let throttler = false;
 let typingTimeout;

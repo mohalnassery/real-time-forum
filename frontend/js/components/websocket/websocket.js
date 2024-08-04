@@ -89,7 +89,6 @@ export function handleWebSocketMessage(message) {
         if (chatPageContainer && (message.senderId == activeChatUserId || message.receiverId == activeChatUserId)) {
             displayChatMessage(message, chatPageContainer, false); // Update chat messages dynamically on the chat page
             chatPageContainer.scrollTo(0, chatPageContainer.scrollHeight);
-            
         }
         displayMessage(message, false);
         const messageWindow = document.querySelector(`.chat-box[data-user-id="${message.receiverId}"] .messages`) || document.querySelector(`.chat-box[data-user-id="${message.senderId}"] .messages`);

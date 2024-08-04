@@ -140,3 +140,9 @@
 .chat-message .message-content {
     white-space: pre-wrap; /* Preserve whitespace and line breaks */
 }
+
+
+/*   <span class="typing-indicator" style="display: none;">  typing...</span> adjust this style to make it seperate from the one before it */
+.typing-indicator {
+    float: left;
+}

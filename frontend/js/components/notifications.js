@@ -1,5 +1,3 @@
-import { updateNotificationCounter } from './nav.js';
-
 async function fetchNotifications() {
   try {
     const response = await fetch("/notifications");
@@ -95,5 +93,17 @@ async function fetchAndDisplayNotifications() {
   displayNotifications(notifications);
 }
 
+async function updateNotificationCounter(count) {
+  const counterElement = document.getElementById("notification-counter");
+  if (count > 0) {
+      counterElement.textContent = count > 99 ? "99+" : count;
+      counterElement.hidden = false;
+  } else {
+      counterElement.hidden = true;
+  }
+}
+
+
+
 // Export functions to be used in other files
-export { fetchAndDisplayNotifications, clearNotification, markAllNotificationsAsRead };
+export { fetchAndDisplayNotifications, clearNotification, markAllNotificationsAsRead, updateNotificationCounter };

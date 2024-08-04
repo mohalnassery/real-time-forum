@@ -163,13 +163,41 @@ export async function populateUserList(chatSidebarId) {
     chatSidebar.innerHTML = ''; // Clear the existing user list
 
     const users = await getUsers();
-    users.forEach(user => {
-        if (user.lastMessageTime && user.lastMessageTime !== "0001-01-01T00:00:00Z") {
+    const filteredUsers = users.filter(user => 
+        user.lastMessageTime && user.lastMessageTime !== "0001-01-01T00:00:00Z"
+    );
+
+    if (filteredUsers.length === 0) {
+        const noConversationsMessage = document.createElement('div');
+        noConversationsMessage.className = 'no-conversations-message';
+        noConversationsMessage.textContent = 'There are no conversations.';
+
+        const startChatButton = document.createElement('button');
+        startChatButton.className = 'start-chat-button';
+        startChatButton.textContent = 'Start New Chat';
+        startChatButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            const userSidebar = document.getElementById('user-sidebar');
+            if (userSidebar) {
+                userSidebar.classList.add('show');
+                // Prevent closing for a short period
+                setTimeout(() => {
+                    document.addEventListener('click', closeSidebar, { once: true });
+                }, 100);
+            } else {
+                console.error('User sidebar not found');
+            }
+        });
+
+        chatSidebar.appendChild(noConversationsMessage);
+        chatSidebar.appendChild(startChatButton);
+    } else {
+        filteredUsers.forEach(user => {
             const userItem = document.createElement('div');
             userItem.className = 'user-item';
-            userItem.dataset.userId = user.id; // Store userId in dataset
+            userItem.dataset.userId = user.id;
 
-            // Create status indicator
             const statusIndicator = document.createElement('div');
             statusIndicator.className = `status-indicator ${user.status}`;
 
@@ -182,6 +210,13 @@ export async function populateUserList(chatSidebarId) {
 
             userItem.addEventListener('click', () => openChat(user.id, user.nickname));
             chatSidebar.appendChild(userItem);
-        }
-    });
+        });
+    }
+}
+
+function closeSidebar(event) {
+    const userSidebar = document.getElementById('user-sidebar');
+    if (userSidebar && !userSidebar.contains(event.target)) {
+        userSidebar.classList.remove('show');
+    }
 }
