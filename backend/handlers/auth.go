@@ -62,14 +62,14 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// check if the nickname is already taken
-	_, err = database.GetUserByNickname(database.DB, user.Nickname)
+	_, err = database.GetUserByNickname(user.Nickname)
 	if err == nil {
 		http.Error(w, "Nickname already taken", http.StatusBadRequest)
 		return
 	}
 
 	// check if the email is already taken
-	_, err = database.GetUserByEmail(database.DB, user.Email)
+	_, err = database.GetUserByEmail(user.Email)
 	if err == nil {
 		http.Error(w, "Email already taken", http.StatusBadRequest)
 		return
@@ -86,7 +86,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	user.AuthType = "local"
 
 	// Call CreateUser method to save the user in the database
-	err = database.CreateUser(database.DB, user)
+	err = database.CreateUser(user)
 	if err != nil {
 		http.Error(w, "Failed to insert into database", http.StatusInternalServerError)
 		return
@@ -131,14 +131,14 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	// Retrieve the user by email or nickname
 	var dbUser models.User
 	if strings.Contains(loginReq.NicknameOrEmail, "@") {
-		user, err := database.GetUserByEmail(database.DB, loginReq.NicknameOrEmail)
+		user, err := database.GetUserByEmail(loginReq.NicknameOrEmail)
 		if err != nil {
 			http.Error(w, "User not found", http.StatusBadRequest)
 			return
 		}
 		dbUser = user.(models.User)
 	} else {
-		user, err := database.GetUserByNickname(database.DB, loginReq.NicknameOrEmail)
+		user, err := database.GetUserByNickname(loginReq.NicknameOrEmail)
 		if err != nil {
 			http.Error(w, "User not found", http.StatusBadRequest)
 			return

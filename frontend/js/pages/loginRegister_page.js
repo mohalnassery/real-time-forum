@@ -55,20 +55,7 @@ export function initAuth(parentElement, showLogin = true) {
                 </div>
                 <div class="error-container" id="register-error"></div>
                 <button type="submit">Register</button>
-                <div class="social-login">
-                    <a href="/auth/google" class="google-login">
-                        <i class="fab fa-google"></i>
-                        Google
-                    </a>
-                    <a href="/auth/github" class="github-login">
-                        <i class="fab fa-github"></i>
-                        GitHub
-                    </a>
-                    <a href="/auth/facebook" class="facebook-login">
-                        <i class="fab fa-facebook"></i>
-                        Facebook
-                    </a>
-                </div>
+
             </form>
             <a href="#" id="switch-to-login">already have an account?</a>
         </div>
@@ -85,20 +72,6 @@ export function initAuth(parentElement, showLogin = true) {
                 <div class="input-container">
                     <i class="fas fa-lock"></i>
                     <input type="password" class="form-input" id="loginPassword" placeholder="Password" required>
-                </div>
-                <div class="social-login">
-                    <a href="/auth/google" class="google-login">
-                        <i class="fab fa-google"></i>
-                        Google
-                    </a>
-                    <a href="/auth/github" class="github-login">
-                        <i class="fab fa-github"></i>
-                        GitHub
-                    </a>
-                    <a href="/auth/facebook" class="facebook-login">
-                        <i class="fab fa-facebook"></i>
-                        Facebook
-                    </a>
                 </div>
                 <div class="error-container" id="login-error"></div>
                 <button type="submit">Sign In</button>

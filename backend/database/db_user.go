@@ -73,23 +73,23 @@ func GetUsernameByID(userID int) (string, error) {
 	return nickname, err
 }
 
-func CreateUser(db *sql.DB, user models.UserRegisteration) error {
-	_, err := db.Exec("INSERT INTO users (nickname, email, password, auth_type, dob, gender, first_name, last_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", user.Nickname, user.Email, user.Password, user.AuthType, user.DOB, user.Gender, user.FirstName, user.LastName)
+func CreateUser(user models.UserRegisteration) error {
+	_, err := DB.Exec("INSERT INTO users (nickname, email, password, auth_type, dob, gender, first_name, last_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", user.Nickname, user.Email, user.Password, user.AuthType, user.DOB, user.Gender, user.FirstName, user.LastName)
 	return err
 }
 
-func GetUserByEmail(db *sql.DB, email string) (interface{}, error) {
+func GetUserByEmail(email string) (interface{}, error) {
 	var user models.User
-	err := db.QueryRow("SELECT id, nickname, email, password, auth_type FROM users WHERE email = ?", email).Scan(&user.ID, &user.Nickname, &user.Email, &user.Password, &user.AuthType)
+	err := DB.QueryRow("SELECT id, nickname, email, password, auth_type FROM users WHERE email = ?", email).Scan(&user.ID, &user.Nickname, &user.Email, &user.Password, &user.AuthType)
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func GetUserByNickname(db *sql.DB, nickname string) (interface{}, error) {
+func GetUserByNickname(nickname string) (interface{}, error) {
 	var user models.User
-	err := db.QueryRow("SELECT id, nickname, email, password, auth_type FROM users WHERE nickname = ?", nickname).Scan(&user.ID, &user.Nickname, &user.Email, &user.Password, &user.AuthType)
+	err := DB.QueryRow("SELECT id, nickname, email, password, auth_type FROM users WHERE nickname = ?", nickname).Scan(&user.ID, &user.Nickname, &user.Email, &user.Password, &user.AuthType)
 	if err != nil {
 		return nil, err
 	}
