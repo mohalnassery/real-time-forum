@@ -197,6 +197,11 @@ p {
 
 .message-content {
     white-space: pre-wrap; /* Preserve whitespace and line breaks */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    white-space: normal;
+    word-break: break-all;
 }
 
 /* Add this to your CSS file */

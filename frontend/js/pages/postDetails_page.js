@@ -18,9 +18,9 @@ export async function initPostDetails(app, postId) {
       </div>
 
       <div class="content-section">
-        <h2 id="post-title">Title Of Post</h2>
+        <h2 id="post-title"></h2>
         <img id="post-image" src="" alt="Post Image" style="max-width: 100%; height: auto; margin-bottom: 20px; display: none;">
-        <p id="post-body"></p>
+        <div id="post-body"></div>
       </div>
 
       <div class="tags" id="post-tags">

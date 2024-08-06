@@ -61,8 +61,8 @@ func (c *Client) readPump() {
 
 		// Only save chat messages to the database
 		if message.Type == "chat" {
-			// if message is not empty and not over 9999 characters
-			if message.Content != "" && len(message.Content) < 9999 {
+			// if message is not empty and not over 500 characters
+			if message.Content != "" && len(message.Content) < 500 {
 				err = database.CreateMessage(&message)
 				if err != nil {
 					log.Printf("error saving message: %v", err)

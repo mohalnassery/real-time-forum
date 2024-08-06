@@ -1,4 +1,3 @@
-
 body {
   font-family: "Poppins", sans-serif;
   margin: 0;
@@ -232,30 +231,62 @@ a {
   border-radius: var(--border-radius);
   box-shadow: var(--card-shadow);
   margin-top: inherit;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
-.top {
+.post-info .top {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  flex-wrap: wrap;
 }
 
-.right {
-  font-size: 13px;
+.post-info .right,
+.post-info .left {
   display: flex;
-  flex-direction: row;
   align-items: center;
   gap: 10px;
+  max-width: 100%;
 }
 
-.right span {
-  color: grey;
+.post-info .right {
+  flex: 1;
+  min-width: 0;
 }
 
-.left {
-  gap: 10px;
-  font-size: 13px;
+.post-info .right p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.post-info h2 {
+  font-size: 1.2em;
+  margin: 10px 0;
+  padding: 0;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  width: 100%;
+  max-width: 100%;
+}
+
+.post-info .tags {
   display: flex;
+  flex-direction: row;
+  gap: 5px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.post-info .tags div {
+  background-color: var(--tag-color);
+  padding: 3px 10px;
+  font-size: 12px;
+  border-radius: 3px;
+  white-space: nowrap;
 }
 
 .post-stats {
@@ -274,27 +305,6 @@ a {
 
 .fa-comment {
   color: grey;
-}
-
-.tags {
-  display: flex;
-  flex-direction: row;
-  gap: 15px;
-  margin-bottom: 10px;
-}
-
-.tags div {
-  background-color: var(--tag-color);
-  padding: 3px 20px;
-  font-size: 14px;
-  border-radius: 3px;
-}
-
-.post-details {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
 }
 
 /* .comment-section {
@@ -554,10 +564,29 @@ a {
   display: block;
 }
 
-.activity-item {
-  background-color: var(--card-background-color);
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 5px;
-  box-shadow: var(--card-shadow);
-}
+  /* Activity item styles */
+  .activity-item {
+    background-color: var(--card-background-color) !important;
+    padding: 10px !important;
+    margin-bottom: 10px !important;
+    border-radius: var(--border-radius) !important;
+    box-shadow: var(--card-shadow) !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+  
+  .activity-item h3 {
+    margin: 0 0 10px 0 !important;
+    font-size: 18px !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    display: block;
+  }
+  
+  .activity-item p {
+    margin: 0 !important;
+    font-size: 14px !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    display: block;
+  }

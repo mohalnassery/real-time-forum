@@ -50,10 +50,11 @@ export async function openChat(userId, nickname) {
     input.addEventListener('keyup', throttle( () => {
         let prevTyping = input.dataset.status;
             if (input.value && !prevTyping) {
-                sendTyping(user.id);
+                sendTyping(userId);
                 input.dataset.status = "typing";
+
             } else if (!input.value && prevTyping) {
-                sendStopTyping(user.id);
+                sendStopTyping(userId);
                 input.dataset.status = "";
             }
     }));
@@ -143,18 +144,24 @@ export function displayChatMessage(message, container, start = true) {
 
 export function sendMessageHandler() {
     const input = document.getElementById('chat-message-input');
-    if (input.value.trim() !== '') {
+    const notification = document.getElementById('message-notification');
+
+    if (input.value.trim() !== '' && input.value.length <= 380) {
         const message = {
             senderId: parseInt(localStorage.getItem('userId')),
             senderNickname: localStorage.getItem('nickname'),
             receiverId: parseInt(document.getElementById('chat-header').dataset.userId),
             content: input.value,
-            createdAt: new Date().toISOString(), // Add timestamp
+            createdAt: new Date().toISOString(),
             type: 'chat'
         };
         sendMessage(message);
         input.value = '';
+        document.getElementById('char-count').textContent = '0/380';
         populateUserList('chat-sidebar');
+    } else if (input.value.length > 380) {
+        notification.textContent = "Message is too long and cannot be sent!";
+        notification.style.display = 'block';
     }
 }
 

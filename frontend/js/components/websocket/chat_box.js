@@ -138,7 +138,7 @@ export async function openChatBox(user) {
             </div>
             <div class="messages"></div>
             <div class="input">
-                <input type="text" placeholder="Type a message..." maxlength="500">
+                <input type="text" placeholder="Type a message..." maxlength="380">
                 <button class="send-message">Send</button>
             </div>
         `;
@@ -162,7 +162,7 @@ export async function openChatBox(user) {
         }));
 
         chatBox.querySelector('.send-message').addEventListener('click', () => {
-            if (input.value.trim() !== '' && input.value.length <= 500) {
+            if (input.value.trim() !== '' && input.value.length <= 380) {
                 const message = {
                     senderId: parseInt(localStorage.getItem('userId')),
                     senderNickname: localStorage.getItem('nickname'),
@@ -179,7 +179,7 @@ export async function openChatBox(user) {
 
         // Add event listener for Enter key press
         input.addEventListener('keypress', (event) => {
-            if (event.key === 'Enter' && input.value.trim() !== '' && input.value.length <= 500) {
+            if (event.key === 'Enter' && input.value.trim() !== '' && input.value.length <= 380) {
                 const message = {
                     senderId: parseInt(localStorage.getItem('userId')),
                     senderNickname: localStorage.getItem('nickname'),

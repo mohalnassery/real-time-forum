@@ -83,3 +83,33 @@ export async function createPost(event) {
     console.error("Error creating post:", error);
   }
 }
+
+export function validateTitleLength(maxLength) {
+  const titleInput = document.getElementById("title");
+  const titleCounter = document.getElementById("title-counter");
+  
+  titleInput.addEventListener("input", () => {
+    const remainingChars = maxLength - titleInput.value.length;
+    titleCounter.textContent = `${remainingChars}/${maxLength}`;
+    
+    if (remainingChars < 0) {
+      titleInput.value = titleInput.value.slice(0, maxLength);
+      titleCounter.textContent = `0/${maxLength}`;
+    }
+  });
+}
+
+export function validateMessageLength(maxLength) {
+  const messageInput = document.getElementById("body-content");
+  const messageCounter = document.getElementById("message-counter");
+  
+  messageInput.addEventListener("input", () => {
+    const remainingChars = maxLength - messageInput.value.length;
+    messageCounter.textContent = `${remainingChars}/${maxLength}`;
+    
+    if (remainingChars < 0) {
+      messageInput.value = messageInput.value.slice(0, maxLength);
+      messageCounter.textContent = `0/${maxLength}`;
+    }
+  });
+}

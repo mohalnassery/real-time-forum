@@ -1,7 +1,6 @@
 import { fetchPosts, createCategoryElements } from '../components/home/posts.js';
 import { fetchUserStats, fetchAllUserStats, fetchLeaderboard } from '../components/home/stats.js';
 import { createFilterListeners } from '../components/home/filtering.js';
-
 export function initContent(app) {
     app.innerHTML = `
         <div class="main-container">

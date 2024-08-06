@@ -12,15 +12,17 @@ export async function initChatPage(mainContent) {
                 <div class="chat-header" id="chat-header" data-user-id="">
                     <div class="status-indicator"></div>
                     <span>Chat with <span id="chat-nickname"></span></span>
-                    <span class="typing-indicator" style="display: none;">  typing...</span>
+                    <span class="typing-indicator" style="display: none;">:  typing...</span>
                 </div>
                 <div class="chat-messages" id="chat-messages">
                     <!-- Chat messages will be dynamically added here -->
                 </div>
                 <div class="chat-input" id="chat-input">
-                    <input type="text" id="chat-message-input" placeholder="Type a message..." maxlength="500">
+                    <input type="text" id="chat-message-input" placeholder="Type a message..." maxlength="380">
+                    <span id="char-count">0/380</span>
                     <button id="chat-send-button">Send</button>
                 </div>
+                <div id="message-notification" class="message-notification"></div>
             </div>
         </div>
     `;
@@ -29,14 +31,36 @@ export async function initChatPage(mainContent) {
     await populateUserList('chat-sidebar');
     document.getElementById('chat-send-button').addEventListener('click', () => {
         const input = document.getElementById('chat-message-input');
-        if (input.value.trim() !== '' && input.value.length <= 500) {
+        if (input.value.trim() !== '' && input.value.length <= 380) {
             sendMessageHandler();
+        } else if (input.value.length > 380) {
+            notification.textContent = "Message is too long and cannot be sent!";
+            notification.style.display = 'block';
         }
     });
     document.getElementById('chat-message-input').addEventListener('keypress', (event) => {
         const input = event.target;
-        if (event.key === 'Enter' && input.value.trim() !== '' && input.value.length <= 500) {
+        if (event.key === 'Enter' && input.value.trim() !== '' && input.value.length <= 380) {
             sendMessageHandler();
+        } else if (event.key === 'Enter' && input.value.length > 380) {
+            notification.textContent = "Message is too long and cannot be sent!";
+            notification.style.display = 'block';
+        }
+    });
+
+    const input = document.getElementById('chat-message-input');
+    const charCount = document.getElementById('char-count');
+    const notification = document.getElementById('message-notification');
+
+    input.addEventListener('input', () => {
+        const length = input.value.length;
+        charCount.textContent = `${length}/380`;
+        
+        if (length > 380) {
+            notification.textContent = "Message is too long!";
+            notification.style.display = 'block';
+        } else {
+            notification.style.display = 'none';
         }
     });
 

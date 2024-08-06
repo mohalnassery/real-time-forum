@@ -29,6 +29,17 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 	title := r.FormValue("title")
 	body := r.FormValue("message")
 
+	// Validate title and body lengths
+	if len(title) > 100 {
+		http.Error(w, "Title exceeds maximum length of 100 characters", http.StatusBadRequest)
+		return
+	}
+
+	if len(body) > 5000 {
+		http.Error(w, "Message exceeds maximum length of 5000 characters", http.StatusBadRequest)
+		return
+	}
+
 	// Get the form values for categories
 	categories := r.Form["options"]
 
@@ -57,13 +68,20 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 	var filename string
 	if file != nil {
 		// Validate the file type
-		allowedTypes := map[string]bool{
-			"image/jpeg": true,
-			"image/png":  true,
-			"image/gif":  true,
+		buffer := make([]byte, 512)
+		_, err = file.Read(buffer)
+		if err != nil {
+			http.Error(w, "Failed to read file", http.StatusBadRequest)
+			return
 		}
-		if !allowedTypes[header.Header.Get("Content-Type")] {
+		fileType := http.DetectContentType(buffer)
+		if fileType != "image/jpeg" && fileType != "image/png" && fileType != "image/gif" {
 			http.Error(w, "Invalid file type. Only JPEG, PNG, and GIF are allowed.", http.StatusBadRequest)
+			return
+		}
+		_, err = file.Seek(0, 0)
+		if err != nil {
+			http.Error(w, "Failed to reset file reader", http.StatusInternalServerError)
 			return
 		}
 

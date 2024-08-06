@@ -183,25 +183,45 @@ body {
   .tabcontent.active {
     display: block !important;
     color: var(--text-color) !important;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
   }
   
   /* Activity item styles */
   .activity-item {
-    background-color: var(--card-background-color) !important;
-    padding: 10px !important;
-    margin-bottom: 10px !important;
-    border-radius: var(--border-radius) !important;
-    box-shadow: var(--card-shadow) !important;
+    background-color: var(--card-background-color);
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
   }
   
   .activity-item h3 {
-    margin: 0 0 10px 0 !important;
-    font-size: 18px !important;
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    white-space: normal;
+    word-break: break-all;
+
   }
   
   .activity-item p {
-    margin: 0 !important;
-    font-size: 14px !important;
+    margin: 0;
+    font-size: 14px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    line-height: 1.4;
+    display: block;
+    white-space: normal;
+    word-break: break-all;
+    
   }
 
   /* Add this new class for the profile information container */

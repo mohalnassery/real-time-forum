@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"real-time-forum/database"
 	"strconv"
@@ -53,14 +54,17 @@ func GetUserProfile(w http.ResponseWriter, r *http.Request) {
 }
 
 func calculateAge(dob string) (int, error) {
-	// Adjust the layout to match the expected format without the time component
-	parsedDOB, err := time.Parse("2006-01-02T15:04:05Z", dob)
+	parsedDOB, err := time.Parse(time.RFC3339, dob)
 	if err != nil {
 		return 0, err
 	}
-	age := time.Now().Year() - parsedDOB.Year()
-	if time.Now().YearDay() < parsedDOB.YearDay() {
+	now := time.Now()
+	age := now.Year() - parsedDOB.Year()
+	if now.YearDay() < parsedDOB.YearDay() {
 		age--
+	}
+	if age < 0 {
+		return 0, errors.New("invalid date of birth")
 	}
 	return age, nil
 }
