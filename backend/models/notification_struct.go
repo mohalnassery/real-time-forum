@@ -4,9 +4,10 @@ import "time"
 
 type Notification struct {
 	ID        int       `json:"id"`
-	UserID    int       `json:"user_id"`
 	Message   string    `json:"message"`
-	CreatedAt time.Time `json:"created_at"`
-	IsRead    bool      `json:"is_read"`
-	SenderID  int       `json:"sender_id"`
+	MessageID int       `json:"messageId"`
+	PostID    int       `json:"postId"`
+	CommentID int       `json:"commentId"`
+	CreatedAt time.Time `json:"createdAt"`
+	IsRead    bool      `json:"isRead"`
 }

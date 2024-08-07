@@ -1,4 +1,4 @@
-import { getUsers, getMessages, sendMessage, sendTyping, sendStopTyping, throttle } from './websocket.js';
+import { getUsers, getMessages, sendMessage, sendTyping, sendStopTyping, throttle, sendChatOpened, sendChatClosed } from './websocket.js';
 import { clearAllChatNotifications } from '../notifications.js';
 
 let throttler = false;
@@ -232,11 +232,7 @@ export async function openChatBox(user) {
     clearAllChatNotifications(user.id);
 
     // Send a message to indicate that the chat is opened
-    sendMessage({
-        type: "chat_opened",
-        senderId: parseInt(localStorage.getItem('userId')),
-        receiverId: user.id
-    });
+    sendChatOpened(user.id);
 
     // Scroll to the bottom of the chat
     const messageWindow = chatBox.querySelector('.messages');
@@ -255,10 +251,6 @@ export function closeChatBox(userId) {
     if (chatBox) {
         chatBox.classList.remove('show');
         // Send a message to indicate that the chat is closed
-        sendMessage({
-            type: "chat_closed",
-            senderId: parseInt(localStorage.getItem('userId')),
-            receiverId: userId
-        });
+        sendChatClosed(userId);
     }
 }

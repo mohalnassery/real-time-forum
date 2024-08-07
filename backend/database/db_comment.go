@@ -30,7 +30,7 @@ func InsertComment(nickname string, body string, postID int) error {
 		return err
 	}
 	message := fmt.Sprintf("%s commented on your post", nickname)
-	err = InsertNotification(postAuthorID, message, userID, postID, tx)
+	err = InsertNotification(postAuthorID, message, tx, 0, postID, 0)
 	if err != nil {
 		return err
 	}

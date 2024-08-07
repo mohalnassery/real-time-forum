@@ -5,10 +5,37 @@ import (
 )
 
 // CreateMessage inserts a new message into the database
-func CreateMessage(message *models.Message) error {
-	_, err := DB.Exec("INSERT INTO messages (sender_id, receiver_id, content, created_at) VALUES (?, ?, ?, ?)",
+func CreateMessage(message *models.Message) (int64, error) {
+	tx, err := DB.Begin()
+	if err != nil {
+		return 0, err
+	}
+	defer tx.Rollback()
+
+	result, err := tx.Exec("INSERT INTO messages (sender_id, receiver_id, content, created_at) VALUES (?, ?, ?, ?)",
 		message.SenderID, message.ReceiverID, message.Content, message.CreatedAt)
-	return err
+	if err != nil {
+		return 0, err
+	}
+
+	messageID, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	message.ID = int(messageID)
+
+	err = CreateMessageNotification(message)
+	if err != nil {
+		return 0, err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return 0, err
+	}
+
+	return messageID, nil
 }
 
 // GetMessagesByUserIDs retrieves messages between two users

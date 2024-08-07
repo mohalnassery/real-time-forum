@@ -55,15 +55,13 @@ func ClearNotification(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	postID, err := database.ClearNotification(notificationID)
+	err = database.ClearNotification(int64(notificationID))
 	if err != nil {
 		http.Error(w, "Failed to clear notification", http.StatusInternalServerError)
 		return
 	}
 
-	response := map[string]int{"postID": postID}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	w.WriteHeader(http.StatusOK)
 }
 
 func MarkAllNotificationsAsRead(w http.ResponseWriter, r *http.Request) {

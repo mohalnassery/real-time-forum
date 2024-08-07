@@ -64,21 +64,35 @@ func (c *Client) readPump() {
 		if message.Type == "chat" {
 			// if message is not empty and not over 500 characters
 			if message.Content != "" && len(message.Content) < 500 {
-				err = database.CreateMessage(&message)
+				messageID, err := database.CreateMessage(&message)
 				if err != nil {
 					log.Printf("error saving message: %v", err)
 					continue
 				}
+
+				isActive, _ := database.IsChatActive(message.ReceiverID, message.SenderID)
+				if isActive {
+					// If chat is active, mark the notification as read immediately
+					err = database.MarkAllChatNotificationsAsRead(message.SenderID, message.ReceiverID)
+					if err != nil {
+						log.Printf("error marking notifications as read: %v", err)
+					}
+				} else {
+					notificationMessage := fmt.Sprintf("New message from %s", message.SenderNickname)
+					err = database.InsertNotification(message.ReceiverID, notificationMessage, nil, int(messageID), 0, 0)
+					if err != nil {
+						log.Printf("error creating notification: %v", err)
+					}
+				}
 			}
 
-			isActive, _ := database.IsChatActive(message.ReceiverID, message.SenderID)
-			if !isActive {
-				// Create a notification only if the chat is not active between these two users
-				notificationMessage := fmt.Sprintf("New message from %s", message.SenderNickname)
-				database.InsertNotification(message.ReceiverID, notificationMessage, message.SenderID, 0, nil)
-			}
 		} else if message.Type == "chat_opened" {
 			c.hub.SetChatActive(message.SenderID, message.ReceiverID)
+			// Mark all notifications as read when chat is opened
+			err = database.MarkAllChatNotificationsAsRead(message.SenderID, message.ReceiverID)
+			if err != nil {
+				log.Printf("error marking notifications as read: %v", err)
+			}
 		} else if message.Type == "chat_closed" {
 			c.hub.SetChatInactive(message.SenderID, message.ReceiverID)
 		}

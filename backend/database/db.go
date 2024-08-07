@@ -160,13 +160,15 @@ func CreateAllTables(db *sql.DB) error {
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			user_id INTEGER,
 			message TEXT NOT NULL,
-			sender_id INTEGER,
+			message_id INTEGER,
 			post_id INTEGER,
+			comment_id INTEGER,
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 			is_read BOOLEAN DEFAULT FALSE,
 			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-			FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
-			FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE
+			FOREIGN KEY (message_id) REFERENCES messages(id) ON DELETE CASCADE,
+			FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
+			FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE
 		);
 		CREATE TABLE IF NOT EXISTS messages (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -179,11 +181,11 @@ func CreateAllTables(db *sql.DB) error {
 		);
 		CREATE TABLE IF NOT EXISTS active_chats (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			user_id INTEGER,
-			sender_id INTEGER,
-			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-			FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
-			UNIQUE (user_id, sender_id)
+			user_id1 INTEGER,
+			user_id2 INTEGER,
+			FOREIGN KEY (user_id1) REFERENCES users(id) ON DELETE CASCADE,
+			FOREIGN KEY (user_id2) REFERENCES users(id) ON DELETE CASCADE,
+			UNIQUE (user_id1, user_id2)
 		);
 	`
 	_, err := db.Exec(sqlTable)

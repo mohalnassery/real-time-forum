@@ -1,4 +1,4 @@
-import { getMessages, sendMessage, getUsers, sendTyping, sendStopTyping, throttle } from '../websocket/websocket.js';
+import { getMessages, sendMessage, getUsers, sendTyping, sendStopTyping, throttle, sendChatOpened, sendChatClosed } from '../websocket/websocket.js';
 import { clearAllChatNotifications } from '../notifications.js';
 
 let throttler = false;
@@ -98,11 +98,7 @@ export async function openChat(userId, nickname) {
     clearAllChatNotifications(userId);
 
     // Send a message to indicate that the chat is opened
-    sendMessage({
-        type: "chat_opened",
-        senderId: parseInt(localStorage.getItem('userId')),
-        receiverId: userId
-    });
+    sendChatOpened(userId);
 }
 
 export function displayChatMessage(message, container, start = true) {
@@ -237,4 +233,8 @@ function closeSidebar(event) {
     if (userSidebar && !userSidebar.contains(event.target)) {
         userSidebar.classList.remove('show');
     }
+}
+
+export function closeChat(userId) {
+    sendChatClosed(userId);
 }

@@ -1,6 +1,7 @@
 import { displayChatMessage } from '../chat/chat.js';
 import { displayMessage, updateUserStatus } from './chat_box.js';
 import { updateNotificationCounter, clearAllChatNotifications } from '../notifications.js';
+import { handleChatNotification } from '../nav.js';
 
 let socket;
 
@@ -101,7 +102,7 @@ export function handleWebSocketMessage(message) {
             // Show notification only if the current user is the receiver and not in an active chat with the sender
             const activeChatBox = document.querySelector(`.chat-box[data-user-id="${message.senderId}"].show`);
             if (!activeChatBox) {
-                showChatNotification(message);
+                handleChatNotification(message);
             }
         }
         displayMessage(message, false);
@@ -116,12 +117,6 @@ export function handleWebSocketMessage(message) {
     } else if (message.type === "stop typing") {
         hideTypingIndicator(message.senderId);
     }
-}
-
-function showChatNotification(message) {
-    const notificationMessage = `New message from ${message.senderNickname}: ${message.content}`;
-    updateNotificationCounter(1, true); // Increment the counter
-    addNotificationToDropdown(notificationMessage, message.senderId);
 }
 
 export function showTypingIndicator(userId) {
@@ -173,4 +168,26 @@ export function throttle(mainFunction, delay = 500) {
         }, delay);
       }
     };
+}
+
+export function sendChatOpened(receiverId) {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        const message = {
+            type: "chat_opened",
+            senderId: parseInt(localStorage.getItem('userId')),
+            receiverId: receiverId
+        };
+        socket.send(JSON.stringify(message));
+    }
+}
+
+export function sendChatClosed(receiverId) {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        const message = {
+            type: "chat_closed",
+            senderId: parseInt(localStorage.getItem('userId')),
+            receiverId: receiverId
+        };
+        socket.send(JSON.stringify(message));
+    }
 }

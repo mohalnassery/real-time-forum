@@ -1,3 +1,6 @@
+import { openChat } from './chat/chat.js';
+import { openChatBox } from './websocket/chat_box.js';
+
 async function fetchNotifications() {
   try {
     const response = await fetch("/notifications");
@@ -34,7 +37,28 @@ function displayNotifications(notifications) {
       const notificationItem = document.createElement("div");
       notificationItem.className = "notification-item";
       notificationItem.textContent = unreadNotification.message;
-      notificationItem.addEventListener("click", () => clearNotification(unreadNotification.id));
+      notificationItem.dataset.senderId = unreadNotification.messageId ? unreadNotification.messageId.toString() : '';
+      notificationItem.dataset.postId = unreadNotification.postId ? unreadNotification.postId.toString() : '';
+      notificationItem.dataset.commentId = unreadNotification.commentId ? unreadNotification.commentId.toString() : '';
+      notificationItem.addEventListener("click", () => {
+        if (unreadNotification.messageId) {
+          const user = { id: unreadNotification.messageId, nickname: unreadNotification.message.split(':')[0].split('from ')[1] };
+          if (document.getElementById('chat-main')) {
+            // If we're on the chat page
+            openChat(unreadNotification.messageId, user.nickname);
+          } else {
+            // If we're not on the chat page
+            openChatBox(user);
+          }
+          clearAllChatNotifications(unreadNotification.messageId);
+        } else if (unreadNotification.postId) {
+          // Handle post notification click
+          // You might want to navigate to the post page here
+        } else if (unreadNotification.commentId) {
+          // Handle comment notification click
+          // You might want to navigate to the comment within a post here
+        }
+      });
       notificationDropdown.appendChild(notificationItem);
     });
 
@@ -118,22 +142,32 @@ async function clearAllChatNotifications(userId) {
     updateNotificationCounter(-removedCount);
 }
 
-async function addNotificationToDropdown(message, senderId) {
+async function addNotificationToDropdown(notification) {
     const notificationDropdown = document.querySelector(".notification-dropdown");
     const notificationItem = document.createElement("div");
     notificationItem.className = "notification-item";
-    notificationItem.textContent = message;
-    notificationItem.dataset.senderId = senderId;
+    notificationItem.textContent = notification.message;
+    notificationItem.dataset.senderId = notification.messageId ? notification.messageId.toString() : '';
+    notificationItem.dataset.postId = notification.postId ? notification.postId.toString() : '';
+    notificationItem.dataset.commentId = notification.commentId ? notification.commentId.toString() : '';
     notificationItem.addEventListener("click", () => {
-        const user = { id: senderId, nickname: message.split(':')[0].split('from ')[1] };
-        if (document.getElementById('chat-main')) {
-            // If we're on the chat page
-            openChat(senderId, user.nickname);
-        } else {
-            // If we're not on the chat page
-            openChatBox(user);
+        if (notification.messageId) {
+            const user = { id: notification.messageId, nickname: notification.message.split(':')[0].split('from ')[1] };
+            if (document.getElementById('chat-main')) {
+                // If we're on the chat page
+                openChat(notification.messageId, user.nickname);
+            } else {
+                // If we're not on the chat page
+                openChatBox(user);
+            }
+            clearAllChatNotifications(notification.messageId);
+        } else if (notification.postId) {
+            // Handle post notification click
+            // You might want to navigate to the post page here
+        } else if (notification.commentId) {
+            // Handle comment notification click
+            // You might want to navigate to the comment within a post here
         }
-        clearAllChatNotifications(senderId);
     });
     notificationDropdown.insertBefore(notificationItem, notificationDropdown.firstChild);
 }

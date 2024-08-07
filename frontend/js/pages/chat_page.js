@@ -65,5 +65,9 @@ export async function initChatPage(mainContent) {
     });
 
     const userId = localStorage.getItem('userId');
-    // initWebSocket(userId);
+
+
+    // Populate user list initially and set up periodic refresh
+    await populateUserList('chat-sidebar');
+    setInterval(() => populateUserList('chat-sidebar'), 30000); // Refresh every 30 seconds
 }
