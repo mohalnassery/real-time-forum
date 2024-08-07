@@ -42,7 +42,7 @@ func InsertPostLike(postID int, userID int) error {
 			return err
 		}
 		message := fmt.Sprintf("Your post was liked by %s", nickname)
-		_, err = tx.Exec("INSERT INTO notifications (user_id, message, post_id) VALUES (?, ?, ?)", postAuthorID, message, postID)
+		err = InsertNotification(postAuthorID, message, userID, postID, tx)
 		if err != nil {
 			return err
 		}
@@ -94,7 +94,7 @@ func InsertPostDislike(postID int, userID int) error {
 			return err
 		}
 		message := fmt.Sprintf("Your post was disliked by %s", nickname)
-		_, err = tx.Exec("INSERT INTO notifications (user_id, message, post_id) VALUES (?, ?, ?)", postAuthorID, message, postID)
+		err = InsertNotification(postAuthorID, message, userID, postID, tx)
 		if err != nil {
 			return err
 		}
@@ -152,7 +152,7 @@ func InsertCommentLike(commentID, userID int) error {
 		}
 
 		message := fmt.Sprintf("Your comment was liked by %s", nickname)
-		_, err = tx.Exec("INSERT INTO notifications (user_id, message, post_id) VALUES (?, ?, ?)", commentAuthorID, message, postID)
+		err = InsertNotification(commentAuthorID, message, userID, postID, tx)
 		if err != nil {
 			return err
 		}
@@ -203,8 +203,12 @@ func InsertCommentDislike(commentID, userID int) error {
 		if err != nil {
 			return err
 		}
+		postID, err := GetPostIDByCommentID(commentID)
+		if err != nil {
+			return err
+		}
 		message := fmt.Sprintf("Your comment was disliked by %s", nickname)
-		_, err = tx.Exec("INSERT INTO notifications (user_id, message) VALUES (?, ?)", commentAuthorID, message)
+		err = InsertNotification(commentAuthorID, message, userID, postID, tx)
 		if err != nil {
 			return err
 		}

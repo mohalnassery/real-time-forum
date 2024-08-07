@@ -1,5 +1,6 @@
-import { fetchAndDisplayNotifications, markAllNotificationsAsRead, updateNotificationCounter } from './notifications.js';
+import { fetchAndDisplayNotifications, markAllNotificationsAsRead, updateNotificationCounter, addNotificationToDropdown } from './notifications.js';
 import { logout } from './auth/auth_handling.js';
+import { openChatBox } from './websocket/chat_box.js';
 
 let isLoggedIn = false; // Variable to track login status
 
@@ -191,5 +192,14 @@ export async function updateNavMenu() {
         }
     } catch (error) {
         console.error("Failed to update navigation menu:", error);
+    }
+}
+
+export function handleChatNotification(message) {
+    const currentUserId = parseInt(localStorage.getItem('userId'));
+    if (message.receiverId === currentUserId) {
+        const notificationMessage = `New message from ${message.senderNickname}: ${message.content}`;
+        updateNotificationCounter(1, true);
+        addNotificationToDropdown(notificationMessage, message.senderId);
     }
 }

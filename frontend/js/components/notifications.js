@@ -59,11 +59,11 @@ async function clearNotification(notificationId) {
     });
     if (response.ok) {
       const data = await response.json();
-      const postID = data.postID;
-      if (postID) {
-        window.location.href = `/#post/${postID}`; // Redirect to the new URL format
+      const senderId = data.senderId;
+      if (senderId) {
+        openChatBox({ id: senderId, nickname: data.senderNickname });
       } else {
-        console.error("Post ID not found in the response");
+        console.error("Sender ID not found in the response");
       }
     } else {
       console.error("Error clearing notification:", response.status);
@@ -93,8 +93,11 @@ async function fetchAndDisplayNotifications() {
   displayNotifications(notifications);
 }
 
-async function updateNotificationCounter(count) {
+async function updateNotificationCounter(count, increment = false) {
   const counterElement = document.getElementById("notification-counter");
+  if (increment) {
+    count = parseInt(counterElement.textContent || "0") + count;
+  }
   if (count > 0) {
       counterElement.textContent = count > 99 ? "99+" : count;
       counterElement.hidden = false;
@@ -103,7 +106,37 @@ async function updateNotificationCounter(count) {
   }
 }
 
+async function clearAllChatNotifications(userId) {
+    const notificationItems = document.querySelectorAll(".notification-item");
+    let removedCount = 0;
+    notificationItems.forEach(item => {
+        if (item.dataset.senderId === userId.toString()) {
+            item.remove();
+            removedCount++;
+        }
+    });
+    updateNotificationCounter(-removedCount);
+}
 
+async function addNotificationToDropdown(message, senderId) {
+    const notificationDropdown = document.querySelector(".notification-dropdown");
+    const notificationItem = document.createElement("div");
+    notificationItem.className = "notification-item";
+    notificationItem.textContent = message;
+    notificationItem.dataset.senderId = senderId;
+    notificationItem.addEventListener("click", () => {
+        const user = { id: senderId, nickname: message.split(':')[0].split('from ')[1] };
+        if (document.getElementById('chat-main')) {
+            // If we're on the chat page
+            openChat(senderId, user.nickname);
+        } else {
+            // If we're not on the chat page
+            openChatBox(user);
+        }
+        clearAllChatNotifications(senderId);
+    });
+    notificationDropdown.insertBefore(notificationItem, notificationDropdown.firstChild);
+}
 
 // Export functions to be used in other files
-export { fetchAndDisplayNotifications, clearNotification, markAllNotificationsAsRead, updateNotificationCounter };
+export { fetchAndDisplayNotifications, clearNotification, markAllNotificationsAsRead, updateNotificationCounter, clearAllChatNotifications, addNotificationToDropdown };

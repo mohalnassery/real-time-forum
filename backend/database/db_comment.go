@@ -6,12 +6,18 @@ import (
 )
 
 func InsertComment(nickname string, body string, postID int) error {
+	tx, err := DB.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
 	userID, err := GetUserID(nickname)
 	if err != nil {
 		return err
 	}
 
-	_, err = DB.Exec(`
+	_, err = tx.Exec(`
         INSERT INTO comments (body, post_id, author)
         VALUES (?, ?, ?)
     `, body, postID, userID)
@@ -24,12 +30,12 @@ func InsertComment(nickname string, body string, postID int) error {
 		return err
 	}
 	message := fmt.Sprintf("%s commented on your post", nickname)
-	err = InsertNotification(postAuthorID, message, postID)
+	err = InsertNotification(postAuthorID, message, userID, postID, tx)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return tx.Commit()
 }
 
 func GetCommentAuthorID(commentID int) (int, error) {

@@ -1,5 +1,6 @@
 import { displayChatMessage } from '../chat/chat.js';
 import { displayMessage, updateUserStatus } from './chat_box.js';
+import { updateNotificationCounter, clearAllChatNotifications } from '../notifications.js';
 
 let socket;
 
@@ -11,9 +12,15 @@ export function initWebSocket(id) {
     };
 
     socket.onmessage = function(event) {
-        const message = JSON.parse(event.data);
-        console.log("WebSocket message received:", message);
-        handleWebSocketMessage(message);
+        console.log("Raw WebSocket message received:", event.data);
+        try {
+            const message = JSON.parse(event.data);
+            console.log("Parsed WebSocket message:", message);
+            handleWebSocketMessage(message);
+        } catch (error) {
+            console.error("Error parsing WebSocket message:", error);
+            console.error("Problematic message:", event.data);
+        }
     };
 
     socket.onclose = function(event) {
@@ -85,10 +92,17 @@ export function handleWebSocketMessage(message) {
     if (message.type === "chat") {
         const chatPageContainer = document.getElementById('chat-messages');
         const activeChatUserId = document.getElementById('chat-header')?.dataset.userId;
+        const currentUserId = parseInt(localStorage.getItem('userId'));
 
         if (chatPageContainer && (message.senderId == activeChatUserId || message.receiverId == activeChatUserId)) {
-            displayChatMessage(message, chatPageContainer, false); // Update chat messages dynamically on the chat page
+            displayChatMessage(message, chatPageContainer, false);
             chatPageContainer.scrollTo(0, chatPageContainer.scrollHeight);
+        } else if (message.receiverId === currentUserId) {
+            // Show notification only if the current user is the receiver and not in an active chat with the sender
+            const activeChatBox = document.querySelector(`.chat-box[data-user-id="${message.senderId}"].show`);
+            if (!activeChatBox) {
+                showChatNotification(message);
+            }
         }
         displayMessage(message, false);
         const messageWindow = document.querySelector(`.chat-box[data-user-id="${message.receiverId}"] .messages`) || document.querySelector(`.chat-box[data-user-id="${message.senderId}"] .messages`);
@@ -102,6 +116,12 @@ export function handleWebSocketMessage(message) {
     } else if (message.type === "stop typing") {
         hideTypingIndicator(message.senderId);
     }
+}
+
+function showChatNotification(message) {
+    const notificationMessage = `New message from ${message.senderNickname}: ${message.content}`;
+    updateNotificationCounter(1, true); // Increment the counter
+    addNotificationToDropdown(notificationMessage, message.senderId);
 }
 
 export function showTypingIndicator(userId) {

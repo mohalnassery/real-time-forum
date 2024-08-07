@@ -1,4 +1,5 @@
 import { getMessages, sendMessage, getUsers, sendTyping, sendStopTyping, throttle } from '../websocket/websocket.js';
+import { clearAllChatNotifications } from '../notifications.js';
 
 let throttler = false;
 let scrollListener = null;
@@ -92,6 +93,16 @@ export async function openChat(userId, nickname) {
 
     // Reset throttler
     throttler = false;
+
+    // Clear all notifications for this user
+    clearAllChatNotifications(userId);
+
+    // Send a message to indicate that the chat is opened
+    sendMessage({
+        type: "chat_opened",
+        senderId: parseInt(localStorage.getItem('userId')),
+        receiverId: userId
+    });
 }
 
 export function displayChatMessage(message, container, start = true) {

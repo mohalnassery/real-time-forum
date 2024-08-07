@@ -1,9 +1,20 @@
 package database
 
-import "real-time-forum/models"
+import (
+	"database/sql"
+	"real-time-forum/models"
+	"time"
+)
 
-func InsertNotification(userID int, message string, postID int) error {
-	_, err := DB.Exec("INSERT INTO notifications (user_id, message, post_id) VALUES (?, ?, ?)", userID, message, postID)
+func InsertNotification(userID int, message string, senderID int, postID int, tx *sql.Tx) error {
+	var err error
+	if tx != nil {
+		_, err = tx.Exec("INSERT INTO notifications (user_id, message, sender_id, post_id, created_at) VALUES (?, ?, ?, ?, ?)",
+			userID, message, senderID, postID, time.Now())
+	} else {
+		_, err = DB.Exec("INSERT INTO notifications (user_id, message, sender_id, post_id, created_at) VALUES (?, ?, ?, ?, ?)",
+			userID, message, senderID, postID, time.Now())
+	}
 	return err
 }
 

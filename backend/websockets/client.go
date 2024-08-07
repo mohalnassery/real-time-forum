@@ -2,6 +2,7 @@ package websockets
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"real-time-forum/database"
 	"real-time-forum/models"
@@ -69,6 +70,17 @@ func (c *Client) readPump() {
 					continue
 				}
 			}
+
+			isActive, _ := database.IsChatActive(message.ReceiverID, message.SenderID)
+			if !isActive {
+				// Create a notification only if the chat is not active between these two users
+				notificationMessage := fmt.Sprintf("New message from %s", message.SenderNickname)
+				database.InsertNotification(message.ReceiverID, notificationMessage, message.SenderID, 0, nil)
+			}
+		} else if message.Type == "chat_opened" {
+			c.hub.SetChatActive(message.SenderID, message.ReceiverID)
+		} else if message.Type == "chat_closed" {
+			c.hub.SetChatInactive(message.SenderID, message.ReceiverID)
 		}
 
 		c.hub.broadcast <- message

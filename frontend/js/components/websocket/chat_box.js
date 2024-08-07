@@ -1,4 +1,5 @@
 import { getUsers, getMessages, sendMessage, sendTyping, sendStopTyping, throttle } from './websocket.js';
+import { clearAllChatNotifications } from '../notifications.js';
 
 let throttler = false;
 let typingTimeout;
@@ -145,7 +146,7 @@ export async function openChatBox(user) {
         document.body.appendChild(chatBox);
 
         chatBox.querySelector('.close-chat').addEventListener('click', () => {
-            chatBox.remove();
+            closeChatBox(user.id);
         });
 
         const input = chatBox.querySelector('input');
@@ -226,11 +227,38 @@ export async function openChatBox(user) {
         });
     }
     chatBox.classList.add('show');
+
+    // Clear all notifications for this user
+    clearAllChatNotifications(user.id);
+
+    // Send a message to indicate that the chat is opened
+    sendMessage({
+        type: "chat_opened",
+        senderId: parseInt(localStorage.getItem('userId')),
+        receiverId: user.id
+    });
+
+    // Scroll to the bottom of the chat
+    const messageWindow = chatBox.querySelector('.messages');
+    messageWindow.scrollTop = messageWindow.scrollHeight;
 }
 
 export function updateUserStatus(userId, status) {
     const userItem = document.querySelector(`.user-item[data-user-id="${userId}"] .status-indicator`);
     if (userItem) {
         userItem.className = `status-indicator ${status}`;
+    }
+}
+
+export function closeChatBox(userId) {
+    const chatBox = document.querySelector(`.chat-box[data-user-id="${userId}"]`);
+    if (chatBox) {
+        chatBox.classList.remove('show');
+        // Send a message to indicate that the chat is closed
+        sendMessage({
+            type: "chat_closed",
+            senderId: parseInt(localStorage.getItem('userId')),
+            receiverId: userId
+        });
     }
 }

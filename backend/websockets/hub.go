@@ -3,6 +3,7 @@ package websockets
 import (
 	"log"
 	"net/http"
+	"real-time-forum/database"
 	"real-time-forum/models"
 	"strconv"
 
@@ -111,4 +112,16 @@ func ServeWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	client.hub.register <- client
 	go client.writePump()
 	go client.readPump()
+}
+
+// Add a new method to the Hub struct
+func (h *Hub) SetChatActive(userID, senderID int) {
+	// Implement logic to set chat as active
+	database.DB.Exec("INSERT OR REPLACE INTO active_chats (user_id, sender_id) VALUES (?, ?)", userID, senderID)
+}
+
+func (h *Hub) SetChatInactive(userID, senderID int) {
+	// Implement logic to set chat as inactive
+	database.DB.Exec("DELETE FROM active_chats WHERE (user_id = ? AND sender_id = ?) OR (user_id = ? AND sender_id = ?)",
+		userID, senderID, senderID, userID)
 }

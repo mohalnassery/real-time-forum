@@ -156,16 +156,18 @@ func CreateAllTables(db *sql.DB) error {
 			expires_at DATETIME,
 			FOREIGN KEY (nickname) REFERENCES users(nickname) ON DELETE CASCADE
 		);
-        CREATE TABLE IF NOT EXISTS notifications (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER,
-            message TEXT NOT NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+		CREATE TABLE IF NOT EXISTS notifications (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			user_id INTEGER,
+			message TEXT NOT NULL,
+			sender_id INTEGER,
 			post_id INTEGER,
-            is_read BOOLEAN DEFAULT FALSE,
-            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-            FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE
-        );
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			is_read BOOLEAN DEFAULT FALSE,
+			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+			FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
+			FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE
+		);
 		CREATE TABLE IF NOT EXISTS messages (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			sender_id INTEGER,
@@ -174,6 +176,14 @@ func CreateAllTables(db *sql.DB) error {
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 			FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
 			FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
+		);
+		CREATE TABLE IF NOT EXISTS active_chats (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			user_id INTEGER,
+			sender_id INTEGER,
+			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+			FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
+			UNIQUE (user_id, sender_id)
 		);
 	`
 	_, err := db.Exec(sqlTable)
