@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	"real-time-forum/models"
 )
 
@@ -8,6 +9,7 @@ import (
 func CreateMessage(message *models.Message) (int64, error) {
 	tx, err := DB.Begin()
 	if err != nil {
+		err = fmt.Errorf("failed to begin transaction: %v", err)
 		return 0, err
 	}
 	defer tx.Rollback()
@@ -15,18 +17,22 @@ func CreateMessage(message *models.Message) (int64, error) {
 	result, err := tx.Exec("INSERT INTO messages (sender_id, receiver_id, content, created_at) VALUES (?, ?, ?, ?)",
 		message.SenderID, message.ReceiverID, message.Content, message.CreatedAt)
 	if err != nil {
+		err = fmt.Errorf("failed to insert message: %v", err)
 		return 0, err
 	}
 
 	messageID, err := result.LastInsertId()
 	if err != nil {
+		// add to the error: failed last insert id
+		err = fmt.Errorf("failed to get last insert id: %v", err)
 		return 0, err
 	}
 
 	message.ID = int(messageID)
 
-	err = CreateMessageNotification(message)
+	err = CreateMessageNotification(message, tx)
 	if err != nil {
+		err = fmt.Errorf("failed to create message notification: %v", err)
 		return 0, err
 	}
 

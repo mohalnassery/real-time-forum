@@ -1,6 +1,5 @@
 import { loadCSS } from '../components/utils.js';
 import { openChat, sendMessageHandler, populateUserList } from '../components/chat/chat.js';
-import { initWebSocket } from '../components/websocket/websocket.js';
 
 export async function initChatPage(mainContent) {
     mainContent.innerHTML = `

@@ -11,11 +11,30 @@ func InsertNotification(userID int, message string, tx *sql.Tx, messageID, postI
         INSERT INTO notifications (user_id, message, message_id, post_id, comment_id, created_at, is_read)
         VALUES (?, ?, ?, ?, ?, ?, FALSE)
     `
+
 	var err error
+	var stmt *sql.Stmt
+
 	if tx != nil {
-		_, err = tx.Exec(query, userID, message, messageID, postID, commentID, time.Now())
+		stmt, err = tx.Prepare(query)
 	} else {
-		_, err = DB.Exec(query, userID, message, messageID, postID, commentID, time.Now())
+		stmt, err = DB.Prepare(query)
+	}
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	for attempts := 0; attempts < 5; attempts++ {
+		_, err = stmt.Exec(userID, message, messageID, postID, commentID, time.Now())
+		if err == nil {
+			return nil
+		}
+		if err.Error() == "database is locked" {
+			time.Sleep(time.Millisecond * 100)
+		} else {
+			return err
+		}
 	}
 	return err
 }
@@ -77,7 +96,7 @@ func MarkAllChatNotificationsAsRead(receiverID, senderID int) error {
 }
 
 // New function to create a notification for a new message
-func CreateMessageNotification(message *models.Message) error {
+func CreateMessageNotification(message *models.Message, tx *sql.Tx) error {
 	notificationMessage := "New message from " + message.SenderNickname
-	return InsertNotification(message.ReceiverID, notificationMessage, nil, int(message.ID), 0, 0)
+	return InsertNotification(message.ReceiverID, notificationMessage, tx, int(message.ID), 0, 0)
 }
