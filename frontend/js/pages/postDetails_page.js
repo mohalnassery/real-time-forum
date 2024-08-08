@@ -6,7 +6,7 @@ export async function initPostDetails(app, postId) {
   <div class="main-section">
     <div class="post-container">
       <div class="top">
-        <a href="/" class="back-button">
+        <a id="back-button" class="back-button">
           <div class="back-button">
             <i class="fa-solid fa-arrow-left"></i>
           </div>
@@ -81,6 +81,9 @@ export async function initPostDetails(app, postId) {
 }
 
 function addEventListeners(postId) {
+  document.getElementById("back-button").addEventListener("click", () => {
+    window.location.hash = "";
+  })
   const likeButton = document.getElementById("like-btn");
   const dislikeButton = document.getElementById("dislike-btn");
   const submitCommentBtn = document.getElementById("submit-comment");

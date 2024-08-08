@@ -6,7 +6,7 @@ let isLoggedIn = false; // Variable to track login status
 export function createNavBar(navbar) {
     navbar.innerHTML = `
         <div class="header">
-            <a href="/">
+            <a id="logo">
                 <img src="/assets/logo.png" alt="Logo" class="logo" style="height: 50px; width: auto;">
             </a>
             <div class="user-auth">
@@ -40,6 +40,10 @@ export function createNavBar(navbar) {
     document.getElementById("logout-btn").addEventListener("click", async () => {
         await logout();
     });
+
+    document.getElementById("logo").addEventListener("click", () => {
+        window.location.hash = "";
+    })
 
     document.getElementById("chat-btn").addEventListener("click", () => {
         const chatBox = document.querySelector(".chat-box");
