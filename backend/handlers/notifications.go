@@ -85,3 +85,25 @@ func MarkAllNotificationsAsRead(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 }
+
+func MarkChatNotificationsAsRead(w http.ResponseWriter, r *http.Request) {
+	user, err := GetSessionUser(r)
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	userID, err := strconv.Atoi(r.URL.Path[len("/notifications/mark-chat-read/"):])
+	if err != nil {
+		http.Error(w, "Invalid user ID", http.StatusBadRequest)
+		return
+	}
+
+	err = database.MarkAllChatNotificationsAsRead(user.UserId, userID)
+	if err != nil {
+		http.Error(w, "Failed to mark chat notifications as read", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}

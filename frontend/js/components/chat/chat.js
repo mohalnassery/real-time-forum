@@ -97,6 +97,9 @@ export async function openChat(userId, nickname) {
     // Clear all notifications for this user
     clearAllChatNotifications(userId);
 
+    // Mark all notifications as read for this user
+    await markAllChatNotificationsAsRead(userId);
+
     // Send a message to indicate that the chat is opened
     sendChatOpened(userId);
 }

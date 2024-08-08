@@ -20,6 +20,11 @@ async function fetchNotifications() {
   }
 }
 
+async function fetchAndDisplayNotifications() {
+  const notifications = await fetchNotifications();
+  displayNotifications(notifications);
+}
+
 function displayNotifications(notifications) {
   const notificationDropdown = document.querySelector(".notification-dropdown");
   notificationDropdown.innerHTML = ""; // Clear existing notifications
@@ -53,10 +58,8 @@ function displayNotifications(notifications) {
           clearAllChatNotifications(unreadNotification.messageId);
         } else if (unreadNotification.postId) {
           // Handle post notification click
-          // You might want to navigate to the post page here
         } else if (unreadNotification.commentId) {
           // Handle comment notification click
-          // You might want to navigate to the comment within a post here
         }
       });
       notificationDropdown.appendChild(notificationItem);
@@ -112,11 +115,6 @@ async function markAllNotificationsAsRead() {
   }
 }
 
-async function fetchAndDisplayNotifications() {
-  const notifications = await fetchNotifications();
-  displayNotifications(notifications);
-}
-
 async function updateNotificationCounter(count, increment = false) {
   const counterElement = document.getElementById("notification-counter");
   if (increment) {
@@ -142,35 +140,54 @@ async function clearAllChatNotifications(userId) {
     updateNotificationCounter(-removedCount);
 }
 
+async function markAllChatNotificationsAsRead(userId) {
+    try {
+        const response = await fetch(`/notifications/mark-chat-read/${userId}`, {
+            method: "POST",
+        });
+        if (response.ok) {
+            fetchAndDisplayNotifications(); // Refresh notifications
+        } else {
+            console.error("Error marking chat notifications as read:", response.status);
+        }
+    } catch (error) {
+        console.error("Error marking chat notifications as read:", error);
+    }
+}
+
 async function addNotificationToDropdown(notification) {
     const notificationDropdown = document.querySelector(".notification-dropdown");
-    const notificationItem = document.createElement("div");
-    notificationItem.className = "notification-item";
-    notificationItem.textContent = notification.message;
-    notificationItem.dataset.senderId = notification.messageId ? notification.messageId.toString() : '';
-    notificationItem.dataset.postId = notification.postId ? notification.postId.toString() : '';
-    notificationItem.dataset.commentId = notification.commentId ? notification.commentId.toString() : '';
-    notificationItem.addEventListener("click", () => {
-        if (notification.messageId) {
-            const user = { id: notification.messageId, nickname: notification.message.split(':')[0].split('from ')[1] };
-            if (document.getElementById('chat-main')) {
-                // If we're on the chat page
-                openChat(notification.messageId, user.nickname);
-            } else {
-                // If we're not on the chat page
-                openChatBox(user);
+    const existingNotification = Array.from(notificationDropdown.children).find(
+        (item) => item.dataset.senderId === notification.messageId.toString()
+    );
+
+    if (!existingNotification) {
+        const notificationItem = document.createElement("div");
+        notificationItem.className = "notification-item";
+        notificationItem.textContent = notification.message;
+        notificationItem.dataset.senderId = notification.messageId ? notification.messageId.toString() : '';
+        notificationItem.dataset.postId = notification.postId ? notification.postId.toString() : '';
+        notificationItem.dataset.commentId = notification.commentId ? notification.commentId.toString() : '';
+        notificationItem.addEventListener("click", () => {
+            if (notification.messageId) {
+                const user = { id: notification.messageId, nickname: notification.message.split(':')[0].split('from ')[1] };
+                if (document.getElementById('chat-main')) {
+                    // If we're on the chat page
+                    openChat(notification.messageId, user.nickname);
+                } else {
+                    // If we're not on the chat page
+                    openChatBox(user);
+                }
+                clearAllChatNotifications(notification.messageId);
+            } else if (notification.postId) {
+                // Handle post notification click
+            } else if (notification.commentId) {
+                // Handle comment notification click
             }
-            clearAllChatNotifications(notification.messageId);
-        } else if (notification.postId) {
-            // Handle post notification click
-            // You might want to navigate to the post page here
-        } else if (notification.commentId) {
-            // Handle comment notification click
-            // You might want to navigate to the comment within a post here
-        }
-    });
-    notificationDropdown.insertBefore(notificationItem, notificationDropdown.firstChild);
+        });
+        notificationDropdown.insertBefore(notificationItem, notificationDropdown.firstChild);
+    }
 }
 
 // Export functions to be used in other files
-export { fetchAndDisplayNotifications, clearNotification, markAllNotificationsAsRead, updateNotificationCounter, clearAllChatNotifications, addNotificationToDropdown };
+export { fetchAndDisplayNotifications, clearNotification, markAllNotificationsAsRead, updateNotificationCounter, clearAllChatNotifications, addNotificationToDropdown, markAllChatNotificationsAsRead };

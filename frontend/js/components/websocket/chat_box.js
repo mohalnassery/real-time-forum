@@ -1,5 +1,5 @@
 import { getUsers, getMessages, sendMessage, sendTyping, sendStopTyping, throttle, sendChatOpened, sendChatClosed } from './websocket.js';
-import { clearAllChatNotifications } from '../notifications.js';
+import { clearAllChatNotifications, markAllChatNotificationsAsRead } from '../notifications.js';
 
 let throttler = false;
 let typingTimeout;
@@ -151,15 +151,15 @@ export async function openChatBox(user) {
 
         const input = chatBox.querySelector('input');
 
-        input.addEventListener('keyup', throttle( () => {
-            let prevTyping = input.dataset.status
-                if (input.value && !prevTyping) {
-                    sendTyping(user.id);
-                    input.dataset.status = "typing";
-                } else if (!input.value && prevTyping) {
-                    sendStopTyping(user.id);
-                    input.dataset.status = "";
-                }
+        input.addEventListener('keyup', throttle(() => {
+            let prevTyping = input.dataset.status;
+            if (input.value && !prevTyping) {
+                sendTyping(user.id);
+                input.dataset.status = "typing";
+            } else if (!input.value && prevTyping) {
+                sendStopTyping(user.id);
+                input.dataset.status = "";
+            }
         }));
 
         chatBox.querySelector('.send-message').addEventListener('click', () => {
@@ -231,6 +231,9 @@ export async function openChatBox(user) {
     // Clear all notifications for this user
     clearAllChatNotifications(user.id);
 
+    // Mark all notifications as read for this user
+    await markAllChatNotificationsAsRead(user.id);
+
     // Send a message to indicate that the chat is opened
     sendChatOpened(user.id);
 
@@ -249,7 +252,7 @@ export function updateUserStatus(userId, status) {
 export function closeChatBox(userId) {
     const chatBox = document.querySelector(`.chat-box[data-user-id="${userId}"]`);
     if (chatBox) {
-        chatBox.classList.remove('show');
+        chatBox.remove(); // Remove the chat box element from the DOM
         console.log("Chat box closed");
         // Send a message to indicate that the chat is closed
         sendChatClosed(userId);

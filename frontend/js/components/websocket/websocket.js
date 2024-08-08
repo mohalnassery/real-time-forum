@@ -1,6 +1,6 @@
 import { displayChatMessage } from '../chat/chat.js';
 import { displayMessage, updateUserStatus } from './chat_box.js';
-import { updateNotificationCounter, clearAllChatNotifications } from '../notifications.js';
+import { updateNotificationCounter, clearAllChatNotifications, markAllChatNotificationsAsRead } from '../notifications.js';
 import { handleChatNotification } from '../nav.js';
 
 let socket;
@@ -90,31 +90,21 @@ export async function getMessages(senderId, receiverId) {
 }
 
 export function handleWebSocketMessage(message) {
-    if (message.type === "chat") {
-        const chatPageContainer = document.getElementById('chat-messages');
-        const activeChatUserId = document.getElementById('chat-header')?.dataset.userId;
-        const currentUserId = parseInt(localStorage.getItem('userId'));
+    const currentUserId = parseInt(localStorage.getItem('userId'));
+    const activeChatUserId = document.getElementById('chat-header')?.dataset.userId;
 
-        if (chatPageContainer && (message.senderId == activeChatUserId || message.receiverId == activeChatUserId)) {
-            displayChatMessage(message, chatPageContainer, false);
-            chatPageContainer.scrollTo(0, chatPageContainer.scrollHeight);
-        } else if (message.receiverId === currentUserId) {
-            // Show notification only if the current user is the receiver and not in an active chat with the sender
-            const activeChatBox = document.querySelector(`.chat-box[data-user-id="${message.senderId}"].show`);
-            if (!activeChatBox) {
-                handleChatNotification(message);
-            }
-        }
-        displayMessage(message, false);
-        const messageWindow = document.querySelector(`.chat-box[data-user-id="${message.receiverId}"] .messages`) || document.querySelector(`.chat-box[data-user-id="${message.senderId}"] .messages`);
-        if (messageWindow) {
-            messageWindow.scrollTo(0, messageWindow.scrollHeight);
+    if (message.type === "chat") {
+        if (activeChatUserId && message.senderId == activeChatUserId) {
+            // User is actively viewing the chat, no notification needed
+            displayChatMessage(message, document.getElementById('chat-messages'), false);
+        } else {
+            handleChatNotification(message);
         }
     } else if (message.type === "status") {
         updateUserStatus(message.senderId, message.content);
-    } else if (message.type === "typing") {
+    } else if (message.type === "typing" && message.receiverId === currentUserId) {
         showTypingIndicator(message.senderId);
-    } else if (message.type === "stop typing") {
+    } else if (message.type === "stop typing" && message.receiverId === currentUserId) {
         hideTypingIndicator(message.senderId);
     }
 }
@@ -180,6 +170,7 @@ export function sendChatOpened(receiverId) {
         socket.send(JSON.stringify(message));
     }
 }
+
 
 export function sendChatClosed(receiverId) {
     if (socket && socket.readyState === WebSocket.OPEN) {

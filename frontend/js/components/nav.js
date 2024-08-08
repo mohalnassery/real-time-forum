@@ -1,6 +1,5 @@
 import { fetchAndDisplayNotifications, markAllNotificationsAsRead, updateNotificationCounter, addNotificationToDropdown } from './notifications.js';
 import { logout } from './auth/auth_handling.js';
-import { openChatBox } from './websocket/chat_box.js';
 
 let isLoggedIn = false; // Variable to track login status
 
@@ -43,9 +42,9 @@ export function createNavBar(navbar) {
     });
 
     document.getElementById("chat-btn").addEventListener("click", () => {
-        const chatBox = document.getElementById("chat-box");
+        const chatBox = document.querySelector(".chat-box");
         if (chatBox) {
-            chatBox.hidden = !chatBox.hidden;
+            chatBox.classList.toggle("show");
         }
         window.location.hash = "#chat";
     });
