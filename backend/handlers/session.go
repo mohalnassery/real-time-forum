@@ -33,6 +33,14 @@ func CreateSession(w http.ResponseWriter, r *http.Request, user models.UserRegis
 		return err
 	}
 
+	// Fetch the user ID from the database
+	var userID int
+	err = database.DB.QueryRow("SELECT id FROM users WHERE nickname = ?", user.Nickname).Scan(&userID)
+	if err != nil {
+		return err
+	}
+	user.UserId = userID // Set the UserId field
+
 	sessionID := generateSessionID()
 	expirationTime := time.Now().Add(24 * time.Hour) // Set session expiration to 24 hours
 
