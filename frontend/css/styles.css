@@ -12,8 +12,8 @@
     --input-background: #f0f0f0;
     --input-border: #cccccc;
     --input-placeholder: #888888;
-    --toast-background: #333;
-    --toast-text-color: #fff;
+    --toast-background: #d3d3d3;
+    --toast-text-color: #1a0c0c;
 }
 
 [data-theme="dark"] {
@@ -29,8 +29,8 @@
     --input-background: #2e2e2e;
     --input-border: #555555;
     --input-placeholder: #aaaaaa;
-    --toast-background: #444;
-    --toast-text-color: #fff;
+    --toast-background: #ff0000;
+    --toast-text-color: #ffffff;
 }
 
 body {

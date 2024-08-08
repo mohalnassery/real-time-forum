@@ -26,6 +26,7 @@ async function fetchAndDisplayNotifications(onlyUnread = false) {
 }
 
 function displayNotifications(notifications) {
+  
   const notificationDropdown = document.querySelector(".notification-dropdown");
   notificationDropdown.innerHTML = ""; // Clear existing notifications
 
@@ -33,8 +34,11 @@ function displayNotifications(notifications) {
   if (!Array.isArray(notifications)) {
     notifications = [];
   }
+  console.log("notifications", notifications);
+  // filter out the read notifications
+  const unreadNotifications = notifications.filter(notification => !notification.isRead);
 
-  notifications.forEach((notification) => {
+  unreadNotifications.forEach((notification) => {
     const notificationItem = document.createElement("div");
     notificationItem.className = "notification-item";
     notificationItem.textContent = notification.message;
@@ -145,39 +149,40 @@ async function markAllChatNotificationsAsRead(userId) {
     }
 }
 
-async function addNotificationToDropdown(notification) {
-  const notificationDropdown = document.querySelector(".notification-dropdown");
-  const existingNotification = Array.from(notificationDropdown.children).find(
-    (item) => item.dataset.senderId === notification.messageId.toString()
-  );
+// async function addNotificationToDropdown(notification) {
+//   const notificationDropdown = document.querySelector(".notification-dropdown");
+//   const existingNotification = Array.from(notificationDropdown.children).find(
+//     (item) => item.dataset.senderId === notification.messageId.toString()
+//   );
 
-  if (!existingNotification) {
-    const notificationItem = document.createElement("div");
-    notificationItem.className = "notification-item";
-    notificationItem.textContent = notification.message;
-    notificationItem.dataset.senderId = notification.messageId ? notification.messageId.toString() : '';
-    notificationItem.dataset.postId = notification.postId ? notification.postId.toString() : '';
-    notificationItem.dataset.commentId = notification.commentId ? notification.commentId.toString() : '';
-    notificationItem.addEventListener("click", () => {
-      if (notification.messageId) {
-        const user = { id: notification.messageId, nickname: notification.message.split(':')[0].split('from ')[1] };
-        if (document.getElementById('chat-main')) {
-          // If we're on the chat page
-          openChat(notification.messageId, user.nickname);
-        } else {
-          // If we're not on the chat page
-          openChatBox(user);
-        }
-        clearAllChatNotifications(notification.messageId);
-      } else if (notification.postId) {
-        // Handle post notification click
-      } else if (notification.commentId) {
-        // Handle comment notification click
-      }
-    });
-    notificationDropdown.insertBefore(notificationItem, notificationDropdown.firstChild);
-  }
-}
+//   if (!existingNotification) {
+//     const notificationItem = document.createElement("div");
+//     notificationItem.className = "notification-item";
+//     notificationItem.textContent = notification.message;
+//     notificationItem.dataset.senderId = notification.messageId ? notification.messageId.toString() : '';
+//     notificationItem.dataset.postId = notification.postId ? notification.postId.toString() : '';
+//     notificationItem.dataset.commentId = notification.commentId ? notification.commentId.toString() : '';
+//     notificationItem.addEventListener("click", () => {
+//       if (notification.messageId) {
+//         const user = { id: notification.messageId, nickname: notification.message.split(':')[0].split('from ')[1] };
+//         if (document.getElementById('chat-main')) {
+//           // If we're on the chat page
+//           openChat(notification.messageId, user.nickname);
+//         } else {
+//           // If we're not on the chat page
+//           openChatBox(user);
+//         }
+//         clearAllChatNotifications(notification.messageId);
+//       } else if (notification.postId) {
+//         // Handle post notification click
+//       } else if (notification.commentId) {
+//         // Handle comment notification click
+//       }
+//     });
+//     notificationDropdown.insertBefore(notificationItem, notificationDropdown.firstChild);
+//   }
+// }
 
 // Export functions to be used in other files
-export { fetchAndDisplayNotifications, clearNotification, markAllNotificationsAsRead, updateNotificationCounter, clearAllChatNotifications, addNotificationToDropdown, markAllChatNotificationsAsRead };
+export { fetchAndDisplayNotifications, clearNotification, markAllNotificationsAsRead, updateNotificationCounter, clearAllChatNotifications, markAllChatNotificationsAsRead };
+// export { addNotificationToDropdown };
