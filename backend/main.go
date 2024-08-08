@@ -41,7 +41,6 @@ func main() {
 
 	// Message handling endpoints
 	r.Handle("/messages", helper.LimitMiddleware(generalLimiter, http.HandlerFunc(handlers.GetMessagesHandler)))
-	r.Handle("/messages/send", helper.LimitMiddleware(generalLimiter, http.HandlerFunc(handlers.SendMessageHandler)))
 
 	// Functionality endpoints
 	r.Handle("/categories", helper.LimitMiddleware(generalLimiter, http.HandlerFunc(handlers.GetCategories)))

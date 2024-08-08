@@ -2,7 +2,6 @@ package websockets
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"real-time-forum/database"
 	"real-time-forum/models"
@@ -64,7 +63,7 @@ func (c *Client) readPump() {
 		if message.Type == "chat" {
 			// if message is not empty and not over 500 characters
 			if message.Content != "" && len(message.Content) < 500 {
-				messageID, err := database.CreateMessage(&message)
+				_, err := database.CreateMessage(&message)
 				if err != nil {
 					log.Printf("error saving message: %v", err)
 					continue
@@ -78,8 +77,7 @@ func (c *Client) readPump() {
 						log.Printf("error marking notifications as read: %v", err)
 					}
 				} else {
-					notificationMessage := fmt.Sprintf("New message from %s", message.SenderNickname)
-					err = database.InsertNotification(message.ReceiverID, notificationMessage, nil, int(messageID), 0, 0)
+					err = database.CreateMessageNotification(&message, nil)
 					if err != nil {
 						log.Printf("error creating notification: %v", err)
 					}

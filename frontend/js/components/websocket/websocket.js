@@ -1,6 +1,6 @@
 import { displayChatMessage } from '../chat/chat.js';
 import { displayMessage, updateUserStatus } from './chat_box.js';
-import { updateNotificationCounter, clearAllChatNotifications, markAllChatNotificationsAsRead } from '../notifications.js';
+import { updateNotificationCounter, clearAllChatNotifications, markAllChatNotificationsAsRead, fetchAndDisplayNotifications } from '../notifications.js';
 import { handleChatNotification } from '../nav.js';
 
 let socket;
@@ -15,9 +15,13 @@ export function initWebSocket(id) {
     socket.onmessage = function(event) {
         console.log("Raw WebSocket message received:", event.data);
         try {
-            const message = JSON.parse(event.data);
-            console.log("Parsed WebSocket message:", message);
-            handleWebSocketMessage(message);
+            // Split the message by newlines to handle multiple JSON objects
+            const messages = event.data.split('\n').filter(msg => msg.trim() !== '');
+            messages.forEach(msg => {
+                const message = JSON.parse(msg);
+                console.log("Parsed WebSocket message:", message);
+                handleWebSocketMessage(message);
+            });
         } catch (error) {
             console.error("Error parsing WebSocket message:", error);
             console.error("Problematic message:", event.data);
@@ -90,21 +94,31 @@ export async function getMessages(senderId, receiverId) {
 }
 
 export function handleWebSocketMessage(message) {
-    const currentUserId = parseInt(localStorage.getItem('userId'));
-    const activeChatUserId = document.getElementById('chat-header')?.dataset.userId;
-
     if (message.type === "chat") {
-        if (activeChatUserId && message.senderId == activeChatUserId) {
-            // User is actively viewing the chat, no notification needed
-            displayChatMessage(message, document.getElementById('chat-messages'), false);
-        } else {
-            handleChatNotification(message);
+        const chatPageContainer = document.getElementById('chat-messages');
+        const activeChatUserId = document.getElementById('chat-header')?.dataset.userId;
+        const currentUserId = parseInt(localStorage.getItem('userId'));
+
+        if (chatPageContainer && (message.senderId == activeChatUserId || message.receiverId == activeChatUserId)) {
+            displayChatMessage(message, chatPageContainer, false);
+            chatPageContainer.scrollTo(0, chatPageContainer.scrollHeight);
+        } else if (message.receiverId === currentUserId) {
+            // Show notification only if the current user is the receiver and not in an active chat with the sender
+            const activeChatBox = document.querySelector(`.chat-box[data-user-id="${message.senderId}"].show`);
+            if (!activeChatBox) {
+                handleChatNotification(message);
+            }
+        }
+        displayMessage(message, false);
+        const messageWindow = document.querySelector(`.chat-box[data-user-id="${message.receiverId}"] .messages`) || document.querySelector(`.chat-box[data-user-id="${message.senderId}"] .messages`);
+        if (messageWindow) {
+            messageWindow.scrollTo(0, messageWindow.scrollHeight);
         }
     } else if (message.type === "status") {
         updateUserStatus(message.senderId, message.content);
-    } else if (message.type === "typing" && message.receiverId === currentUserId) {
+    } else if (message.type === "typing") {
         showTypingIndicator(message.senderId);
-    } else if (message.type === "stop typing" && message.receiverId === currentUserId) {
+    } else if (message.type === "stop typing") {
         hideTypingIndicator(message.senderId);
     }
 }

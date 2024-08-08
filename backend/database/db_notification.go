@@ -8,12 +8,21 @@ import (
 )
 
 func InsertNotification(userID int, message string, tx *sql.Tx, messageID, postID, commentID int) error {
+	// Check if messageID exists in the messages table
+	var exists bool
+	err := DB.QueryRow("SELECT EXISTS(SELECT 1 FROM messages WHERE id = ?)", messageID).Scan(&exists)
+	if err != nil {
+		return fmt.Errorf("failed to check if messageID exists: %v", err)
+	}
+	if !exists {
+		return fmt.Errorf("messageID %d does not exist in messages table", messageID)
+	}
+
 	query := `
         INSERT INTO notifications (user_id, message, message_id, post_id, comment_id, created_at, is_read)
         VALUES (?, ?, ?, ?, ?, ?, FALSE)
     `
 
-	var err error
 	var stmt *sql.Stmt
 
 	if tx != nil {
@@ -33,6 +42,9 @@ func InsertNotification(userID int, message string, tx *sql.Tx, messageID, postI
 		}
 		if err.Error() == "database is locked" {
 			time.Sleep(time.Millisecond * 100)
+		} else if err.Error() == "FOREIGN KEY constraint failed" {
+			// Log more details about the foreign key constraint failure
+			return fmt.Errorf("foreign key constraint failed: userID=%d, messageID=%d, postID=%d, commentID=%d, error=%v", userID, messageID, postID, commentID, err)
 		} else {
 			return fmt.Errorf("failed to execute statement: %v", err)
 		}

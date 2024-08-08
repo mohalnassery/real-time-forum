@@ -2,8 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
-	"log"
 	"net/http"
 	"real-time-forum/database"
 	"real-time-forum/models"
@@ -51,19 +49,10 @@ func SendMessageHandler(w http.ResponseWriter, r *http.Request) {
 	// Set the creation time to the current time
 	message.CreatedAt = time.Now()
 
-	messageID, err := database.CreateMessage(&message)
+	_, err = database.CreateMessage(&message)
 	if err != nil {
 		http.Error(w, "Failed to send message", http.StatusInternalServerError)
 		return
-	}
-
-	isActive, _ := database.IsChatActive(message.ReceiverID, message.SenderID)
-	if !isActive {
-		notificationMessage := fmt.Sprintf("New message from %s", message.SenderNickname)
-		err = database.InsertNotification(message.ReceiverID, notificationMessage, nil, int(messageID), 0, 0)
-		if err != nil {
-			log.Printf("Error creating notification: %v", err)
-		}
 	}
 
 	w.WriteHeader(http.StatusOK)

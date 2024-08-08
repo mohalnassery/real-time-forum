@@ -23,23 +23,24 @@ func CreateMessage(message *models.Message) (int64, error) {
 
 	messageID, err := result.LastInsertId()
 	if err != nil {
-		// add to the error: failed last insert id
 		err = fmt.Errorf("failed to get last insert id: %v", err)
 		return 0, err
 	}
 
 	message.ID = int(messageID)
 
-	err = CreateMessageNotification(message, tx)
-	if err != nil {
-		err = fmt.Errorf("failed to create message notification: %v", err)
-		return 0, err
-	}
-
+	// Commit the transaction after inserting the message
 	err = tx.Commit()
 	if err != nil {
 		return 0, err
 	}
+
+	// Create the message notification
+	// err = CreateMessageNotification(message, nil)
+	// if err != nil {
+	// 	err = fmt.Errorf("failed to create message notification: %v", err)
+	// 	return 0, err
+	// }
 
 	return messageID, nil
 }

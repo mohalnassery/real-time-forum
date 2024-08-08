@@ -195,10 +195,10 @@ export async function updateNavMenu() {
 }
 
 export function handleChatNotification(message) {
-    const currentUserId = parseInt(localStorage.getItem('userId'));
-    if (message.receiverId === currentUserId) {
-        const notificationMessage = `New message from ${message.senderNickname}: ${message.content}`;
-        updateNotificationCounter(1, true);
-        addNotificationToDropdown(notificationMessage, message.senderId);
-    }
+  const currentUserId = parseInt(localStorage.getItem('userId'));
+  if (message.receiverId === currentUserId) {
+    const notificationMessage = `New message from ${message.senderNickname}: ${message.content}`;
+    updateNotificationCounter(1, true);
+    addNotificationToDropdown(notificationMessage, message.senderId);
+  }
 }
