@@ -5,6 +5,7 @@ import { handleChatNotification } from '../nav.js';
 
 let socket;
 
+// Initialize the WebSocket connection
 export function initWebSocket(id) {
     socket = new WebSocket(`ws://localhost:8080/ws?clientId=${id}`);
 
@@ -37,6 +38,7 @@ export function initWebSocket(id) {
     };
 }
 
+// Send a message to the server
 export function sendMessage(message) {
     if (socket && socket.readyState === WebSocket.OPEN) {
         socket.send(JSON.stringify(message));
@@ -45,6 +47,7 @@ export function sendMessage(message) {
     }
 }
 
+// Send a typing message to the server
 export function sendTyping(receiverId) {
     if (socket && socket.readyState === WebSocket.OPEN) {
         const message = {
@@ -56,6 +59,7 @@ export function sendTyping(receiverId) {
     }
 }
 
+// Send a stop typing message to the server
 export function sendStopTyping(receiverId) {
     if (socket && socket.readyState === WebSocket.OPEN) {
         const message = {
@@ -67,6 +71,7 @@ export function sendStopTyping(receiverId) {
     }
 }
 
+// Fetch users from the server
 export async function getUsers() {
     const userId = localStorage.getItem('userId');
     const response = await fetch(`/users?user_id=${userId}`);
@@ -78,6 +83,7 @@ export async function getUsers() {
     }
 }
 
+// Fetch messages between two users
 export async function getMessages(senderId, receiverId) {
     try {
         const response = await fetch(`/messages?sender_id=${senderId}&receiver_id=${receiverId}`);
@@ -93,6 +99,7 @@ export async function getMessages(senderId, receiverId) {
     }
 }
 
+// Handle a WebSocket message
 export function handleWebSocketMessage(message) {
     if (message.type === "chat") {
         const chatPageContainer = document.getElementById('chat-messages');
@@ -123,6 +130,7 @@ export function handleWebSocketMessage(message) {
     }
 }
 
+// Show a typing indicator in the chat header
 export function showTypingIndicator(userId) {
     // Check for typing indicator in chat header
     const chatHeaderIndicator = document.querySelector(`.chat-header[data-user-id="${userId}"] .typing-indicator`);
@@ -137,6 +145,7 @@ export function showTypingIndicator(userId) {
     }
 }
 
+// Hide a typing indicator in the chat header
 export function hideTypingIndicator(userId) {
     // Check for typing indicator in chat header
     const chatHeaderIndicator = document.querySelector(`.chat-header[data-user-id="${userId}"] .typing-indicator`);
@@ -151,6 +160,7 @@ export function hideTypingIndicator(userId) {
     }
 }
 
+// Debounce a function
 export function debounce(func, timeout = 500){
     let timer;
     return (...args) => {
@@ -159,7 +169,7 @@ export function debounce(func, timeout = 500){
     };
 }
 
-  
+// Throttle a function
 export function throttle(mainFunction, delay = 500) {
     let timerFlag = null; // Variable to keep track of the timer
   
@@ -174,6 +184,7 @@ export function throttle(mainFunction, delay = 500) {
     };
 }
 
+// Send a chat opened message to the server
 export function sendChatOpened(receiverId) {
     if (socket && socket.readyState === WebSocket.OPEN) {
         const message = {
@@ -185,7 +196,7 @@ export function sendChatOpened(receiverId) {
     }
 }
 
-
+// Send a chat closed message to the server
 export function sendChatClosed(receiverId) {
     if (socket && socket.readyState === WebSocket.OPEN) {
         const message = {

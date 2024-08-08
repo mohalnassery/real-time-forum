@@ -1,4 +1,4 @@
-import { fetchAndDisplayNotifications, markAllNotificationsAsRead, updateNotificationCounter, addNotificationToDropdown } from './notifications.js';
+import { fetchAndDisplayNotifications, markAllNotificationsAsRead, updateNotificationCounter } from './notifications.js';
 import { logout } from './auth/auth_handling.js';
 
 let isLoggedIn = false; // Variable to track login status
@@ -93,7 +93,8 @@ export function createNavBar(navbar) {
         event.stopPropagation();
         notificationDropdown.classList.toggle("show");
         if (notificationDropdown.classList.contains("show")) {
-            await fetchAndDisplayNotifications();
+            notificationDropdown.innerHTML = ""; // Clear existing notifications
+            await fetchAndDisplayNotifications(); // Fetch all notifications
         }
     });
 
@@ -195,10 +196,39 @@ export async function updateNavMenu() {
 }
 
 export function handleChatNotification(message) {
-  const currentUserId = parseInt(localStorage.getItem('userId'));
-  if (message.receiverId === currentUserId) {
-    const notificationMessage = `New message from ${message.senderNickname}: ${message.content}`;
-    updateNotificationCounter(1, true);
-    addNotificationToDropdown(notificationMessage, message.senderId);
-  }
+    const currentUserId = parseInt(localStorage.getItem('userId'));
+    if (message.receiverId === currentUserId) {
+        const notificationMessage = `New message from ${message.senderNickname}: ${message.content}`;
+        updateNotificationCounter(1, true);
+        // Show a toast notification instead of adding to dropdown
+        showNotification(notificationMessage);
+    }
+}
+
+// Function to show a toast notification
+function showNotification(message) {
+    let toastNotification = document.querySelector(".toast-notification");
+
+    if (toastNotification) {
+        // If a toast already exists, update its message and reset the timer
+        toastNotification.textContent = message;
+        toastNotification.classList.add("show"); // Ensure it is visible
+        clearTimeout(toastNotification.timeoutId); // Clear the previous timeout
+        toastNotification.timeoutId = setTimeout(() => {
+            toastNotification.remove();
+        }, 5000); // 5000ms = 5 seconds
+    } else {
+        // Create a new toast notification element
+        toastNotification = document.createElement("div");
+        toastNotification.className = "toast-notification show"; // Add the show class to trigger the animation
+        toastNotification.textContent = message;
+
+        // Add the toast notification to the body
+        document.body.appendChild(toastNotification);
+
+        // Set a timer to remove the toast notification after some time
+        toastNotification.timeoutId = setTimeout(() => {
+            toastNotification.remove();
+        }, 5000); // 5000ms = 5 seconds
+    }
 }

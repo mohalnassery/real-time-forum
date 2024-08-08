@@ -42,6 +42,7 @@ export function createUserSidebar() {
     });
 }
 
+// Fetch users from the server and display them in the user sidebar
 async function fetchUsers() {
     const users = await getUsers();
     const userList = document.getElementById('user-list');
@@ -74,6 +75,7 @@ async function fetchUsers() {
     });
 }
 
+// Display a message in the chat box
 export function displayMessage(message, start = true) {
     const chatBox = document.querySelector(`.chat-box[data-user-id="${message.receiverId}"]`) || document.querySelector(`.chat-box[data-user-id="${message.senderId}"]`);
     if (chatBox) {
@@ -123,7 +125,7 @@ export function displayMessage(message, start = true) {
     }
 }
 
-
+// Open a chat box with a user
 export async function openChatBox(user) {
     let chatBox = document.querySelector(`.chat-box[data-user-id="${user.id}"]`);
     if (!chatBox) {
@@ -242,6 +244,7 @@ export async function openChatBox(user) {
     messageWindow.scrollTop = messageWindow.scrollHeight;
 }
 
+// Update the status of a user in the chat box
 export function updateUserStatus(userId, status) {
     const userItem = document.querySelector(`.user-item[data-user-id="${userId}"] .status-indicator`);
     if (userItem) {
@@ -249,6 +252,7 @@ export function updateUserStatus(userId, status) {
     }
 }
 
+// Close a chat box with a user
 export function closeChatBox(userId) {
     const chatBox = document.querySelector(`.chat-box[data-user-id="${userId}"]`);
     if (chatBox) {

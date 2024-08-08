@@ -1,9 +1,9 @@
 import { openChat } from './chat/chat.js';
 import { openChatBox } from './websocket/chat_box.js';
 
-async function fetchNotifications() {
+async function fetchNotifications(onlyUnread = false) {
   try {
-    const response = await fetch("/notifications");
+    const response = await fetch(`/notifications${onlyUnread ? '?unread=true' : ''}`);
     if (response.ok) {
       const data = await response.json();
       const notifications = data.notifications;
@@ -20,8 +20,8 @@ async function fetchNotifications() {
   }
 }
 
-async function fetchAndDisplayNotifications() {
-  const notifications = await fetchNotifications();
+async function fetchAndDisplayNotifications(onlyUnread = false) {
+  const notifications = await fetchNotifications(onlyUnread);
   displayNotifications(notifications);
 }
 
@@ -34,49 +34,39 @@ function displayNotifications(notifications) {
     notifications = [];
   }
 
-  // Filter out read notifications
-  const unreadNotifications = notifications.filter(notification => !notification.is_read);
-
-  if (unreadNotifications.length > 0) {
-    unreadNotifications.forEach((unreadNotification) => {
-      const notificationItem = document.createElement("div");
-      notificationItem.className = "notification-item";
-      notificationItem.textContent = unreadNotification.message;
-      notificationItem.dataset.senderId = unreadNotification.messageId ? unreadNotification.messageId.toString() : '';
-      notificationItem.dataset.postId = unreadNotification.postId ? unreadNotification.postId.toString() : '';
-      notificationItem.dataset.commentId = unreadNotification.commentId ? unreadNotification.commentId.toString() : '';
-      notificationItem.addEventListener("click", () => {
-        if (unreadNotification.messageId) {
-          const user = { id: unreadNotification.messageId, nickname: unreadNotification.message.split(':')[0].split('from ')[1] };
-          if (document.getElementById('chat-main')) {
-            // If we're on the chat page
-            openChat(unreadNotification.messageId, user.nickname);
-          } else {
-            // If we're not on the chat page
-            openChatBox(user);
-          }
-          clearAllChatNotifications(unreadNotification.messageId);
-        } else if (unreadNotification.postId) {
-          // Handle post notification click
-        } else if (unreadNotification.commentId) {
-          // Handle comment notification click
+  notifications.forEach((notification) => {
+    const notificationItem = document.createElement("div");
+    notificationItem.className = "notification-item";
+    notificationItem.textContent = notification.message;
+    notificationItem.dataset.senderId = notification.messageId ? notification.messageId.toString() : '';
+    notificationItem.dataset.postId = notification.postId ? notification.postId.toString() : '';
+    notificationItem.dataset.commentId = notification.commentId ? notification.commentId.toString() : '';
+    notificationItem.addEventListener("click", () => {
+      if (notification.messageId) {
+        const user = { id: notification.messageId, nickname: notification.message.split(':')[0].split('from ')[1] };
+        if (document.getElementById('chat-main')) {
+          // If we're on the chat page
+          openChat(notification.messageId, user.nickname);
+        } else {
+          // If we're not on the chat page
+          openChatBox(user);
         }
-      });
-      notificationDropdown.appendChild(notificationItem);
+        clearAllChatNotifications(notification.messageId);
+      } else if (notification.postId) {
+        // Handle post notification click
+      } else if (notification.commentId) {
+        // Handle comment notification click
+      }
     });
+    notificationDropdown.appendChild(notificationItem);
+  });
 
-    // Add "Mark all as read" option
-    const markAllRead = document.createElement("div");
-    markAllRead.className = "mark-all-read";
-    markAllRead.textContent = "Mark all as read";
-    markAllRead.addEventListener("click", markAllNotificationsAsRead);
-    notificationDropdown.appendChild(markAllRead);
-  } else {
-    const noNotifications = document.createElement("div");
-    noNotifications.className = "notification-item";
-    noNotifications.textContent = "NO NEW NOTIFICATION";
-    notificationDropdown.appendChild(noNotifications);
-  }
+  // Add "Mark all as read" option
+  const markAllRead = document.createElement("div");
+  markAllRead.className = "mark-all-read";
+  markAllRead.textContent = "Mark all as read";
+  markAllRead.addEventListener("click", markAllNotificationsAsRead);
+  notificationDropdown.appendChild(markAllRead);
 }
 
 async function clearNotification(notificationId) {
@@ -106,13 +96,7 @@ async function markAllNotificationsAsRead() {
       method: "POST",
     });
     if (response.ok) {
-      fetchAndDisplayNotifications(); // Refresh notifications
-      // // Notify other clients via WebSocket
-      // const message = {
-      //   type: "mark_all_read",
-      //   receiverId: parseInt(localStorage.getItem('userId'))
-      // };
-      // sendMessage(message);
+      fetchAndDisplayNotifications(); // Refresh notifications and show all
     } else {
       console.error("Error marking all notifications as read:", response.status);
     }
@@ -152,7 +136,7 @@ async function markAllChatNotificationsAsRead(userId) {
             method: "POST",
         });
         if (response.ok) {
-            fetchAndDisplayNotifications(); // Refresh notifications
+            fetchAndDisplayNotifications(true); // Refresh notifications and show only unread
         } else {
             console.error("Error marking chat notifications as read:", response.status);
         }
