@@ -63,9 +63,16 @@ func (c *Client) readPump() {
 		if message.Type == "chat" {
 			// if message is not empty and not over 500 characters
 			if message.Content != "" && len(message.Content) < 500 {
-				_, err := database.CreateMessage(&message)
+				tx, err := database.DB.Begin()
+				if err != nil {
+					log.Printf("error beginning transaction: %v", err)
+					continue
+				}
+
+				_, err = database.CreateMessage(&message)
 				if err != nil {
 					log.Printf("error saving message: %v", err)
+					tx.Rollback()
 					continue
 				}
 
@@ -77,10 +84,18 @@ func (c *Client) readPump() {
 						log.Printf("error marking notifications as read: %v", err)
 					}
 				} else {
-					err = database.CreateMessageNotification(&message, nil)
+					err = database.CreateMessageNotification(&message, tx)
 					if err != nil {
-						log.Printf("error creating notification: %v", err)
+						log.Printf("error creating notification: %v, isActive: %v, receiverID: %d, senderID: %d", err, isActive, message.ReceiverID, message.SenderID)
+						tx.Rollback()
+						continue
 					}
+				}
+
+				err = tx.Commit()
+				if err != nil {
+					log.Printf("error committing transaction: %v", err)
+					continue
 				}
 			}
 

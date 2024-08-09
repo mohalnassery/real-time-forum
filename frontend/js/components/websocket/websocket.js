@@ -40,11 +40,26 @@ export function initWebSocket(id) {
 
 // Send a message to the server
 export function sendMessage(message) {
-    if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify(message));
-    } else {
-        console.error("WebSocket is not open. Unable to send message.");
-    }
+    const maxAttempts = 3; // Maximum number of attempts
+    let attempts = 0;
+
+    const trySendMessage = () => {
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify(message));
+        } else {
+            console.error("WebSocket is not open. Unable to send message.");
+            if (attempts < maxAttempts) {
+                attempts++;
+                console.log(`Attempting to reopen WebSocket (${attempts}/${maxAttempts})...`);
+                initWebSocket(id);
+                setTimeout(trySendMessage, 1000); // Wait before trying again
+            } else {
+                console.error("Failed to send message after multiple attempts.");
+            }
+        }
+    };
+
+    trySendMessage();
 }
 
 // Send a typing message to the server
