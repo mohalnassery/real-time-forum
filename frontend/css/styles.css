@@ -63,6 +63,10 @@ button:hover {
     background-color: var(--primary-color-dark);
 }
 
+a:hover {
+    cursor: pointer;
+}
+
 h1 {
     color: var(--primary-color);
     font-style: italic;
