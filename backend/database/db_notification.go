@@ -8,14 +8,17 @@ import (
 )
 
 func InsertNotification(userID int, message string, tx *sql.Tx, messageID, postID, commentID int) error {
-	// Check if messageID exists in the messages table
-	var exists bool
-	err := DB.QueryRow("SELECT EXISTS(SELECT 1 FROM messages WHERE id = ?)", messageID).Scan(&exists)
-	if err != nil {
-		return fmt.Errorf("failed to check if messageID exists: %v", err)
-	}
-	if !exists {
-		return fmt.Errorf("messageID %d does not exist in messages table", messageID)
+	// Skip the existence check if messageID is 0
+	var err error
+	if messageID != 0 {
+		var exists bool
+		err = DB.QueryRow("SELECT EXISTS(SELECT 1 FROM messages WHERE id = ?)", messageID).Scan(&exists)
+		if err != nil {
+			return fmt.Errorf("failed to check if messageID exists: %v", err)
+		}
+		if !exists {
+			return fmt.Errorf("messageID %d does not exist in messages table", messageID)
+		}
 	}
 
 	query := `
@@ -65,8 +68,8 @@ func GetNotifications(userID int) ([]models.Notification, error) {
 	rows, err := DB.Query(`
         SELECT notifications.id, notifications.message, notifications.message_id, notifications.post_id, notifications.comment_id, notifications.created_at, notifications.is_read, messages.sender_id
         FROM notifications
-		JOIN messages on notifications.message_id = messages.id
-        WHERE notifications.user_id = ?
+        LEFT JOIN messages ON notifications.message_id = messages.id
+        WHERE notifications.user_id = ? AND notifications.is_read = FALSE
         ORDER BY notifications.created_at DESC
     `, userID)
 	if err != nil {
@@ -78,9 +81,16 @@ func GetNotifications(userID int) ([]models.Notification, error) {
 	var notifications []models.Notification
 	for rows.Next() {
 		var n models.Notification
-		err := rows.Scan(&n.ID, &n.Message, &n.MessageID, &n.PostID, &n.CommentID, &n.CreatedAt, &n.IsRead, &n.SenderID)
+		var senderID sql.NullInt64
+		err := rows.Scan(&n.ID, &n.Message, &n.MessageID, &n.PostID, &n.CommentID, &n.CreatedAt, &n.IsRead, &senderID)
 		if err != nil {
 			return nil, err
+		}
+		if senderID.Valid {
+			senderIDValue := int(senderID.Int64)
+			n.SenderID = &senderIDValue
+		} else {
+			n.SenderID = nil
 		}
 		notifications = append(notifications, n)
 	}

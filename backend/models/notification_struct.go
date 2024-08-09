@@ -10,5 +10,5 @@ type Notification struct {
 	CommentID int       `json:"commentId"`
 	CreatedAt time.Time `json:"createdAt"`
 	IsRead    bool      `json:"isRead"`
-	SenderID  int       `json:"senderId"`
+	SenderID  *int      `json:"senderId"` // Use a pointer to handle NULL values
 }
