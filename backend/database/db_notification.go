@@ -63,12 +63,14 @@ func GetUnreadNotificationCount(userID int) (int, error) {
 
 func GetNotifications(userID int) ([]models.Notification, error) {
 	rows, err := DB.Query(`
-        SELECT id, message, message_id, post_id, comment_id, created_at, is_read
+        SELECT notifications.id, notifications.message, notifications.message_id, notifications.post_id, notifications.comment_id, notifications.created_at, notifications.is_read, messages.sender_id
         FROM notifications
-        WHERE user_id = ?
-        ORDER BY created_at DESC
+		JOIN messages on notifications.message_id = messages.id
+        WHERE notifications.user_id = ?
+        ORDER BY notifications.created_at DESC
     `, userID)
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -76,7 +78,7 @@ func GetNotifications(userID int) ([]models.Notification, error) {
 	var notifications []models.Notification
 	for rows.Next() {
 		var n models.Notification
-		err := rows.Scan(&n.ID, &n.Message, &n.MessageID, &n.PostID, &n.CommentID, &n.CreatedAt, &n.IsRead)
+		err := rows.Scan(&n.ID, &n.Message, &n.MessageID, &n.PostID, &n.CommentID, &n.CreatedAt, &n.IsRead, &n.SenderID)
 		if err != nil {
 			return nil, err
 		}

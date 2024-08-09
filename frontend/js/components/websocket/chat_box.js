@@ -50,7 +50,6 @@ async function fetchUsers() {
 
     // Sort users by nickname
     users.sort((a, b) => a.nickname.localeCompare(b.nickname));
-    console.log(users)
 
     users.forEach(user => {
         if (user.nickname != localStorage.getItem("nickname")) {
@@ -251,7 +250,6 @@ export function updateUserStatus(userId, status) {
     if (userItem) {
         userItem.className = `status-indicator ${status}`;
     } else {
-        console.log("sound 1")
         fetchUsers();
     }
 }

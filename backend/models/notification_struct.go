@@ -10,4 +10,5 @@ type Notification struct {
 	CommentID int       `json:"commentId"`
 	CreatedAt time.Time `json:"createdAt"`
 	IsRead    bool      `json:"isRead"`
+	SenderID  int       `json:"senderId"`
 }

@@ -42,15 +42,15 @@ function displayNotifications(notifications) {
     const notificationItem = document.createElement("div");
     notificationItem.className = "notification-item";
     notificationItem.textContent = notification.message;
-    notificationItem.dataset.senderId = notification.messageId ? notification.messageId.toString() : '';
+    notificationItem.dataset.senderId = notification.senderId ? notification.senderId.toString() : '';
     notificationItem.dataset.postId = notification.postId ? notification.postId.toString() : '';
     notificationItem.dataset.commentId = notification.commentId ? notification.commentId.toString() : '';
     notificationItem.addEventListener("click", () => {
       if (notification.messageId) {
-        const user = { id: notification.messageId, nickname: notification.message.split(':')[0].split('from ')[1] };
+        const user = { id: notification.senderId, nickname: notification.message.split(':')[0].split('from ')[1] };
         if (document.getElementById('chat-main')) {
           // If we're on the chat page
-          openChat(notification.messageId, user.nickname);
+          openChat(notification.senderId, user.nickname);
         } else {
           // If we're not on the chat page
           openChatBox(user);
@@ -118,6 +118,7 @@ async function updateNotificationCounter(count, increment = false) {
       counterElement.textContent = count > 99 ? "99+" : count;
       counterElement.hidden = false;
   } else {
+      counterElement.textContent = "0"
       counterElement.hidden = true;
   }
 }
