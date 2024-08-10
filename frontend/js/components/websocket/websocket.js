@@ -136,6 +136,14 @@ export function handleWebSocketMessage(message) {
         if (messageWindow) {
             messageWindow.scrollTo(0, messageWindow.scrollHeight);
         }
+        // update the user list
+        const userToBoost = document.querySelector(`.user-item[data-user-id="${message.senderId}"]`) || document.querySelector(`.user-item[data-user-id="${message.receiverId}"]`)
+        if (userToBoost) {
+            const userlist = document.getElementById('user-list')
+            userlist.insertBefore(userToBoost,userlist.firstChild)
+        } else {
+            console.log("uhhh")
+        }
     } else if (message.type === "status") {
         updateUserStatus(message.senderId, message.content);
     } else if (message.type === "typing") {

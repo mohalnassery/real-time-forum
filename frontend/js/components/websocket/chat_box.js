@@ -49,7 +49,17 @@ async function fetchUsers() {
     userList.innerHTML = '';
 
     // Sort users by nickname
-    users.sort((a, b) => a.nickname.localeCompare(b.nickname));
+    users.sort((a, b) => {
+        if (a.lastMessageTime === b.lastMessageTime || (!a.lastMessageTime && b.lastMessageTime === "0001-01-01T00:00:00Z") || (!b.lastMessageTime && a.lastMessageTime === "0001-01-01T00:00:00Z")) {
+            return a.nickname.localeCompare(b.nickname)
+        }
+        const dateA = new Date(a.lastMessageTime)
+        const dateB = new Date(b.lastMessageTime)
+        if (dateA === dateB) {
+            return a.nickname.localeCompare(b.nickname)
+        }
+        return dateB - dateA
+    } );
 
     users.forEach(user => {
         if (user.nickname != localStorage.getItem("nickname")) {
