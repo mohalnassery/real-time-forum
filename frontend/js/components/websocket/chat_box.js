@@ -269,7 +269,6 @@ export function closeChatBox(userId) {
     const chatBox = document.querySelector(`.chat-box[data-user-id="${userId}"]`);
     if (chatBox) {
         chatBox.remove(); // Remove the chat box element from the DOM
-        console.log("Chat box closed");
         // Send a message to indicate that the chat is closed
         sendChatClosed(userId);
     }

@@ -74,7 +74,6 @@ export function createNavBar(navbar) {
         const response = await fetch("/auth/is-logged-in");
         if (response.ok) {
             const data = await response.json();
-            console.log("data", data);
             localStorage.setItem("userId", data.userId);
         } else {
             console.error("Failed to fetch user ID:", response.status);

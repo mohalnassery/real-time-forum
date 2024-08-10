@@ -33,7 +33,6 @@ function displayNotifications(notifications) {
   if (!Array.isArray(notifications)) {
     notifications = [];
   }
-  console.log("notifications", notifications);
   // filter out the read notifications
   const unreadNotifications = notifications.filter(notification => !notification.isRead);
   unreadNotifications.forEach((notification) => {

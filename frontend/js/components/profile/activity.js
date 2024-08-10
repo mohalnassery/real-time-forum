@@ -6,7 +6,7 @@ export async function fetchUserActivity(userID) {
         }
         const data = await response.json();
         const activity = data.activity;
-        console.log(activity); // Log the response to check the structure
+        //console.log(activity); // Log the response to check the structure
 
         // Normalize the creationDate field and ensure properties are initialized
         activity.createdPosts = (activity.createdPosts || []).map(post => ({

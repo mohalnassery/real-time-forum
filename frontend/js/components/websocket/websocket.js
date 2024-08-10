@@ -14,13 +14,13 @@ export function initWebSocket(id) {
     };
 
     socket.onmessage = function(event) {
-        console.log("Raw WebSocket message received:", event.data);
+        //console.log("Raw WebSocket message received:", event.data);
         try {
             // Split the message by newlines to handle multiple JSON objects
             const messages = event.data.split('\n').filter(msg => msg.trim() !== '');
             messages.forEach(msg => {
                 const message = JSON.parse(msg);
-                console.log("Parsed WebSocket message:", message);
+                //console.log("Parsed WebSocket message:", message);
                 handleWebSocketMessage(message);
             });
         } catch (error) {
@@ -141,8 +141,6 @@ export function handleWebSocketMessage(message) {
         if (userToBoost) {
             const userlist = document.getElementById('user-list')
             userlist.insertBefore(userToBoost,userlist.firstChild)
-        } else {
-            console.log("uhhh")
         }
     } else if (message.type === "status") {
         updateUserStatus(message.senderId, message.content);
