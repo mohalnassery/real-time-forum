@@ -49,7 +49,7 @@ function displayNotifications(notifications) {
       if (notification.postId !== 0 && notification.messageId === 0) {
         // Navigate to the post
         await clearNotification(notification.id); // Clear the notification
-        updateNotificationCounter(-1); // Decrement the counter by 1
+        updateNotificationCounter(-1,true); // Decrement the counter by 1
         window.location.href = `http://localhost:8080/#post/${notification.postId}`;
 
       } else if (notification.messageId !== 0) {
@@ -138,7 +138,7 @@ async function clearAllChatNotifications(userId) {
             removedCount++;
         }
     });
-    updateNotificationCounter(-removedCount);
+    updateNotificationCounter(-removedCount,true);
 }
 
 async function markAllChatNotificationsAsRead(userId) {
