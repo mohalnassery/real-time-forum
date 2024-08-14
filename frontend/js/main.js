@@ -4,7 +4,7 @@ import { initContent } from './pages/home_page.js';
 import { initPostDetails } from './pages/postDetails_page.js';
 import { initCreatePost } from './pages/createPost_page.js';
 import { loadCSS } from './components/utils.js';
-import { initWebSocket } from './components/websocket/websocket.js';
+import { initWebSocket, sendChatClosed } from './components/websocket/websocket.js';
 import { initProfilePage } from './pages/profile_page.js';
 import { initChatPage } from './pages/chat_page.js'; // Import the chat page initialization function
 import { createUserSidebar } from './components/websocket/chat_box.js';
@@ -53,6 +53,7 @@ async function handleNavigation() {
     }
 
     try {
+        sendChatClosed(0);
         if (hash.startsWith("#post/")) {
             const postId = hash.split("/")[1];
             await initPostDetails(mainContent, postId);

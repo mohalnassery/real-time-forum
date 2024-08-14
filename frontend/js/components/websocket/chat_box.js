@@ -4,7 +4,6 @@ import { clearAllChatNotifications, markAllChatNotificationsAsRead } from '../no
 let throttler = false;
 let typingTimeout;
 
-
 // Function to create the user sidebar
 export function createUserSidebar() {
     const sidebar = document.createElement('div');
@@ -27,7 +26,6 @@ export function createUserSidebar() {
 
     fetchUsers();
 
-    
     // Add event listener to user icon to toggle sidebar
     document.getElementById("user-icon").addEventListener("click", () => {
         document.getElementById("user-sidebar").classList.toggle("show");
@@ -59,7 +57,7 @@ async function fetchUsers() {
             return a.nickname.localeCompare(b.nickname)
         }
         return dateB - dateA
-    } );
+    });
 
     users.forEach(user => {
         if (user.nickname != localStorage.getItem("nickname")) {
@@ -146,7 +144,7 @@ export async function openChatBox(user) {
             <div class="chat-header" data-user-id="${user.id}">
                 <div class="status-indicator ${user.status}"></div>
                 <span>Chat with ${user.nickname}</span>
-                <span class="typing-indicator" style="display: none;">typing...</span>
+                <span class="typing-indicator" style="display: none;"></span>
                 <button class="close-chat">X</button>
             </div>
             <div class="messages"></div>

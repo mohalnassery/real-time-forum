@@ -80,7 +80,7 @@ func GetMessagesByUserIDs(senderID, receiverID int) ([]models.Message, error) {
 // IsChatActive checks if there's an active chat session between two users
 func IsChatActive(userID1, userID2 int) (bool, error) {
 	var count int
-	err := DB.QueryRow("SELECT COUNT(*) FROM active_chats WHERE (user_id1 = ? AND user_id2 = ?) OR (user_id1 = ? AND user_id2 = ?)",
+	err := DB.QueryRow("SELECT COUNT(*) FROM active_chats WHERE (user_id1 = ? AND user_id2 = ?) AND (user_id1 = ? AND user_id2 = ?)",
 		userID1, userID2, userID2, userID1).Scan(&count)
 	return count > 0, err
 }
@@ -93,7 +93,12 @@ func SetChatActive(userID1, userID2 int) error {
 
 // SetChatInactive marks the chat as inactive for the specific pair of users
 func SetChatInactive(userID1, userID2 int) error {
-	_, err := DB.Exec("DELETE FROM active_chats WHERE (user_id1 = ? AND user_id2 = ?) OR (user_id1 = ? AND user_id2 = ?)",
-		userID1, userID2, userID2, userID1)
-	return err
+	if userID2 == 0 {
+		_, err := DB.Exec("DELETE FROM active_chats WHERE user_id1 = ?", userID1)
+		return err
+	} else {
+		_, err := DB.Exec("DELETE FROM active_chats WHERE user_id1 = ? AND user_id2 = ?",
+			userID1, userID2)
+		return err
+	}
 }

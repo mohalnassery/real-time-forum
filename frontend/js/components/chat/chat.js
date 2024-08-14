@@ -1,5 +1,5 @@
 import { getMessages, sendMessage, getUsers, sendTyping, sendStopTyping, throttle, sendChatOpened, sendChatClosed } from '../websocket/websocket.js';
-import { clearAllChatNotifications } from '../notifications.js';
+import { clearAllChatNotifications, markAllChatNotificationsAsRead } from '../notifications.js';
 
 let throttler = false;
 let scrollListener = null;
@@ -48,16 +48,15 @@ export async function openChat(userId, nickname) {
     const input = document.getElementById('chat-message-input');
     let typingTimeout;
 
-    input.addEventListener('keyup', throttle( () => {
+    input.addEventListener('keyup', throttle(() => {
         let prevTyping = input.dataset.status;
-            if (input.value && !prevTyping) {
-                sendTyping(userId);
-                input.dataset.status = "typing";
-
-            } else if (!input.value && prevTyping) {
-                sendStopTyping(userId);
-                input.dataset.status = "";
-            }
+        if (input.value && !prevTyping) {
+            sendTyping(userId);
+            input.dataset.status = "typing";
+        } else if (!input.value && prevTyping) {
+            sendStopTyping(userId);
+            input.dataset.status = "";
+        }
     }));
 
     // Scroll event listener
@@ -175,14 +174,51 @@ export function sendMessageHandler() {
     }
 }
 
+
 export async function populateUserList(chatSidebarId) {
     const chatSidebar = document.getElementById(chatSidebarId);
-    chatSidebar.innerHTML = ''; // Clear the existing user list
-
     const users = await getUsers();
     const filteredUsers = users.filter(user => 
         user.lastMessageTime && user.lastMessageTime !== "0001-01-01T00:00:00Z"
     );
+
+    // Update existing user items or add new ones
+    filteredUsers.forEach(user => {
+        let userItem = chatSidebar.querySelector(`.user-item[data-user-id="${user.id}"]`);
+        if (!userItem) {
+            userItem = document.createElement('div');
+            userItem.className = 'user-item';
+            userItem.dataset.userId = user.id;
+
+            const statusIndicator = document.createElement('div');
+            statusIndicator.className = `status-indicator ${user.status}`;
+
+            const userName = document.createElement('span');
+            userName.textContent = `${user.nickname} (${new Date(user.lastMessageTime).toLocaleString()})`;
+
+            userItem.appendChild(statusIndicator);
+            userItem.appendChild(userName);
+
+            userItem.addEventListener('click', () => openChat(user.id, user.nickname));
+            chatSidebar.appendChild(userItem);
+        } else {
+            // Update existing user item
+            const statusIndicator = userItem.querySelector('.status-indicator');
+            statusIndicator.className = `status-indicator ${user.status}`;
+
+            const userName = userItem.querySelector('span');
+            userName.textContent = `${user.nickname} (${new Date(user.lastMessageTime).toLocaleString()})`;
+        }
+    });
+
+    // Remove user items that are no longer in the filteredUsers list
+    const existingUserItems = chatSidebar.querySelectorAll('.user-item');
+    existingUserItems.forEach(userItem => {
+        const userId = userItem.dataset.userId;
+        if (!filteredUsers.some(user => user.id == userId)) {
+            chatSidebar.removeChild(userItem);
+        }
+    });
 
     if (filteredUsers.length === 0) {
         const noConversationsMessage = document.createElement('div');
@@ -209,25 +245,6 @@ export async function populateUserList(chatSidebarId) {
 
         chatSidebar.appendChild(noConversationsMessage);
         chatSidebar.appendChild(startChatButton);
-    } else {
-        filteredUsers.forEach(user => {
-            const userItem = document.createElement('div');
-            userItem.className = 'user-item';
-            userItem.dataset.userId = user.id;
-
-            const statusIndicator = document.createElement('div');
-            statusIndicator.className = `status-indicator ${user.status}`;
-
-            const userName = document.createElement('span');
-            const lastMessageTime = new Date(user.lastMessageTime).toLocaleString();
-            userName.textContent = `${user.nickname} (${lastMessageTime})`;
-
-            userItem.appendChild(statusIndicator);
-            userItem.appendChild(userName);
-
-            userItem.addEventListener('click', () => openChat(user.id, user.nickname));
-            chatSidebar.appendChild(userItem);
-        });
     }
 }
 

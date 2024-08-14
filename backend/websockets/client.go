@@ -100,14 +100,14 @@ func (c *Client) readPump() {
 			}
 
 		} else if message.Type == "chat_opened" {
-			c.hub.SetChatActive(message.SenderID, message.ReceiverID)
+			database.SetChatActive(message.SenderID, message.ReceiverID)
 			// Mark all notifications as read when chat is opened
 			err = database.MarkAllChatNotificationsAsRead(message.SenderID, message.ReceiverID)
 			if err != nil {
 				log.Printf("error marking notifications as read: %v", err)
 			}
 		} else if message.Type == "chat_closed" {
-			c.hub.SetChatInactive(message.SenderID, message.ReceiverID)
+			database.SetChatInactive(message.SenderID, message.ReceiverID)
 		}
 
 		c.hub.broadcast <- message

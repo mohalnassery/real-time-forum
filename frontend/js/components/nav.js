@@ -211,10 +211,11 @@ export function handleChatNotification(message) {
 // Function to show a toast notification
 function showNotification(message) {
     let toastNotification = document.querySelector(".toast-notification");
+    const truncatedMessage = message.length > 100 ? message.substring(0, 100) + '...' : message; // Truncate message to 20 chars
 
     if (toastNotification) {
         // If a toast already exists, update its message and reset the timer
-        toastNotification.textContent = message;
+        toastNotification.textContent = truncatedMessage;
         toastNotification.classList.add("show"); // Ensure it is visible
         clearTimeout(toastNotification.timeoutId); // Clear the previous timeout
         toastNotification.timeoutId = setTimeout(() => {
@@ -224,7 +225,7 @@ function showNotification(message) {
         // Create a new toast notification element
         toastNotification = document.createElement("div");
         toastNotification.className = "toast-notification show"; // Add the show class to trigger the animation
-        toastNotification.textContent = message;
+        toastNotification.textContent = truncatedMessage;
 
         // Add the toast notification to the body
         document.body.appendChild(toastNotification);
