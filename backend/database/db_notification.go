@@ -10,16 +10,16 @@ import (
 func InsertNotification(userID int, message string, tx *sql.Tx, messageID, postID, commentID int) error {
 	// Skip the existence check if messageID is 0
 	var err error
-	if messageID != 0 {
-		var exists bool
-		err = DB.QueryRow("SELECT EXISTS(SELECT 1 FROM messages WHERE id = ?)", messageID).Scan(&exists)
-		if err != nil {
-			return fmt.Errorf("failed to check if messageID exists: %v", err)
-		}
-		if !exists {
-			return fmt.Errorf("messageID %d does not exist in messages table", messageID)
-		}
-	}
+	// if messageID != 0 {
+	// 	var exists bool
+	// 	err = DB.QueryRow("SELECT EXISTS(SELECT 1 FROM messages WHERE id = ?)", messageID).Scan(&exists)
+	// 	if err != nil {
+	// 		return fmt.Errorf("failed to check if messageID exists: %v", err)
+	// 	}
+	// 	if !exists {
+	// 		return fmt.Errorf("messageID %d does not exist in messages table", messageID)
+	// 	}
+	// }
 
 	query := `
         INSERT INTO notifications (user_id, message, message_id, post_id, comment_id, created_at, is_read)
@@ -122,6 +122,26 @@ func MarkAllChatNotificationsAsRead(receiverID, senderID int) error {
 
 // New function to create a notification for a new message
 func CreateMessageNotification(message *models.Message, tx *sql.Tx) error {
+	// Ensure the transaction is committed before checking the existence
+	if tx != nil {
+		if err := tx.Commit(); err != nil {
+			return fmt.Errorf("failed to commit transaction: %v", err)
+		}
+	}
+
+	// Add a small delay to ensure the database has fully processed the commit
+	time.Sleep(100 * time.Millisecond)
+
+	// Check if messageID exists
+	var exists bool
+	err := DB.QueryRow("SELECT EXISTS(SELECT 1 FROM messages WHERE id = ?)", message.ID).Scan(&exists)
+	if err != nil {
+		return fmt.Errorf("failed to check if messageID exists: %v", err)
+	}
+	if !exists {
+		return fmt.Errorf("messageID %d does not exist in messages table", message.ID)
+	}
+
 	notificationMessage := "New message from " + message.SenderNickname
-	return InsertNotification(message.ReceiverID, notificationMessage, tx, int(message.ID), 0, 0)
+	return InsertNotification(message.ReceiverID, notificationMessage, nil, int(message.ID), 0, 0)
 }

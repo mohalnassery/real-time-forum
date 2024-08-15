@@ -76,6 +76,12 @@ func (c *Client) readPump() {
 					continue
 				}
 
+				err = tx.Commit()
+				if err != nil {
+					log.Printf("error committing transaction: %v", err)
+					continue
+				}
+
 				isActive, _ := database.IsChatActive(message.ReceiverID, message.SenderID)
 				if isActive {
 					// If chat is active, mark the notification as read immediately
@@ -84,18 +90,11 @@ func (c *Client) readPump() {
 						log.Printf("error marking notifications as read: %v", err)
 					}
 				} else {
-					err = database.CreateMessageNotification(&message, tx)
+					// Create notification after message creation is committed
+					err = database.CreateMessageNotification(&message, nil)
 					if err != nil {
 						log.Printf("error creating notification: %v, isActive: %v, receiverID: %d, senderID: %d", err, isActive, message.ReceiverID, message.SenderID)
-						tx.Rollback()
-						continue
 					}
-				}
-
-				err = tx.Commit()
-				if err != nil {
-					log.Printf("error committing transaction: %v", err)
-					continue
 				}
 			}
 

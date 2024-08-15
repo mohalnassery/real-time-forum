@@ -167,20 +167,23 @@ export function sendMessageHandler() {
         sendMessage(message);
         input.value = '';
         document.getElementById('char-count').textContent = '0/380';
-        populateUserList('chat-sidebar');
+        populateChatSidebar('chat-sidebar');
     } else if (input.value.length > 380) {
         notification.textContent = "Message is too long and cannot be sent!";
         notification.style.display = 'block';
     }
 }
 
+export async function populateChatSidebar(chatSidebarId) {
+// chatsidebarId = "chat-sidebar"
+    chatSidebarId = "chat-sidebar";
 
-export async function populateUserList(chatSidebarId) {
     const chatSidebar = document.getElementById(chatSidebarId);
     const users = await getUsers();
-    const filteredUsers = users.filter(user => 
-        user.lastMessageTime && user.lastMessageTime !== "0001-01-01T00:00:00Z"
-    );
+
+    const filteredUsers = users
+        .filter(user => user.lastMessageTime && user.lastMessageTime !== "0001-01-01T00:00:00Z")
+        .sort((b, a) => new Date(a.lastMessageTime) - new Date(b.lastMessageTime));
 
     // Update existing user items or add new ones
     filteredUsers.forEach(user => {
@@ -219,6 +222,18 @@ export async function populateUserList(chatSidebarId) {
             chatSidebar.removeChild(userItem);
         }
     });
+
+    // Remove no-conversations-message class before anything
+    const existingNoConversationsMessage = chatSidebar.querySelector('.no-conversations-message');
+    if (existingNoConversationsMessage) {
+        chatSidebar.removeChild(existingNoConversationsMessage);
+    }
+
+    // Remove start-chat-button class before anything
+    const existingStartChatButton = chatSidebar.querySelector('.start-chat-button');
+    if (existingStartChatButton) {
+        chatSidebar.removeChild(existingStartChatButton);
+    }
 
     if (filteredUsers.length === 0) {
         const noConversationsMessage = document.createElement('div');

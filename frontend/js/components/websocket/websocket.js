@@ -1,8 +1,7 @@
 import { displayChatMessage } from '../chat/chat.js';
 import { displayMessage, updateUserStatus } from './chat_box.js';
-import { updateNotificationCounter, clearAllChatNotifications, markAllChatNotificationsAsRead, fetchAndDisplayNotifications } from '../notifications.js';
 import { handleChatNotification } from '../nav.js';
-import { populateUserList } from '../chat/chat.js'; // Import the function
+import { populateChatSidebar } from '../chat/chat.js'; // Import the function
 
 let socket;
 
@@ -49,6 +48,7 @@ export function handleWebSocketMessage(message) {
         if (chatPageContainer && (message.senderId == activeChatUserId || message.receiverId == activeChatUserId)) {
             displayChatMessage(message, chatPageContainer, false);
             chatPageContainer.scrollTo(0, chatPageContainer.scrollHeight);
+            populateChatSidebar('chat-sidebar');
         } else if (message.receiverId === currentUserId) {
             // Show notification only if the current user is the receiver and not in an active chat with the sender
             const activeChatBox = document.querySelector(`.chat-box[data-user-id="${message.senderId}"].show`);
@@ -61,13 +61,12 @@ export function handleWebSocketMessage(message) {
         if (messageWindow) {
             messageWindow.scrollTo(0, messageWindow.scrollHeight);
         }
-        // update the user list
-        const userToBoost = document.querySelector(`.user-item[data-user-id="${message.senderId}"]`) || document.querySelector(`.user-item[data-user-id="${message.receiverId}"]`)
+        // update the chat-sidebar user list
+        const userToBoost = document.querySelector(`#chat-sidebar .user-item[data-user-id="${message.senderId}"]`) || document.querySelector(`#chat-sidebar .user-item[data-user-id="${message.receiverId}"]`);
         if (userToBoost) {
-            const userlist = document.getElementById('user-list')
-            userlist.insertBefore(userToBoost,userlist.firstChild)
+            const userlist = document.getElementById('chat-sidebar');
+            userlist.insertBefore(userToBoost, userlist.firstChild);
         }
-        populateUserList('chat-sidebar'); // Update the user list
     } else if (message.type === "status") {
         updateUserStatus(message.senderId, message.content);
     } else if (message.type === "typing") {

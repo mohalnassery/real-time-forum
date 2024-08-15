@@ -36,8 +36,41 @@
     padding: 10px;
     background-color: var(--primary-color);
     color: var(--text-color);
-    text-align: center;
+    display: flex;
+    align-items: center;
     flex-shrink: 0; /* Prevents the header from shrinking */
+    position: relative;
+}
+
+.chat-header .chat-title {
+    display: flex;
+    align-items: center;
+    flex-grow: 1; /* This will make the chat title take up the remaining space */
+}
+
+.chat-header .typing-indicator {
+    margin-left: 10px;
+    font-size: 0.85em;
+    color: var(--text-color);
+}
+
+.chat-header .close-chat {
+    background-color: #e95420;
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+}
+
+.chat-header .close-chat:hover {
+    background-color: #c84117;
 }
 
 .chat-messages {
@@ -141,37 +174,34 @@
     white-space: pre-wrap; /* Preserve whitespace and line breaks */
 }
 
-
-/*   <span class="typing-indicator" style="display: none;">  typing...</span> adjust this style to make it seperate from the one before it */
-
 .typing-indicator {
-    display: inline-block;
-    width: 1em;
-    height: 1em;
+    font-size: 1em;
     vertical-align: middle;
     text-align: left;
-    overflow: hidden;
     position: relative;
 }
 
-.typing-indicator::before {
-    content: 'typing...';
-    animation: typing 1.5s steps(3, end) infinite;
+.typing-indicator::after {
+    content: 'typing';
+    animation: typing 1.5s steps(4, end) infinite;
     position: absolute;
     left: 0;
 }
 
 @keyframes typing {
-    0%, 20% {
+    0% {
         content: 'typing';
     }
-    40% {
+     25% {
         content: 'typing.';
     }
-    60% {
+    50% {
         content: 'typing..';
     }
-    80%, 100% {
+    75% {
         content: 'typing...';
+    }
+    100% {
+        content: 'typing';
     }
 }

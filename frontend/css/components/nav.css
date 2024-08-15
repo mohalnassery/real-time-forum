@@ -320,3 +320,36 @@ input:checked + .slider:after {
   top: 60px; /* Adjusted to appear below the nav bar */
   opacity: 1;
 }
+
+
+
+.typing-indicator {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  text-align: left;
+  position: relative;
+}
+
+.typing-indicator::before {
+  content: 'typing...';
+  animation: typing 1.5s steps(3, end) infinite;
+  position: absolute;
+  left: 0;
+}
+
+@keyframes typing {
+  0%, 20% {
+      content: 'typing';
+  }
+  40% {
+      content: 'typing.';
+  }
+  60% {
+      content: 'typing..';
+  }
+  80%, 100% {
+      content: 'typing...';
+  }
+}

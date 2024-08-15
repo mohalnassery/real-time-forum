@@ -1,5 +1,5 @@
 import { loadCSS } from '../components/utils.js';
-import { openChat, sendMessageHandler, populateUserList } from '../components/chat/chat.js';
+import { openChat, sendMessageHandler, populateChatSidebar } from '../components/chat/chat.js';
 
 export async function initChatPage(mainContent) {
     mainContent.innerHTML = `
@@ -27,7 +27,7 @@ export async function initChatPage(mainContent) {
     `;
 
     loadCSS('./css/pages/chat.css');
-    await populateUserList('chat-sidebar');
+    await populateChatSidebar('chat-sidebar');
     document.getElementById('chat-send-button').addEventListener('click', () => {
         const input = document.getElementById('chat-message-input');
         if (input.value.trim() !== '' && input.value.length <= 380) {
@@ -65,8 +65,7 @@ export async function initChatPage(mainContent) {
 
     const userId = localStorage.getItem('userId');
 
-
     // Populate user list initially and set up periodic refresh
-    await populateUserList('chat-sidebar');
-    setInterval(() => populateUserList('chat-sidebar'), 30000); // Refresh every 30 seconds
+    await populateChatSidebar('chat-sidebar');
+    setInterval(() => populateChatSidebar('chat-sidebar'), 30000); // Refresh every 30 seconds
 }
