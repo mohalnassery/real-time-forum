@@ -205,3 +205,38 @@
         content: 'typing';
     }
 }
+
+.recent-section {
+    background-color: var(--card-background-color);
+    border-bottom: 1px solid var(--input-border);
+}
+
+/* New chat section styles */
+.chat-sidebar .new-chat-section {
+    background-color: var(--card-background-color);
+    padding: 10px;
+    border-bottom: 1px solid var(--input-border);
+}
+
+.chat-sidebar .new-chat-section .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.chat-sidebar .new-chat-section .section-header .title {
+    font-weight: bold;
+}
+
+.chat-sidebar .new-chat-section .section-header .toggle-button {
+    cursor: pointer;
+}
+
+.new-chat-users {
+    display: none;
+}
+
+.new-chat-users.show {
+    display: block;
+}

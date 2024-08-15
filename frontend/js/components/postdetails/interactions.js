@@ -115,6 +115,9 @@ export async function dislikePost() {
 
 export async function deletePost() {
   const postId = getPostIdFromURL();
+  const confirmation = confirm("Are you sure you want to delete this post?");
+  if (!confirmation) return;
+
   try {
     const response = await fetch(`/posts/${postId}`, { method: "DELETE" });
     if (response.ok) {
@@ -234,6 +237,9 @@ export async function dislikeComment(commentId) {
 }
 
 export async function deleteComment(commentId) {
+  const confirmation = confirm("Are you sure you want to delete this comment?");
+  if (!confirmation) return;
+
   try {
     const response = await fetch(`/comments/${commentId}`, { method: "DELETE" });
     if (response.ok) {

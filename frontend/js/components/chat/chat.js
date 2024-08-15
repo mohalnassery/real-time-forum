@@ -175,92 +175,86 @@ export function sendMessageHandler() {
 }
 
 export async function populateChatSidebar(chatSidebarId) {
-// chatsidebarId = "chat-sidebar"
     chatSidebarId = "chat-sidebar";
 
+    // Check if sidebar exists
     const chatSidebar = document.getElementById(chatSidebarId);
+    if (!chatSidebar) {
+        return;
+    }
+
     const users = await getUsers();
 
-    const filteredUsers = users
+    const recentUsers = users
         .filter(user => user.lastMessageTime && user.lastMessageTime !== "0001-01-01T00:00:00Z")
         .sort((b, a) => new Date(a.lastMessageTime) - new Date(b.lastMessageTime));
 
-    // Update existing user items or add new ones
-    filteredUsers.forEach(user => {
-        let userItem = chatSidebar.querySelector(`.user-item[data-user-id="${user.id}"]`);
-        if (!userItem) {
-            userItem = document.createElement('div');
-            userItem.className = 'user-item';
-            userItem.dataset.userId = user.id;
+    const newUsers = users
+        .filter(user => !user.lastMessageTime || user.lastMessageTime === "0001-01-01T00:00:00Z")
+        .sort((a, b) => a.nickname.localeCompare(b.nickname));
 
-            const statusIndicator = document.createElement('div');
-            statusIndicator.className = `status-indicator ${user.status}`;
+    // Clear existing content
+    chatSidebar.innerHTML = '';
 
-            const userName = document.createElement('span');
-            userName.textContent = `${user.nickname} (${new Date(user.lastMessageTime).toLocaleString()})`;
+    // Create Recent Messages section
+    const recentSection = document.createElement('div');
+    recentSection.className = 'recent-section';
+    const recentHeader = document.createElement('h3');
+    recentHeader.textContent = 'Recent Messages';
+    recentSection.appendChild(recentHeader);
 
-            userItem.appendChild(statusIndicator);
-            userItem.appendChild(userName);
-
-            userItem.addEventListener('click', () => openChat(user.id, user.nickname));
-            chatSidebar.appendChild(userItem);
-        } else {
-            // Update existing user item
-            const statusIndicator = userItem.querySelector('.status-indicator');
-            statusIndicator.className = `status-indicator ${user.status}`;
-
-            const userName = userItem.querySelector('span');
-            userName.textContent = `${user.nickname} (${new Date(user.lastMessageTime).toLocaleString()})`;
-        }
+    recentUsers.forEach(user => {
+        const userItem = createUserItem(user);
+        recentSection.appendChild(userItem);
     });
 
-    // Remove user items that are no longer in the filteredUsers list
-    const existingUserItems = chatSidebar.querySelectorAll('.user-item');
-    existingUserItems.forEach(userItem => {
-        const userId = userItem.dataset.userId;
-        if (!filteredUsers.some(user => user.id == userId)) {
-            chatSidebar.removeChild(userItem);
-        }
+    chatSidebar.appendChild(recentSection);
+
+    // Create New Chat section
+    const newChatSection = document.createElement('div');
+    newChatSection.className = 'new-chat-section';
+    const newChatHeader = document.createElement('h3');
+    newChatHeader.textContent = 'Create New Chat';
+    newChatSection.appendChild(newChatHeader);
+
+    const newChatToggle = document.createElement('button');
+    newChatToggle.className = 'new-chat-toggle';
+    newChatToggle.textContent = 'Show/Hide';
+    newChatToggle.addEventListener('click', () => {
+        newChatUsersDiv.classList.toggle('show');
     });
+    newChatSection.appendChild(newChatToggle);
 
-    // Remove no-conversations-message class before anything
-    const existingNoConversationsMessage = chatSidebar.querySelector('.no-conversations-message');
-    if (existingNoConversationsMessage) {
-        chatSidebar.removeChild(existingNoConversationsMessage);
-    }
+    // Create a div to hold new users
+    const newChatUsersDiv = document.createElement('div');
+    newChatUsersDiv.className = 'new-chat-users';
+    newUsers.forEach(user => {
+        const userItem = createUserItem(user);
+        // Remove the time from the user item
+        userItem.querySelector('span').textContent = user.nickname; // Only show nickname
+        newChatUsersDiv.appendChild(userItem);
+    });
+    newChatSection.appendChild(newChatUsersDiv); // Append the users div to the new chat section
 
-    // Remove start-chat-button class before anything
-    const existingStartChatButton = chatSidebar.querySelector('.start-chat-button');
-    if (existingStartChatButton) {
-        chatSidebar.removeChild(existingStartChatButton);
-    }
+    chatSidebar.appendChild(newChatSection);
+}
 
-    if (filteredUsers.length === 0) {
-        const noConversationsMessage = document.createElement('div');
-        noConversationsMessage.className = 'no-conversations-message';
-        noConversationsMessage.textContent = 'There are no conversations.';
+function createUserItem(user) {
+    const userItem = document.createElement('div');
+    userItem.className = 'user-item';
+    userItem.dataset.userId = user.id;
 
-        const startChatButton = document.createElement('button');
-        startChatButton.className = 'start-chat-button';
-        startChatButton.textContent = 'Start New Chat';
-        startChatButton.addEventListener('click', (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            const userSidebar = document.getElementById('user-sidebar');
-            if (userSidebar) {
-                userSidebar.classList.add('show');
-                // Prevent closing for a short period
-                setTimeout(() => {
-                    document.addEventListener('click', closeSidebar, { once: true });
-                }, 100);
-            } else {
-                console.error('User sidebar not found');
-            }
-        });
+    const statusIndicator = document.createElement('div');
+    statusIndicator.className = `status-indicator ${user.status}`;
 
-        chatSidebar.appendChild(noConversationsMessage);
-        chatSidebar.appendChild(startChatButton);
-    }
+    const userName = document.createElement('span');
+    userName.textContent = `${user.nickname} (${new Date(user.lastMessageTime).toLocaleString()})`;
+
+    userItem.appendChild(statusIndicator);
+    userItem.appendChild(userName);
+
+    userItem.addEventListener('click', () => openChat(user.id, user.nickname));
+    return userItem;
 }
 
 function closeSidebar(event) {

@@ -22,6 +22,10 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Validate the input data
 	emailRegex := `^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{1,}$`
+	if len(user.Email) > 320 {
+		http.Error(w, "Email should be less than 320 characters", http.StatusBadRequest)
+		return
+	}
 	match, err := regexp.MatchString(emailRegex, user.Email)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

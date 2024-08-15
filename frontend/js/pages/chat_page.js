@@ -27,7 +27,11 @@ export async function initChatPage(mainContent) {
     `;
 
     loadCSS('./css/pages/chat.css');
-    await populateChatSidebar('chat-sidebar');
+    const chatSidebar = document.getElementById('chat-sidebar');
+    if (chatSidebar) {
+        await populateChatSidebar('chat-sidebar');
+    }
+
     document.getElementById('chat-send-button').addEventListener('click', () => {
         const input = document.getElementById('chat-message-input');
         if (input.value.trim() !== '' && input.value.length <= 380) {
@@ -64,8 +68,4 @@ export async function initChatPage(mainContent) {
     });
 
     const userId = localStorage.getItem('userId');
-
-    // Populate user list initially and set up periodic refresh
-    await populateChatSidebar('chat-sidebar');
-    setInterval(() => populateChatSidebar('chat-sidebar'), 30000); // Refresh every 30 seconds
 }

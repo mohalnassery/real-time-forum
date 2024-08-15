@@ -151,6 +151,7 @@ body {
     border: 1px solid var(--tab-border-color) !important;
     background-color: var(--card-background-color) !important;
     margin-top: 20px !important;
+    box-shadow: var(--card-shadow) !important;
   }
   
   .tab button {

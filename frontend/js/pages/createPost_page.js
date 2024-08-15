@@ -32,7 +32,7 @@ export function initCreatePost(mainContent) {
           <div class="tag-input-container"></div>
         </div>
         <div class="error-container" id="error"></div>
-        <button type="submit">Post Topic</button>
+        <button type="submit">Create Post</button>
       </form>
     </section>
   `;
