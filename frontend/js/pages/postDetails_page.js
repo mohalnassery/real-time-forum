@@ -3,7 +3,7 @@ import { loadCSS } from '../components/utils.js';
 
 export async function initPostDetails(app, postId) {
   app.innerHTML = `
-  <div class="main-section">
+  <div class="main-section hidden"> <!-- Add hidden class initially -->
     <div class="post-container">
       <div class="top">
         <a id="back-button" class="back-button">
@@ -75,6 +75,16 @@ export async function initPostDetails(app, postId) {
     await fetchPost(postId);
     enableInteractions();
     addEventListeners(postId);
+
+    // Trigger the animation after appending the elements
+    setTimeout(() => {
+      document.querySelectorAll('.hidden').forEach(element => {
+        if (!element.classList.contains('animate-on-load')) {
+          element.classList.remove('hidden');
+          element.classList.add('animate-on-load');
+        }
+      });
+    }, 100);
   } catch (error) {
     disableInteractions();
   }
@@ -101,7 +111,6 @@ function addEventListeners(postId) {
     submitCommentBtn.addEventListener("click", submitComment);
     submitCommentBtn.setAttribute("data-listener", "true");
   }
-
 
   const deletePostButton = document.querySelector("#post-actions .fa-trash");
   if (deletePostButton) {

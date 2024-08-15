@@ -11,6 +11,7 @@ export function createFilterListeners() {
   optionsContainers.forEach((options) => {
     if (options) {
       for (const option of options.children) {
+        option.classList.add("hidden"); // Add hidden class initially
         switch (option.innerHTML) {
           case "Created Posts":
             option.addEventListener("click", () => {
@@ -29,6 +30,11 @@ export function createFilterListeners() {
             });
             break;
         }
+        // Trigger the animation after appending the element
+        setTimeout(() => {
+          option.classList.remove("hidden");
+          option.classList.add("animate-on-load");
+        }, 100);
       }
     }
   });
@@ -54,4 +60,3 @@ export function getFilterLikes() {
 export function getFilterCreated() {
   return filterCreated;
 }
-

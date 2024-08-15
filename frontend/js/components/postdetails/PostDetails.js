@@ -44,6 +44,7 @@ export function displayPostDetails(post) {
     likeButton.classList.remove("liked");
     dislikeButton.classList.remove("disliked");
   }
+
   const tagsContainer = document.getElementById("post-tags");
   if (tagsContainer) {
     tagsContainer.innerHTML = ""; // Clear existing tags
@@ -54,6 +55,7 @@ export function displayPostDetails(post) {
       tagsContainer.appendChild(tag);
     });
   }
+
   // Display the associated image
   const postImage = document.getElementById("post-image");
   if (post.image) {
@@ -64,6 +66,14 @@ export function displayPostDetails(post) {
   } else {
     postImage.style.display = "none";
   }
+
+  // Trigger the animation after setting the content
+  setTimeout(() => {
+    document.querySelectorAll('.hidden').forEach(element => {
+      element.classList.remove('hidden');
+      element.classList.add('animate-on-load');
+    });
+  }, 100);
 
   if (post.isAuthor) {
     const postActions = document.getElementById("post-actions");
@@ -95,12 +105,12 @@ export function displayPostDetails(post) {
 
 export function displayComments(comments) {
   const commentList = document.getElementById("comment-section");
-  commentList.innerHTML = "";
+  commentList.innerHTML = ""; // Clear existing comments
 
   if (comments && comments.length > 0) {
     comments.forEach((comment) => {
       const commentCard = document.createElement("div");
-      commentCard.classList.add("comment");
+      commentCard.classList.add("comment", "hidden"); // Add hidden class initially
 
       const commentHeader = document.createElement("div");
       commentHeader.classList.add("info");
@@ -113,9 +123,7 @@ export function displayComments(comments) {
       const author = document.createElement("p");
       author.innerHTML =
         comment.author +
-        ` <span>• ${new Date(
-          comment.creationDate
-        ).toLocaleDateString()}</span>`;
+        ` <span>• ${new Date(comment.creationDate).toLocaleDateString()}</span>`;
       commentHeader.appendChild(author);
 
       commentCard.appendChild(commentHeader);
@@ -195,6 +203,12 @@ export function displayComments(comments) {
       }
 
       commentList.appendChild(commentCard);
+
+      // Trigger the animation after appending the element
+      setTimeout(() => {
+        commentCard.classList.remove("hidden");
+        commentCard.classList.add("animate-on-load");
+      }, 100);
     });
   } else {
     const noCommentsMessage = document.createElement("p");

@@ -77,7 +77,7 @@ function displayPosts(posts) {
     // For loop to create and append post elements
     posts.forEach((post) => {
       const postInfo = document.createElement("div");
-      postInfo.className = "post-info";
+      postInfo.className = "post-info hidden"; // Add hidden class initially
 
       const top = document.createElement("div");
       top.className = "top";
@@ -162,6 +162,12 @@ function displayPosts(posts) {
       postInfo.appendChild(tags);
 
       postsSection.appendChild(postInfo);
+
+      // Trigger the animation after appending the element
+      setTimeout(() => {
+        postInfo.classList.remove("hidden");
+        postInfo.classList.add("animate-on-load");
+      }, 100);
     });
   } else {
     // Display a message when there are no posts

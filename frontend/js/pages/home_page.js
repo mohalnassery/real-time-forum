@@ -5,7 +5,7 @@ export function initContent(app) {
     app.innerHTML = `
         <div class="main-container">
             <div class="left-section">
-                <div class="stats" id="user-stats">
+                <div class="stats hidden" id="user-stats">
                     <h1>My Stats</h1>
                     <div class="stat-item">
                         <p>Number of posts created:</p>
@@ -24,7 +24,7 @@ export function initContent(app) {
                         <span id="user-dislikes"></span>
                     </div>
                 </div>
-                <div class="stats" id="alluser-stats">
+                <div class="stats hidden" id="alluser-stats">
                     <h1>Forum Statistics</h1>
                     <div class="stat-item">
                         <p>Total number of posts:</p>
@@ -43,24 +43,24 @@ export function initContent(app) {
                         <span id="total-dislikes"></span>
                     </div>
                 </div>
-                <div class="stats" id="categories">
+                <div class="stats hidden" id="categories">
                     <h1>Filter By Category</h1>
                     <div class="category-container"></div>
                 </div>
             </div>
             <div class="middle-section">
-                <div class="create-section">
+                <div class="create-section hidden">
                     <h1>All Posts</h1>
                     <button id="create-btn" onclick="window.location.hash='#create-post'">Create Post</button>
                 </div>
                 <div class="posts-section"></div>
             </div>
             <div class="right-section">
-                <div class="leaderboard">
+                <div class="leaderboard hidden">
                     <h1>LeaderBoard</h1>
                     <div id="user-leaderboard"></div>
                 </div>
-                <div class="filter-options" id="user-filters">
+                <div class="filter-options hidden" id="user-filters">
                     <h1>Filter By</h1>
                     <div class="options">
                         <div>Created Posts</div>
@@ -78,5 +78,13 @@ export function initContent(app) {
     fetchAllUserStats();
     fetchLeaderboard();
     createCategoryElements();
-    createFilterListeners(); // Add this line to initialize filter listeners
+    createFilterListeners();
+
+    // Trigger the animation after appending the elements
+    setTimeout(() => {
+        document.querySelectorAll('.hidden').forEach(element => {
+            element.classList.remove('hidden');
+            element.classList.add('animate-on-load');
+        });
+    }, 100);
 }

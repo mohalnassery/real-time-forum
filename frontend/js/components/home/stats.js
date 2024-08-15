@@ -7,18 +7,41 @@ export async function fetchUserStats(userID) {
 
             // Display user stats
             document.querySelectorAll("#user-posts").forEach((element) => {
+                element.classList.add("hidden"); // Add hidden class initially
                 element.textContent = data.posts;
+                // Trigger the animation after setting the content
+                setTimeout(() => {
+                    element.classList.remove("hidden");
+                    element.classList.add("animate-on-load");
+                }, 100);
             });
             document.querySelectorAll("#user-comments").forEach((element) => {
+                element.classList.add("hidden"); // Add hidden class initially
                 element.textContent = data.comments;
+                // Trigger the animation after setting the content
+                setTimeout(() => {
+                    element.classList.remove("hidden");
+                    element.classList.add("animate-on-load");
+                }, 100);
             });
             document.querySelectorAll("#user-likes").forEach((element) => {
+                element.classList.add("hidden"); // Add hidden class initially
                 element.textContent = data.likes;
+                // Trigger the animation after setting the content
+                setTimeout(() => {
+                    element.classList.remove("hidden");
+                    element.classList.add("animate-on-load");
+                }, 100);
             });
             document.querySelectorAll("#user-dislikes").forEach((element) => {
+                element.classList.add("hidden"); // Add hidden class initially
                 element.textContent = data.dislikes;
+                // Trigger the animation after setting the content
+                setTimeout(() => {
+                    element.classList.remove("hidden");
+                    element.classList.add("animate-on-load");
+                }, 100);
             });
-
         } else {
             console.error("Error fetching user stats:", response.status);
         }
@@ -38,16 +61,40 @@ export async function fetchAllUserStats() {
         const stats = await response.json();
 
         document.querySelectorAll("#total-posts").forEach((element) => {
+            element.classList.add("hidden"); // Add hidden class initially
             element.textContent = stats.totalPosts;
+            // Trigger the animation after setting the content
+            setTimeout(() => {
+                element.classList.remove("hidden");
+                element.classList.add("animate-on-load");
+            }, 100);
         });
         document.querySelectorAll("#total-comments").forEach((element) => {
+            element.classList.add("hidden"); // Add hidden class initially
             element.textContent = stats.totalComments;
+            // Trigger the animation after setting the content
+            setTimeout(() => {
+                element.classList.remove("hidden");
+                element.classList.add("animate-on-load");
+            }, 100);
         });
         document.querySelectorAll("#total-likes").forEach((element) => {
+            element.classList.add("hidden"); // Add hidden class initially
             element.textContent = stats.totalLikes;
+            // Trigger the animation after setting the content
+            setTimeout(() => {
+                element.classList.remove("hidden");
+                element.classList.add("animate-on-load");
+            }, 100);
         });
         document.querySelectorAll("#total-dislikes").forEach((element) => {
+            element.classList.add("hidden"); // Add hidden class initially
             element.textContent = stats.totalDislikes;
+            // Trigger the animation after setting the content
+            setTimeout(() => {
+                element.classList.remove("hidden");
+                element.classList.add("animate-on-load");
+            }, 100);
         });
     } catch (error) {
         console.log(error.message);
@@ -71,9 +118,8 @@ export async function fetchLeaderboard() {
             leaderboardContainer.innerHTML = ""; // Clear existing content
 
             leaderboard.forEach((user) => {
-                
                 const userProfile = document.createElement("div");
-                userProfile.className = "user-profile";
+                userProfile.className = "user-profile hidden"; // Add hidden class initially
 
                 const userData = document.createElement("div");
                 userData.className = "user-data";
@@ -94,10 +140,15 @@ export async function fetchLeaderboard() {
                 userProfile.appendChild(postCount);
 
                 leaderboardContainer.appendChild(userProfile);
+
+                // Trigger the animation after appending the element
+                setTimeout(() => {
+                    userProfile.classList.remove("hidden");
+                    userProfile.classList.add("animate-on-load");
+                }, 100);
             });
         });
     } catch (error) {
         console.log(error.message);
     }
 }
-
