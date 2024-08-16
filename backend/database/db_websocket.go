@@ -87,7 +87,14 @@ func IsChatActive(userID1, userID2 int) (bool, error) {
 
 // SetChatActive marks the chat as active for the specific pair of users
 func SetChatActive(userID1, userID2 int) error {
-	_, err := DB.Exec("INSERT OR REPLACE INTO active_chats (user_id1, user_id2) VALUES (?, ?)", userID1, userID2)
+	// Delete any active chats for userID1
+	_, err := DB.Exec("DELETE FROM active_chats WHERE user_id1 = ?", userID1)
+	if err != nil {
+		return err
+	}
+
+	// Insert the new active chat
+	_, err = DB.Exec("INSERT INTO active_chats (user_id1, user_id2) VALUES (?, ?)", userID1, userID2)
 	return err
 }
 

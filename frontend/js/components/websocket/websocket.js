@@ -1,7 +1,6 @@
-import { displayChatMessage } from '../chat/chat.js';
+import { displayChatMessage, populateChatSidebar } from '../chat/chat.js';
 import { displayMessage, updateUserStatus } from './chat_box.js';
 import { handleChatNotification } from '../nav.js';
-import { populateChatSidebar } from '../chat/chat.js'; // Import the function
 
 let socket;
 
@@ -14,13 +13,11 @@ export function initWebSocket(id) {
     };
 
     socket.onmessage = function(event) {
-        //console.log("Raw WebSocket message received:", event.data);
         try {
             // Split the message by newlines to handle multiple JSON objects
             const messages = event.data.split('\n').filter(msg => msg.trim() !== '');
             messages.forEach(msg => {
                 const message = JSON.parse(msg);
-                //console.log("Parsed WebSocket message:", message);
                 handleWebSocketMessage(message);
             });
         } catch (error) {
@@ -61,11 +58,16 @@ export function handleWebSocketMessage(message) {
         if (messageWindow) {
             messageWindow.scrollTo(0, messageWindow.scrollHeight);
         }
-        // update the chat-sidebar user list
+        // Update the chat-sidebar user list
         const userToBoost = document.querySelector(`#chat-sidebar .user-item[data-user-id="${message.senderId}"]`) || document.querySelector(`#chat-sidebar .user-item[data-user-id="${message.receiverId}"]`);
         if (userToBoost) {
-            const userlist = document.getElementById('chat-sidebar');
-            userlist.insertBefore(userToBoost, userlist.firstChild);
+            const recentSection = document.querySelector('#chat-sidebar .recent-section');
+            const recentHeader = recentSection.querySelector('h3');
+            if (recentHeader) {
+                recentSection.insertBefore(userToBoost, recentHeader.nextSibling);
+            } else {
+                recentSection.insertBefore(userToBoost, recentSection.firstChild);
+            }
         }
     } else if (message.type === "status") {
         updateUserStatus(message.senderId, message.content);
