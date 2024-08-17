@@ -167,16 +167,14 @@ export function sendMessageHandler() {
         sendMessage(message);
         input.value = '';
         document.getElementById('char-count').textContent = '0/380';
-        populateChatSidebar('chat-sidebar');
+        populateChatSidebar();
     } else if (input.value.length > 380) {
         notification.textContent = "Message is too long and cannot be sent!";
         notification.style.display = 'block';
     }
 }
 
-export async function populateChatSidebar(chatSidebarId) {
-    chatSidebarId = "chat-sidebar";
-
+export async function populateChatSidebar(chatSidebarId = "chat-sidebar") {
     // Check if sidebar exists
     const chatSidebar = document.getElementById(chatSidebarId);
     if (!chatSidebar) {

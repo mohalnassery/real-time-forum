@@ -1,5 +1,6 @@
 import { getUsers, getMessages, sendMessage, sendTyping, sendStopTyping, throttle, sendChatOpened, sendChatClosed } from './websocket.js';
 import { clearAllChatNotifications, markAllChatNotificationsAsRead } from '../notifications.js';
+import { populateChatSidebar } from '../chat/chat.js';
 
 let throttler = false;
 let typingTimeout;
@@ -24,12 +25,11 @@ export function createUserSidebar() {
 
     document.body.appendChild(sidebar);
 
-    fetchUsers();
+    populateUserSidebar();
 
     // Add event listener to user icon to toggle sidebar
     document.getElementById("user-icon").addEventListener("click", () => {
         // clear the existing items in user-sidebar class
-        populateUserSidebar("user-sidebar");
         document.getElementById("user-sidebar").classList.toggle("show");
     });
 
@@ -43,13 +43,23 @@ export function createUserSidebar() {
 }
 
 // Fetch users from the server and display them in the user sidebar
-async function fetchUsers() {
+async function populateUserSidebar() {
     const users = await getUsers();
     const userList = document.getElementById('user-list');
     userList.innerHTML = '';
 
     // Sort users by username (nickname)
-    users.sort((a, b) => a.nickname.localeCompare(b.nickname));
+    users.sort((a, b) => {
+        if (a.lastMessageTime === b.lastMessageTime || (!a.lastMessageTime && b.lastMessageTime === "0001-01-01T00:00:00Z") || (!b.lastMessageTime && a.lastMessageTime === "0001-01-01T00:00:00Z")) {
+            return a.nickname.localeCompare(b.nickname)
+        }
+        const dateA = new Date(a.lastMessageTime)
+        const dateB = new Date(b.lastMessageTime)
+        if (dateA === dateB) {
+            return a.nickname.localeCompare(b.nickname)
+        }
+        return dateB - dateA
+    } );
 
     users.forEach(user => {
         if (user.nickname != localStorage.getItem("nickname")) {
@@ -252,7 +262,8 @@ export function updateUserStatus(userId, status) {
     if (userItem) {
         userItem.className = `status-indicator ${status}`;
     } else {
-        fetchUsers();
+        populateUserSidebar();
+        populateChatSidebar();
     }
 }
 
@@ -264,50 +275,4 @@ export function closeChatBox(userId) {
         // Send a message to indicate that the chat is closed
         sendChatClosed(userId);
     }
-}
-
-export async function populateUserSidebar(userSidebarId) {
-    userSidebarId = "user-sidebar";
-    const userSidebar = document.getElementById(userSidebarId);
-    const users = await getUsers();
-
-    const filteredUsers = users.sort((a, b) => a.nickname.localeCompare(b.nickname));
-
-    // Update existing user items or add new ones
-    filteredUsers.forEach(user => {
-        let userItem = userSidebar.querySelector(`.user-item[data-user-id="${user.id}"]`);
-        if (!userItem) {
-            userItem = document.createElement('div');
-            userItem.className = 'user-item';
-            userItem.dataset.userId = user.id;
-
-            const statusIndicator = document.createElement('div');
-            statusIndicator.className = `status-indicator ${user.status}`;
-
-            const userName = document.createElement('span');
-            userName.textContent = user.nickname;
-
-            userItem.appendChild(statusIndicator);
-            userItem.appendChild(userName);
-
-            userItem.addEventListener('click', () => openChat(user.id, user.nickname));
-            userSidebar.appendChild(userItem);
-        } else {
-            // Update existing user item
-            const statusIndicator = userItem.querySelector('.status-indicator');
-            statusIndicator.className = `status-indicator ${user.status}`;
-
-            const userName = userItem.querySelector('span');
-            userName.textContent = user.nickname;
-        }
-    });
-
-    // Remove user items that are no longer in the filteredUsers list
-    const existingUserItems = userSidebar.querySelectorAll('.user-item');
-    existingUserItems.forEach(userItem => {
-        const userId = userItem.dataset.userId;
-        if (!filteredUsers.some(user => user.id == userId)) {
-            userSidebar.removeChild(userItem);
-        }
-    });
 }
