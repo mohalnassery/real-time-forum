@@ -1,6 +1,5 @@
 import { getUsers, getMessages, sendMessage, sendTyping, sendStopTyping, throttle, sendChatOpened, sendChatClosed } from './websocket.js';
 import { clearAllChatNotifications, markAllChatNotificationsAsRead } from '../notifications.js';
-import { populateChatSidebar } from '../chat/chat.js';
 
 let throttler = false;
 let typingTimeout;
@@ -25,11 +24,12 @@ export function createUserSidebar() {
 
     document.body.appendChild(sidebar);
 
-    populateUserSidebar();
+    fetchUsers();
 
     // Add event listener to user icon to toggle sidebar
     document.getElementById("user-icon").addEventListener("click", () => {
         // clear the existing items in user-sidebar class
+        populateUserSidebar("user-sidebar");
         document.getElementById("user-sidebar").classList.toggle("show");
     });
 
@@ -43,23 +43,13 @@ export function createUserSidebar() {
 }
 
 // Fetch users from the server and display them in the user sidebar
-async function populateUserSidebar() {
+async function fetchUsers() {
     const users = await getUsers();
     const userList = document.getElementById('user-list');
     userList.innerHTML = '';
 
     // Sort users by username (nickname)
-    users.sort((a, b) => {
-        if (a.lastMessageTime === b.lastMessageTime || (!a.lastMessageTime && b.lastMessageTime === "0001-01-01T00:00:00Z") || (!b.lastMessageTime && a.lastMessageTime === "0001-01-01T00:00:00Z")) {
-            return a.nickname.localeCompare(b.nickname)
-        }
-        const dateA = new Date(a.lastMessageTime)
-        const dateB = new Date(b.lastMessageTime)
-        if (dateA === dateB) {
-            return a.nickname.localeCompare(b.nickname)
-        }
-        return dateB - dateA
-    } );
+    users.sort((a, b) => a.nickname.localeCompare(b.nickname));
 
     users.forEach(user => {
         if (user.nickname != localStorage.getItem("nickname")) {
@@ -262,8 +252,7 @@ export function updateUserStatus(userId, status) {
     if (userItem) {
         userItem.className = `status-indicator ${status}`;
     } else {
-        populateUserSidebar();
-        populateChatSidebar();
+        fetchUsers();
     }
 }
 
