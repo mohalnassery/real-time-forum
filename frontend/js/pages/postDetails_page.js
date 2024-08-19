@@ -70,7 +70,6 @@ export async function initPostDetails(app, postId) {
   </div>
   `;
 
-  loadCSS('./css/pages/post-details.css');
   try {
     await fetchPost(postId);
     enableInteractions();

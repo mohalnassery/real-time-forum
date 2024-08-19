@@ -276,3 +276,95 @@ export function closeChatBox(userId) {
         sendChatClosed(userId);
     }
 }
+
+
+export async function populateUserSidebar(userSidebarId) {
+    userSidebarId = "user-sidebar";
+    const userSidebar = document.getElementById(userSidebarId);
+    if (!userSidebar) {
+        return;
+    }
+
+    const users = await getUsers();
+
+    const recentUsers = users
+        .filter(user => user.lastMessageTime && user.lastMessageTime !== "0001-01-01T00:00:00Z")
+        .sort((b, a) => new Date(a.lastMessageTime) - new Date(b.lastMessageTime));
+
+    const newUsers = users
+        .filter(user => !user.lastMessageTime || user.lastMessageTime === "0001-01-01T00:00:00Z")
+        .sort((a, b) => a.nickname.localeCompare(b.nickname));
+
+    // Clear existing content
+    userSidebar.innerHTML = '';
+
+    // Add close button
+    const closeButton = document.createElement('button');
+    closeButton.className = 'close-button';
+    closeButton.textContent = 'X';
+    closeButton.addEventListener('click', () => {
+        userSidebar.classList.remove('show');
+    });
+    userSidebar.appendChild(closeButton);
+
+    // Create Recent Messages section
+    const recentSection = document.createElement('div');
+    recentSection.className = 'recent-section';
+    const recentHeader = document.createElement('h3');
+    recentHeader.textContent = 'Recent Messages';
+    recentSection.appendChild(recentHeader);
+
+    recentUsers.forEach(user => {
+        const userItem = createUserItem(user);
+        recentSection.appendChild(userItem);
+    });
+
+    userSidebar.appendChild(recentSection);
+
+    // Create New Chat section
+    const newChatSection = document.createElement('div');
+    newChatSection.className = 'new-chat-section';
+    const newChatHeader = document.createElement('h3');
+    newChatHeader.textContent = 'Create New Chat';
+    newChatSection.appendChild(newChatHeader);
+
+    const newChatToggle = document.createElement('button');
+    newChatToggle.className = 'new-chat-toggle';
+    newChatToggle.textContent = 'Show/Hide';
+    newChatToggle.addEventListener('click', () => {
+        newChatUsersDiv.classList.toggle('show');
+    });
+    newChatSection.appendChild(newChatToggle);
+
+    // Create a div to hold new users
+    const newChatUsersDiv = document.createElement('div');
+    newChatUsersDiv.className = 'new-chat-usersidebar show'; // Initially show users
+    newUsers.forEach(user => {
+        const userItem = createUserItem(user);
+        // Remove the time from the user item
+        userItem.querySelector('span').textContent = user.nickname; // Only show nickname
+        newChatUsersDiv.appendChild(userItem);
+    });
+    newChatSection.appendChild(newChatUsersDiv); // Append the users div to the new chat section
+
+    userSidebar.appendChild(newChatSection);
+
+    // Function to create a user item element
+    function createUserItem(user) {
+        const userItem = document.createElement('div');
+        userItem.className = 'user-item';
+        userItem.dataset.userId = user.id;
+
+        const statusIndicator = document.createElement('div');
+        statusIndicator.className = `status-indicator ${user.status}`;
+
+        const userName = document.createElement('span');
+        userName.textContent = `${user.nickname} (${new Date(user.lastMessageTime).toLocaleString()})`;
+
+        userItem.appendChild(statusIndicator);
+        userItem.appendChild(userName);
+
+        userItem.addEventListener('click', () => openChatBox(user));
+        return userItem;
+    }
+}

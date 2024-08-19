@@ -25,17 +25,22 @@ func InsertComment(nickname string, body string, postID int) error {
 		return err
 	}
 
+	err = tx.Commit() // Commit the transaction before inserting the notification
+	if err != nil {
+		return err
+	}
+
 	postAuthorID, err := GetPostAuthorID(postID)
 	if err != nil {
 		return err
 	}
 	message := fmt.Sprintf("%s commented on your post", nickname)
-	err = InsertNotification(postAuthorID, message, tx, 0, postID, 0)
+	err = InsertNotification(postAuthorID, message, nil, 0, postID, 0) // Use nil for tx since it's already committed
 	if err != nil {
 		return err
 	}
 
-	return tx.Commit()
+	return nil
 }
 
 func GetCommentAuthorID(commentID int) (int, error) {

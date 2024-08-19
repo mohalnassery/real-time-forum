@@ -1,5 +1,6 @@
 import { fetchAndDisplayNotifications, markAllNotificationsAsRead, updateNotificationCounter } from './notifications.js';
 import { logout } from './auth/auth_handling.js';
+import { populateUserSidebar } from './websocket/chat_box.js'; // Import the function
 
 let isLoggedIn = false; // Variable to track login status
 
@@ -122,6 +123,19 @@ export function createNavBar(navbar) {
     document.body.setAttribute("data-theme", savedTheme);
     themeToggle.checked = savedTheme === "dark";
 
+    // Add event listener to user icon to toggle sidebar
+    document.getElementById("user-icon").addEventListener("click", async (event) => {
+        event.stopPropagation(); // Prevent the click event from propagating to the document
+        await populateUserSidebar("user-sidebar");
+    });
+
+    // Hide the sidebar when clicking outside
+    document.addEventListener("click", (event) => {
+        const userSidebar = document.getElementById("user-sidebar");
+        if (userSidebar && !userSidebar.contains(event.target) && !event.target.matches('.user-icon, .user-icon *')) {
+            userSidebar.classList.remove("show");
+        }
+    });
 }
 
 export function setNickname(newNickname) {

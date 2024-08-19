@@ -32,23 +32,24 @@ func InsertPostLike(postID int, userID int) error {
 		if err != nil {
 			return err
 		}
-
-		postAuthorID, err := GetPostAuthorID(postID)
-		if err != nil {
-			return err
-		}
-		nickname, err := GetUsernameByID(userID)
-		if err != nil {
-			return err
-		}
-		message := fmt.Sprintf("Your post was liked by %s", nickname)
-		err = InsertNotification(postAuthorID, message, tx, 0, postID, 0)
-		if err != nil {
-			return err
-		}
 	}
 
 	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+
+	postAuthorID, err := GetPostAuthorID(postID)
+	if err != nil {
+		return err
+	}
+	nickname, err := GetUsernameByID(userID)
+	if err != nil {
+		return err
+	}
+
+	message := fmt.Sprintf("Your post was liked by %s", nickname)
+	err = InsertNotification(postAuthorID, message, nil, 0, postID, 0)
 	if err != nil {
 		return err
 	}

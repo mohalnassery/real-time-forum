@@ -15,15 +15,6 @@ a {
   color: var(--text-color);
 }
 
-.header {
-  background-color: var(--card-background-color);
-  box-shadow: 4px 0 5px 0 rgba(0, 0, 0, 0.3);
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 30px;
-  width: 96%;
-}
-
 .user-auth {
   display: flex;
   align-items: center;
