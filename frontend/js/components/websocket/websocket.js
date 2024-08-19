@@ -59,19 +59,21 @@ export function handleWebSocketMessage(message) {
             messageWindow.scrollTo(0, messageWindow.scrollHeight);
         }
         // Update the normal sidebar userlist
-        const userToBoostN = document.querySelector(`.user-item[data-user-id="${message.senderId}"]`) || document.querySelector(`.user-item[data-user-id="${message.receiverId}"]`)
+        const userToBoostN = document.querySelector(`.user-item[data-user-id="${message.senderId}"]`) || document.querySelector(`.user-item[data-user-id="${message.receiverId}"]`);
         if (userToBoostN) {
-            const userlist = document.getElementById('user-list')
-            userlist.insertBefore(userToBoostN,userlist.firstChild)
+            const userlist = document.getElementById('user-list');
+            if (userlist) {
+                userlist.insertBefore(userToBoostN, userlist.firstChild);
+            }
         }
         // Update the chat-sidebar user list
         const userToBoostC = document.querySelector(`#chat-sidebar .user-item[data-user-id="${message.senderId}"]`) || document.querySelector(`#chat-sidebar .user-item[data-user-id="${message.receiverId}"]`);
         if (userToBoostC) {
             const recentSection = document.querySelector('#chat-sidebar .recent-section');
-            const recentHeader = recentSection.querySelector('h3');
+            const recentHeader = recentSection ? recentSection.querySelector('h3') : null;
             if (recentHeader) {
                 recentSection.insertBefore(userToBoostC, recentHeader.nextSibling);
-            } else {
+            } else if (recentSection) {
                 recentSection.insertBefore(userToBoostC, recentSection.firstChild);
             }
         }

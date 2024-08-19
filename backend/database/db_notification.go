@@ -8,23 +8,25 @@ import (
 )
 
 func InsertNotification(userID int, message string, tx *sql.Tx, messageID, postID, commentID int) error {
-	// Skip the existence check if messageID is 0
 	var err error
-	// if messageID != 0 {
-	// 	var exists bool
-	// 	err = DB.QueryRow("SELECT EXISTS(SELECT 1 FROM messages WHERE id = ?)", messageID).Scan(&exists)
-	// 	if err != nil {
-	// 		return fmt.Errorf("failed to check if messageID exists: %v", err)
-	// 	}
-	// 	if !exists {
-	// 		return fmt.Errorf("messageID %d does not exist in messages table", messageID)
-	// 	}
-	// }
+	var query string
 
-	query := `
-        INSERT INTO notifications (user_id, message, message_id, post_id, comment_id, created_at, is_read)
-        VALUES (?, ?, ?, ?, ?, ?, FALSE)
-    `
+	if messageID != 0 {
+		query = `
+            INSERT INTO notifications (user_id, message, message_id, created_at, is_read)
+            VALUES (?, ?, ?, ?, FALSE)
+        `
+	} else if commentID == 0 && messageID == 0 {
+		query = `
+            INSERT INTO notifications (user_id, message, post_id, created_at, is_read)
+            VALUES (?, ?, ?, ?, FALSE)
+        `
+	} else if commentID != 0 {
+		query = `
+            INSERT INTO notifications (user_id, message, post_id, comment_id, created_at, is_read)
+            VALUES (?, ?, ?, ?, ?, FALSE)
+        `
+	}
 
 	var stmt *sql.Stmt
 
@@ -39,7 +41,13 @@ func InsertNotification(userID int, message string, tx *sql.Tx, messageID, postI
 	defer stmt.Close()
 
 	for attempts := 0; attempts < 5; attempts++ {
-		_, err = stmt.Exec(userID, message, messageID, postID, commentID, time.Now())
+		if messageID != 0 {
+			_, err = stmt.Exec(userID, message, messageID, time.Now())
+		} else if commentID == 0 && messageID == 0 {
+			_, err = stmt.Exec(userID, message, postID, time.Now())
+		} else {
+			_, err = stmt.Exec(userID, message, postID, commentID, time.Now())
+		}
 		if err == nil {
 			return nil
 		}
@@ -81,10 +89,28 @@ func GetNotifications(userID int) ([]models.Notification, error) {
 	var notifications []models.Notification
 	for rows.Next() {
 		var n models.Notification
+		var messageID sql.NullInt64
+		var postID sql.NullInt64
+		var commentID sql.NullInt64
 		var senderID sql.NullInt64
-		err := rows.Scan(&n.ID, &n.Message, &n.MessageID, &n.PostID, &n.CommentID, &n.CreatedAt, &n.IsRead, &senderID)
+		err := rows.Scan(&n.ID, &n.Message, &messageID, &postID, &commentID, &n.CreatedAt, &n.IsRead, &senderID)
 		if err != nil {
 			return nil, err
+		}
+		if messageID.Valid {
+			n.MessageID = int(messageID.Int64)
+		} else {
+			n.MessageID = 0
+		}
+		if postID.Valid {
+			n.PostID = int(postID.Int64)
+		} else {
+			n.PostID = 0
+		}
+		if commentID.Valid {
+			n.CommentID = int(commentID.Int64)
+		} else {
+			n.CommentID = 0
 		}
 		if senderID.Valid {
 			senderIDValue := int(senderID.Int64)

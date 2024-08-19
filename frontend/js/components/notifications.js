@@ -48,12 +48,11 @@ function displayNotifications(notifications) {
       if (notification.postId !== 0 && notification.messageId === 0) {
         // Navigate to the post
         await clearNotification(notification.id); // Clear the notification
-        updateNotificationCounter(-1,true); // Decrement the counter by 1
+        updateNotificationCounter(-1, true); // Decrement the counter by 1
         window.location.href = `http://localhost:8080/#post/${notification.postId}`;
-
       } else if (notification.messageId !== 0) {
         // Navigate to the chat
-        const user = { id: notification.senderId, nickname: notification.message.split('from ')[1] };
+        const user = { id: notification.senderId, nickname: notification.message.split('from ')[1], status: notification.status };
         if (document.getElementById('chat-main')) {
           // If we're on the chat page
           openChat(notification.senderId, user.nickname);
@@ -86,7 +85,7 @@ async function clearNotification(notificationId) {
         const data = JSON.parse(text);
         const senderId = data.senderId;
         if (senderId) {
-          openChatBox({ id: senderId, nickname: data.senderNickname });
+          openChatBox({ id: senderId, nickname: data.senderNickname, status: data.senderStatus });
         } else {
           console.error("Sender ID not found in the response");
         }
@@ -120,39 +119,39 @@ async function updateNotificationCounter(count, increment = false) {
     count = parseInt(counterElement.textContent || "0") + count;
   }
   if (count > 0) {
-      counterElement.textContent = count > 99 ? "99+" : count;
-      counterElement.hidden = false;
+    counterElement.textContent = count > 99 ? "99+" : count;
+    counterElement.hidden = false;
   } else {
-      counterElement.textContent = "0"
-      counterElement.hidden = true;
+    counterElement.textContent = "0";
+    counterElement.hidden = true;
   }
 }
 
 async function clearAllChatNotifications(userId) {
-    const notificationItems = document.querySelectorAll(".notification-item");
-    let removedCount = 0;
-    notificationItems.forEach(item => {
-        if (item.dataset.senderId === userId.toString()) {
-            item.remove();
-            removedCount++;
-        }
-    });
-    updateNotificationCounter(-removedCount,true);
+  const notificationItems = document.querySelectorAll(".notification-item");
+  let removedCount = 0;
+  notificationItems.forEach(item => {
+    if (item.dataset.senderId === userId.toString()) {
+      item.remove();
+      removedCount++;
+    }
+  });
+  updateNotificationCounter(-removedCount, true);
 }
 
 async function markAllChatNotificationsAsRead(userId) {
-    try {
-        const response = await fetch(`/notifications/mark-chat-read/${userId}`, {
-            method: "POST",
-        });
-        if (response.ok) {
-            fetchAndDisplayNotifications(true); // Refresh notifications and show only unread
-        } else {
-            console.error("Error marking chat notifications as read:", response.status);
-        }
-    } catch (error) {
-        console.error("Error marking chat notifications as read:", error);
+  try {
+    const response = await fetch(`/notifications/mark-chat-read/${userId}`, {
+      method: "POST",
+    });
+    if (response.ok) {
+      fetchAndDisplayNotifications(true); // Refresh notifications and show only unread
+    } else {
+      console.error("Error marking chat notifications as read:", response.status);
     }
+  } catch (error) {
+    console.error("Error marking chat notifications as read:", error);
+  }
 }
 
 // Export functions to be used in other files
