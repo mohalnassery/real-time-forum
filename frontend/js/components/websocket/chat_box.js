@@ -251,9 +251,7 @@ export function updateUserStatus(userId, status) {
     const userItem = document.querySelector(`.user-item[data-user-id="${userId}"] .status-indicator`);
     if (userItem) {
         userItem.className = `status-indicator ${status}`;
-    } else {
-        fetchUsers();
-    }
+    } 
 }
 
 // Close a chat box with a user
