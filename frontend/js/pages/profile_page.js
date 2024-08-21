@@ -1,6 +1,7 @@
 import { fetchUserStats, fetchAllUserStats, fetchLeaderboard } from '../components/profile/profile_stats.js';
 import { loadCSS } from '../components/utils.js';
 import { fetchUserActivity, displayUserActivity } from '../components/profile/activity.js'; // Import functions from activity.js
+import { showNotification } from '../components/notifications.js';
 
 export function initProfilePage(app) {
     const urlParams = new URLSearchParams(window.location.hash.split('?')[1]);

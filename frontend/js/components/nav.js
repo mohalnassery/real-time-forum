@@ -1,9 +1,10 @@
-import { fetchAndDisplayNotifications, markAllNotificationsAsRead, updateNotificationCounter } from './notifications.js';
+import { fetchAndDisplayNotifications, markAllNotificationsAsRead, updateNotificationCounter, showNotification } from './notifications.js';
 import { logout } from './auth/auth_handling.js';
 import { populateUserSidebar } from './websocket/chat_box.js'; // Import the function
 
 let isLoggedIn = false; // Variable to track login status
 
+// Function to create the navigation bar
 export function createNavBar(navbar) {
     navbar.innerHTML = `
         <div class="header">
@@ -19,16 +20,14 @@ export function createNavBar(navbar) {
                     <i class="fa-solid fa-bell"></i>
                     <div class="notification-counter" id="notification-counter" hidden></div>
                     <div class="notification-dropdown">
-                        <div class="mark-all-read">
-                        </div>
+                        <div class="mark-all-read"></div>
                     </div>
                 </div>
                 <button class="link-buttons" id="toggle-login" hidden disabled >Login</button>
                 <button class="link-buttons" id="toggle-signup" hidden disabled >SignUp</button>
                 <button class="link-buttons" id="logout-btn" hidden disabled >LogOut</button>
                 <div class="user-info" display="none">
-                    <p id="nickname">
-                    </p>
+                    <p id="nickname"></p>
                 </div>
                 <div class="user-icon" id="user-icon" hidden>
                     <i class="fa-solid fa-users"></i>
@@ -38,14 +37,17 @@ export function createNavBar(navbar) {
         </div>
     `;
 
+    // Event listener for logout button
     document.getElementById("logout-btn").addEventListener("click", async () => {
         await logout();
     });
 
+    // Event listener for logo click to reset the hash
     document.getElementById("logo").addEventListener("click", () => {
         window.location.hash = "";
-    })
+    });
 
+    // Event listener for chat button to toggle chat box
     document.getElementById("chat-btn").addEventListener("click", () => {
         const chatBox = document.querySelector(".chat-box");
         if (chatBox) {
@@ -57,10 +59,12 @@ export function createNavBar(navbar) {
     const chatSendButton = document.getElementById('chat-send-button');
     const chatMessageInput = document.getElementById('chat-message-input');
 
+    // Event listener for sending messages via button click
     if (chatSendButton) {
         chatSendButton.addEventListener('click', () => sendMessageHandler('chat-messages'));
     }
 
+    // Event listener for sending messages via Enter key
     if (chatMessageInput) {
         chatMessageInput.addEventListener('keypress', (event) => {
             if (event.key === 'Enter') {
@@ -69,9 +73,8 @@ export function createNavBar(navbar) {
         });
     }
 
-    // Add event listener to nickname element to redirect to profile page
+    // Event listener to redirect to profile page when nickname is clicked
     document.getElementById("nickname").addEventListener("click", async () => {
-        // fetching and set user ID again
         const response = await fetch("/auth/is-logged-in");
         if (response.ok) {
             const data = await response.json();
@@ -83,16 +86,16 @@ export function createNavBar(navbar) {
         window.location.href = `/#profile?user_id=${userID}`;
     });
 
-    // Add "Mark all as read" button
+    // Add "Mark all as read" button functionality
     const notificationIcon = document.getElementsByClassName("notification-icon")[0];
     const notificationDropdown = document.getElementsByClassName("notification-dropdown")[0];
     document.getElementsByClassName("mark-all-read")[0].addEventListener("click", async () => {
         await markAllNotificationsAsRead();
-        notificationDropdown.innerHTML = "";
+        notificationDropdown.innerHTML = ""; // Clear notifications after marking as read
         updateNotificationCounter(0); // Reset counter
     });
 
-    // Add event listener to toggle dropdown visibility and fetch notifications
+    // Event listener to toggle notification dropdown visibility and fetch notifications
     notificationIcon.addEventListener("click", async (event) => {
         event.stopPropagation();
         notificationDropdown.classList.toggle("show");
@@ -109,7 +112,7 @@ export function createNavBar(navbar) {
         }
     });
 
-    // Add event listener for theme toggle
+    // Event listener for theme toggle
     const themeToggle = document.getElementById("theme-toggle");
     themeToggle.addEventListener("change", () => {
         const currentTheme = document.body.getAttribute("data-theme");
@@ -123,7 +126,7 @@ export function createNavBar(navbar) {
     document.body.setAttribute("data-theme", savedTheme);
     themeToggle.checked = savedTheme === "dark";
 
-    // Add event listener to user icon to toggle sidebar
+    // Event listener to toggle user sidebar
     document.getElementById("user-icon").addEventListener("click", async (event) => {
         event.stopPropagation(); // Prevent the click event from propagating to the document
         await populateUserSidebar("user-sidebar");
@@ -138,21 +141,25 @@ export function createNavBar(navbar) {
     });
 }
 
+// Function to set the user's nickname
 export function setNickname(newNickname) {
     document.getElementById("nickname").textContent = newNickname;
     localStorage.setItem("nickname", newNickname);
 }
 
+// Function to get the user's nickname
 export function getNickname() {
     return localStorage.getItem("nickname");
 }
 
+// Function to update the navigation menu based on login status
 export async function updateNavMenu() {
     try {
         const response = await fetch("/auth/is-logged-in");
         if (response.ok) {
             const data = await response.json();
-            if (data.status === "logged_in") {
+            // Update the navigation menu based on login status
+            if (data.status === "logged_in") { 
                 isLoggedIn = true;
                 document.getElementById("toggle-login").hidden = true;
                 document.getElementById("toggle-signup").hidden = true;
@@ -209,44 +216,5 @@ export async function updateNavMenu() {
         }
     } catch (error) {
         console.error("Failed to update navigation menu:", error);
-    }
-}
-
-export function handleChatNotification(message) {
-    const currentUserId = parseInt(localStorage.getItem('userId'));
-    if (message.receiverId === currentUserId) {
-        const notificationMessage = `New message from ${message.senderNickname}: ${message.content}`;
-        updateNotificationCounter(1, true);
-        // Show a toast notification instead of adding to dropdown
-        showNotification(notificationMessage);
-    }
-}
-
-// Function to show a toast notification
-function showNotification(message) {
-    let toastNotification = document.querySelector(".toast-notification");
-    const truncatedMessage = message.length > 100 ? message.substring(0, 100) + '...' : message; // Truncate message to 20 chars
-
-    if (toastNotification) {
-        // If a toast already exists, update its message and reset the timer
-        toastNotification.textContent = truncatedMessage;
-        toastNotification.classList.add("show"); // Ensure it is visible
-        clearTimeout(toastNotification.timeoutId); // Clear the previous timeout
-        toastNotification.timeoutId = setTimeout(() => {
-            toastNotification.remove();
-        }, 5000); // 5000ms = 5 seconds
-    } else {
-        // Create a new toast notification element
-        toastNotification = document.createElement("div");
-        toastNotification.className = "toast-notification show"; // Add the show class to trigger the animation
-        toastNotification.textContent = truncatedMessage;
-
-        // Add the toast notification to the body
-        document.body.appendChild(toastNotification);
-
-        // Set a timer to remove the toast notification after some time
-        toastNotification.timeoutId = setTimeout(() => {
-            toastNotification.remove();
-        }, 5000); // 5000ms = 5 seconds
     }
 }

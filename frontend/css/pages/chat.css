@@ -1,3 +1,4 @@
+/* Chat Container Styles */
 .chat-container {
     display: flex;
     height: calc(100vh - 150px); /* Adjust height to account for the top margin */
@@ -5,6 +6,7 @@
     margin: 100px 0 0 0; /* Add 100px margin on top */
 }
 
+/* Chat Sidebar Styles */
 .chat-sidebar {
     width: 25%;
     background-color: var(--card-background-color);
@@ -16,6 +18,7 @@
     left: 0; /* Ensure it starts from the left */
 }
 
+/* Chat Main Styles */
 .chat-main {
     width: 75%;
     margin-left: 25%; /* Adjusts the main chat area to the right of the sidebar */
@@ -32,6 +35,7 @@
     right: 0; /* Ensure it starts from the right */
 }
 
+/* Chat Header Styles */
 .chat-header {
     padding: 10px;
     background-color: var(--primary-color);
@@ -73,6 +77,7 @@
     background-color: #c84117;
 }
 
+/* Chat Messages Styles */
 .chat-messages {
     flex: 1;
     padding: 10px;
@@ -85,6 +90,7 @@
     height: 300px; /* Adjust height as needed */
 }
 
+/* Chat Input Styles */
 .chat-input {
     display: flex;
     padding: 10px;
@@ -112,6 +118,7 @@
     cursor: pointer;
 }
 
+/* User Item Styles */
 .user-item {
     padding: 10px;
     cursor: pointer;
@@ -129,6 +136,7 @@
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Increase shadow on hover */
 }
 
+/* Chat Message Styles */
 .chat-message {
     display: flex;
     align-items: flex-start;
@@ -174,6 +182,7 @@
     white-space: pre-wrap; /* Preserve whitespace and line breaks */
 }
 
+/* Typing Indicator Styles */
 .typing-indicator {
     font-size: 1em;
     vertical-align: middle;
@@ -206,12 +215,13 @@
     }
 }
 
+/* Recent Section Styles */
 .recent-section {
     background-color: var(--card-background-color);
     border-bottom: 1px solid var(--input-border);
 }
 
-/* New chat section styles */
+/* New Chat Section Styles */
 .chat-sidebar .new-chat-section {
     background-color: var(--card-background-color);
     padding: 10px;

@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
@@ -26,9 +27,20 @@ func main() {
 	postLimiter := helper.NewRateLimiter(40, 40)    // 40 requests per minute
 	commentLimiter := helper.NewRateLimiter(30, 30) // 30 requests per minute
 
-	// Serve the single HTML file
+	// Serve the single HTML file for the root and all other frontend routes
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "../frontend/index.html")
+		if r.URL.Path == "/" || r.URL.Path == "/index.html" {
+			http.ServeFile(w, r, "../frontend/index.html")
+		} else {
+			w.Header().Set("X-Custom-Status", "404")
+			w.WriteHeader(http.StatusNotFound)
+			content, err := ioutil.ReadFile("../frontend/index.html")
+			if err != nil {
+				http.Error(w, "404 Not Found", http.StatusNotFound)
+				return
+			}
+			w.Write(content)
+		}
 	})
 
 	// WebSocket endpoint
@@ -114,6 +126,11 @@ func main() {
 	r.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("../frontend/css"))))
 	r.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("../frontend/assets"))))
 	r.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir("../frontend/uploads"))))
+
+	// 404 Not Found handler for API routes
+	r.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "404 Not Found", http.StatusNotFound)
+	})
 
 	// Parse command-line flags
 	flag.Parse()

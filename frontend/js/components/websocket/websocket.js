@@ -1,6 +1,6 @@
 import { displayChatMessage, populateChatSidebar } from '../chat/chat.js';
 import { displayMessage, updateUserStatus } from './chat_box.js';
-import { handleChatNotification } from '../nav.js';
+import { showNotification, handleChatNotification } from '../notifications.js';
 
 let socket;
 
@@ -95,13 +95,16 @@ export function sendMessage(message) {
         if (socket && socket.readyState === WebSocket.OPEN) {
             socket.send(JSON.stringify(message));
         } else {
+            showNotification("WebSocket is not open. Unable to send message.");
             console.error("WebSocket is not open. Unable to send message.");
             if (attempts < maxAttempts) {
                 attempts++;
+                showNotification("Attempting to reopen WebSocket (" + attempts + "/" + maxAttempts + ")...");
                 console.log(`Attempting to reopen WebSocket (${attempts}/${maxAttempts})...`);
                 initWebSocket(id);
                 setTimeout(trySendMessage, 1000); // Wait before trying again
             } else {
+                showNotification("Failed to send message after multiple attempts.");
                 console.error("Failed to send message after multiple attempts.");
             }
         }

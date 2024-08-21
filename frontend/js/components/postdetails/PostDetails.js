@@ -10,8 +10,10 @@ export async function fetchPostDetailsFromServer(postId) {
     });
 
     if (!response.ok) {
-      const errorMessage = await response.text();
-      throw new Error(`Failed to fetch post details. Status: ${response.status}. Message: ${errorMessage}`);
+      if (response.status === 404) {
+        throw new Error('Post not found');
+      }
+      throw new Error(`Failed to fetch post details. Status: ${response.status}`);
     }
 
     const postDetails = await response.json();
@@ -229,7 +231,11 @@ export async function fetchPostDetails(postId) {
   } catch (error) {
     const errorElement = document.getElementById('error');
     if (errorElement) {
-      errorElement.textContent = 'Failed to load post details.';
+      if (error.message.includes('404')) {
+        errorElement.textContent = 'Post not available.';
+      } else {
+        errorElement.textContent = 'Failed to load post details.';
+      }
     }
     disableInteractions();
     throw error;

@@ -2,7 +2,8 @@ import { fetchPost, enableInteractions, disableInteractions, likePost, dislikePo
 import { loadCSS } from '../components/utils.js';
 
 export async function initPostDetails(app, postId) {
-  app.innerHTML = `
+  try {
+    app.innerHTML = `
   <div class="main-section hidden"> <!-- Add hidden class initially -->
     <div class="post-container">
       <div class="top">
@@ -70,7 +71,6 @@ export async function initPostDetails(app, postId) {
   </div>
   `;
 
-  try {
     await fetchPost(postId);
     enableInteractions();
     addEventListeners(postId);
@@ -86,6 +86,7 @@ export async function initPostDetails(app, postId) {
     }, 100);
   } catch (error) {
     disableInteractions();
+    throw error; // Rethrow the error to be caught by handleNavigation
   }
 }
 
