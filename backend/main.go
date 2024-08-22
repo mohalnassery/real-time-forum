@@ -114,6 +114,7 @@ func main() {
 	r.Handle("/notifications", helper.LimitMiddleware(generalLimiter, http.HandlerFunc(handlers.GetNotifications)))
 	r.Handle("/notifications/clear/{notificationId}", helper.LimitMiddleware(generalLimiter, http.HandlerFunc(handlers.ClearNotification)))
 	r.Handle("/notifications/mark-all-read", helper.LimitMiddleware(generalLimiter, http.HandlerFunc(handlers.MarkAllNotificationsAsRead)))
+	r.Handle("/notifications/mark-chat-read/{userId}", helper.LimitMiddleware(generalLimiter, http.HandlerFunc(handlers.MarkChatNotificationsAsRead)))
 
 	// New endpoint for fetching users
 	r.Handle("/users", helper.LimitMiddleware(generalLimiter, http.HandlerFunc(handlers.GetUsersHandler)))
